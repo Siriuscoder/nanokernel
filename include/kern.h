@@ -19,8 +19,7 @@
 #ifndef GRUB_KERN_HEADER
 #define GRUB_KERN_HEADER	1
 
-/* The offset of KERNEL_SECTOR. (floppy) */
-#define BOOT_KERNEL_FLOPPY_SECTOR_START		0x10
+
 #define BOOL_LOADER_BODY_SIZE			0x1FE
 /* boot drive index (0x00 for floppy disk A)*/
 #define BOOT_DRIVE_INDEX			0x00
@@ -28,10 +27,10 @@
 #define MAIN_BOOT_RECORD_SIGNATURE		0xAA55
 /* boot loader start address */
 #define BOOT_LOADER_BIOS_START			0x7C00
-/* kernel size in sectors ((0x7c00-0x70)/0x200)-1 = 3C (60 sectors) */
-#define BOOT_KERNEL_SIZE_IN_SECT		0x3C
+/* kernel size in sectors (60 sectors) 60x512=30 kB */
+#define BOOT_KERNEL_SIZE_IN_SECT		17
 /* kernel start sector */
-#define BOOT_KERNEL_START_SECTOR		0x02
+#define BOOT_KERNEL_START_SECTOR		0x2
 /* default sector size 512 bytes */
 #define DISK_SECT_SIZE			 	512
 /* kernel load address 0000h:7e00h */

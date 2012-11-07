@@ -104,7 +104,19 @@ real_start:
 	jz	lba_not_supported
 
 lba_mode:
+/*
+ * BIOS call "INT 0x13 Function 0x42" to read sectors from disk into memory
+ *	Call with	%ah = 0x42
+ *			%dl = drive number
+ *			%ds:%si = segment:offset of disk address packet
+ *	Return:
+ *			%al = 0x0 on success; err code on failure
+ */
 
+	movb	$0x42, %ah
+	movw	$REAL_ADR(DAP), %si
+	int	$0x13
+	jnc	boot_next
 
 CHS_mode:
 	push	%dx
@@ -155,6 +167,7 @@ CHS_read_sector:
 	movb	%ah, %dh
 	pushw	%dx
 	// calc cylinder no
+	xorw	%dx, %dx
 	movw	-4(%bp), %ax
 	divw	-2(%bp)
 	/* restore dx */
@@ -195,6 +208,8 @@ CHS_read_sector:
 	cmpw	$(BOOT_KERNEL_SIZE_IN_SECT+BOOT_KERNEL_START_SECTOR), -4(%bp)
 	jl	CHS_read_sector
 
+	/* restore stack */
+	movw	%bp, %sp
 	jmp 	boot_next
 
 lba_not_supported:
