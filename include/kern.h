@@ -28,9 +28,9 @@
 /* boot loader start address */
 #define BOOT_LOADER_BIOS_START			0x7C00
 /* kernel size in sectors (60 sectors) 60x512=30 kB */
-#define BOOT_KERNEL_SIZE_IN_SECT		17
+#define BOOT_KERNEL_SIZE_IN_SECT		60
 /* kernel start sector */
-#define BOOT_KERNEL_START_SECTOR		0x2
+#define BOOT_KERNEL_START_SECTOR		0x1
 /* default sector size 512 bytes */
 #define DISK_SECT_SIZE			 	512
 /* kernel load address 0000h:7e00h */

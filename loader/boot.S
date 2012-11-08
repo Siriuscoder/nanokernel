@@ -173,13 +173,14 @@ CHS_read_sector:
 	/* restore dx */
 	popw	%dx
 /*
-	CX =       ---CH--- ---CL---
-	cylinder : 76543210 98
-	sector   :            543210
-
-	low bits of cylinder start
+  CX =       ---CH--- ---CL---
+  cylinder : 76543210 98
+  sector   :            543210
 */
+	/* low bits of cylinder start */
 	movb	%al, %ch
+	/* normalize sector start (1-based) */
+	incb	%cl
 	/* high bits of cylinder start */
 	xorb	%al, %al
 	shrw	$2, %ax
