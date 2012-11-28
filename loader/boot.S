@@ -16,7 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "kern.h"
+#include "loader.h"
 
 	.file	"boot.S"
 

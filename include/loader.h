@@ -16,8 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef GRUB_KERN_HEADER
-#define GRUB_KERN_HEADER	1
+#ifndef LOADER_HEADER
+#define LOADER_HEADER	1
 
 
 #define BOOL_LOADER_BODY_SIZE			0x1FE
