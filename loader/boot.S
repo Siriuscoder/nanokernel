@@ -53,8 +53,8 @@ DAP:
 	(note that x86 is little-endian: if declaring the segment and offset separately, 
 	the offset must be declared before the segment) 
 	*/
-	.short  0x0
-	.short	KERNEL_LOAD_ADDR
+	.short  KERNEL_LOAD_SEGMENT
+	.short	0x0
 	/* absolute number of the start of the sectors to be read (1st sector of drive has number 0) */
 	.quad 	1
 CHS_parameters:
@@ -152,8 +152,9 @@ CHS_read:
 	/* sector counter */
 	movw	$BOOT_KERNEL_START_SECTOR, %ax
 	pushw	%ax
-	/* block address */
-	movw	$KERNEL_LOAD_ADDR, %bx
+	/* setup memory buffer segment */
+	movw	$KERNEL_LOAD_SEGMENT, %bx
+	movw	%bx, %es
 
 CHS_read_sector:
 	// calc next CHS coordinates
@@ -185,6 +186,8 @@ CHS_read_sector:
 	xorb	%al, %al
 	shrw	$2, %ax
 	orb	%al, %cl
+	/* setup memory buffer offset to 0 */
+	xorw	%bx, %bx
 /*
  * BIOS call "INT 0x13 Function 0x2" to read sectors from disk into memory
  *	Call with	%ah = 0x2
@@ -205,7 +208,9 @@ CHS_read_sector:
 	/* to next sector */
 	incw	-4(%bp)
 	/* to next memory block */
-	addw	$DISK_SECT_SIZE, %bx
+	movw	%es, %bx
+	addw	$LOAD_SEGMENT_OFFSET, %bx
+	movw	%bx, %es
 	cmpw	$(BOOT_KERNEL_SIZE_IN_SECT+BOOT_KERNEL_START_SECTOR), -4(%bp)
 	jl	CHS_read_sector
 
@@ -248,7 +253,8 @@ stop_boot:
 boot_next:
 	movw 	$REAL_ADR(success_mes), %si
 	call 	message
-	ljmp	$0, $KERNEL_LOAD_ADDR
+/* go go go !!! */
+	ljmp	$KERNEL_LOAD_SEGMENT, $0x0
 
 lba_not_supported_err_mes:
 	.asciz "LBA not supported, trying CHS mode\n"

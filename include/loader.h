@@ -27,14 +27,16 @@
 #define MAIN_BOOT_RECORD_SIGNATURE		0xAA55
 /* boot loader start address */
 #define BOOT_LOADER_BIOS_START			0x7C00
-/* kernel size in sectors (60 sectors) 60x512=30 kB */
-#define BOOT_KERNEL_SIZE_IN_SECT		60
+/* kernel size in sectors (127 sectors) 127x512=64 kB */
+#define BOOT_KERNEL_SIZE_IN_SECT		127
 /* kernel start sector */
 #define BOOT_KERNEL_START_SECTOR		0x1
 /* default sector size 512 bytes */
-#define DISK_SECT_SIZE			 	512
-/* kernel load address 0000h:7e00h */
-#define KERNEL_LOAD_ADDR			0x7e00
+#define DISK_SECT_SIZE			 	0x200
+/* sector size / 0x10 */
+#define LOAD_SEGMENT_OFFSET		 	0x20
+/* kernel load address 07e0h:0000h */
+#define KERNEL_LOAD_SEGMENT			0x07e0
 #define FLOPPY_SECTORS_PER_TRACK		18
 #define FLOPPY_HEADS_NUM			2
 
