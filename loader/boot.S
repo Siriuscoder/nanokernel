@@ -53,8 +53,8 @@ DAP:
 	(note that x86 is little-endian: if declaring the segment and offset separately, 
 	the offset must be declared before the segment) 
 	*/
-	.short  KERNEL_LOAD_SEGMENT
-	.short	0x0
+	.short  0x0
+	.short	KERNEL_LOAD_SEGMENT
 	/* absolute number of the start of the sectors to be read (1st sector of drive has number 0) */
 	.quad 	1
 CHS_parameters:
@@ -114,13 +114,13 @@ lba_mode:
  */
 
 	movb	$0x42, %ah
-	movw	$REAL_ADR(DAP), %si
+	leaw	REAL_ADR(DAP), %si
 	int	$0x13
 	jnc	boot_next
 
 CHS_mode:
 	push	%dx
-	movw	$REAL_ADR(CHS_parameters), %si
+	leaw	REAL_ADR(CHS_parameters), %si
 	/*
 	 *  Determine the hard disk geometry from the BIOS!
 	 *  INT 13h AH=08h: Read Drive Parameters
@@ -220,13 +220,13 @@ CHS_read_sector:
 
 lba_not_supported:
 	pushw	%si
-	movw 	$REAL_ADR(lba_not_supported_err_mes), %si
+	leaw 	REAL_ADR(lba_not_supported_err_mes), %si
 	call 	message
 	popw	%si
 	jmp 	CHS_mode
 
 error_disk_read:
-	movw 	$REAL_ADR(disk_read_error_mes), %si
+	leaw 	REAL_ADR(disk_read_error_mes), %si
 	call 	message
 	jmp 	stop_boot
 
@@ -251,7 +251,7 @@ message_lods:
 stop_boot:
 	jmp 	stop_boot
 boot_next:
-	movw 	$REAL_ADR(success_mes), %si
+	leaw 	REAL_ADR(success_mes), %si
 	call 	message
 /* go go go !!! */
 	ljmp	$KERNEL_LOAD_SEGMENT, $0x0
