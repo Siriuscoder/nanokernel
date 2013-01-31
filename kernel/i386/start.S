@@ -19,12 +19,14 @@
 #include "kernel.h"
 
 	.file	"start.S"
-	.text
 
 .globl _start, start;
-.globl k_reset_disk_system;
 .globl k_do_reboot;
 .globl k_halt_system;
+.globl k_rm_message;
+.globl k_phisical_memory_map_size;
+
+	.text
 
 _start:
 start:
@@ -38,20 +40,26 @@ start:
 	movw	%ax, %cx
 	movw	%ax, %dx
 
-	/* do force ljump to 07e0h:common_segments_init */
-	/* setup code segment and instruction pointer */
-	ljmp	$KERNEL_REALMODE_CODE_SEG, common_segments_init
+	/* normalize code segment */
+	ljmp	$KERNEL_REALMODE_CODE_SEG, $common_segments_init
+	nop
 	nop
 
 common_segments_init:
 /* turn off interrupts */
 	cli
 /* setup new stack */
-	movw	$KERNEL_REALMODE_STACK_SEG, %ss
+	movw	$KERNEL_REALMODE_STACK_SEG, %ax
+	movw	%ax, %ss
 	movw	$KERNEL_REALMODE_STACK_ADDR, %sp
 	movw	%sp, %bp
 /* setup data segment */
-	movw	$KERNEL_REALMODE_DATA_SEG, %ds
+	movw	$KERNEL_REALMODE_DATA_SEG, %ax
+	movw	%ax, %ds
+/* set fs and gs to zero */
+	xorw	%ax, %ax
+	movw	%ax, %fs
+	movw	%ax, %gs	
 
 /* turn on interrupts */
 	sti
@@ -59,7 +67,93 @@ common_segments_init:
 start_system_initialization:
 
 	call 	k_reset_disk_system
+	call 	k_get_memory_info
+
+	movw	$0x0, %ax
+	call 	k_halt_system
 	
+k_get_memory_info:
+	.code16
+/*
+INT 15h, AX=E820h - Query System Address Map
+
+Input:
+	EAX	Function Code	E820h
+	EBX	Continuation	Contains the "continuation value" to get the
+				next run of physical memory.  This is the
+				value returned by a previous call to this
+				routine.  If this is the first call, EBX
+				must contain zero.
+	ES:DI	Buffer Pointer	Pointer to an  Address Range Descriptor
+				structure which the BIOS is to fill in.
+	ECX	Buffer Size	The length in bytes of the structure passed
+				to the BIOS.  The BIOS will fill in at most
+				ECX bytes of the structure or however much
+				of the structure the BIOS implements.  The
+				minimum size which must be supported by both
+				the BIOS and the caller is 20 bytes.  Future
+				implementations may extend this structure.
+	EDX	Signature	'SMAP' -  Used by the BIOS to verify the
+				caller is requesting the system map
+				information to be returned in ES:DI.
+Output:
+	CF	Carry Flag	Non-Carry - indicates no error
+	EAX	Signature	'SMAP' - Signature to verify correct BIOS
+				revision.
+	ES:DI	Buffer Pointer	Returned Address Range Descriptor pointer.
+				Same value as on input.
+	ECX	Buffer Size	Number of bytes returned by the BIOS in the
+				address range descriptor.  The minimum size
+				structure returned by the BIOS is 20 bytes.
+	EBX	Continuation	Contains the continuation value to get the
+				next address descriptor.  The actual
+				significance of the continuation value is up
+				to the discretion of the BIOS.  The caller
+				must pass the continuation value unchanged
+				as input to the next iteration of the E820
+				call in order to get the next Address Range
+				Descriptor.  A return value of zero means that
+				this is the last descriptor.  Note that the
+				BIOS indicate that the last valid descriptor
+				has been returned by either returning a zero
+				as the continuation value, or by returning
+				carry.
+*/
+	xorl	%ebx, %ebx
+	movl 	$0xE820, %eax
+	movw	%bx, %es /* 0x0 to es */
+	movw	$SYSTEM_ADDRESS_MAP_ENTRY, %di
+	movl	$20, %ecx /* read 20 bytes per call */
+	movl	$0x534D4150, %edx /* 'SMAP' magic */
+	/* Query System Address Map first call */
+	int 	$0x15
+	/* check result */
+	jc 	get_bios_memory_map_failed
+
+	cmpl	$0x534D4150, %eax
+	jne	get_bios_memory_map_failed
+
+	testl	%ebx, %ebx
+	je	get_bios_memory_map_failed
+	incw	(k_phisical_memory_map_size)
+
+get_memory_map_loop:
+	movl 	$0xE820, %eax
+	addw	%cx, %di
+	movl	$20, %ecx
+	int 	$0x15
+
+	/* check result */
+	jc 	get_bios_memory_map_failed
+	
+	incw	(k_phisical_memory_map_size)
+	testl	%ebx, %ebx
+	je	get_memory_map_done
+
+	jmp	get_memory_map_loop
+
+get_memory_map_done:
+	ret
 
 k_reset_disk_system:
 	.code16
@@ -73,16 +167,52 @@ k_reset_disk_system:
 /* set ax to 0x1234 for warm boot, and 0x0000 to cold boot */
 k_do_reboot:
 	.code16
+	leaw 	reboot_mes, %si
+	call 	k_rm_message
 	movw	$0x0472, %di
 	movw	%ax, (%di)
 	ljmp	$0xf000, $0xfff0
 
 k_halt_system:
 	.code16
+	leaw 	halt_mes, %si
+	call 	k_rm_message
 	cli
   	hlt
-	nop
-	nop
+
+get_bios_memory_map_failed:
+	.code16
+	leaw 	get_bios_memory_map_failed_mes, %si
+	call 	k_rm_message
+/* stop processor */
+	jmp 	k_halt_system
+
+k_rm_message:
+	.code16
+	movw	$0x0001, %bx
+	movb	$0xe, %ah
+	jmp 	message_lods
+display_char:
+	int	$0x10		/* display a byte */
+message_lods:
+	lodsb
+	cmpb	$0, %al
+	/* if not end of string, jmp to display */
+	jne	display_char
+	ret
+
+	.data
+k_phisical_memory_map_size:
+	.short	0x0
+
+	.section .rodata
+get_bios_memory_map_failed_mes:
+	.asciz "Get BIOS memory map failed..\n"
+reboot_mes:
+	.asciz "Rebooting system now..\n"
+halt_mes:
+	.asciz "Halt system now..\n"
+
 
 
 

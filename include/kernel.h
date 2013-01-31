@@ -21,10 +21,14 @@
 
 #include "loader.h"
 
+#ifndef __GAS__
+#include "types.h"
+#endif
+
 /* realmode segments */
 #define KERNEL_REALMODE_STACK_SEG		0x0
-#define KERNEL_REALMODE_CODE_SEG		KERNEL_LOAD_SEGMENT
-#define KERNEL_REALMODE_DATA_SEG		KERNEL_REALMODE_CODE_SEG
+#define KERNEL_REALMODE_CODE_SEG		0x0
+#define KERNEL_REALMODE_DATA_SEG		0x0
 /* realmode address */
 #define KERNEL_REALMODE_STACK_ADDR		(KERNEL_LOAD_SEGMENT*0x10)
 /* realmode stack size */
@@ -32,4 +36,39 @@
 #define KERNEL_REALMODE_CODE_ADDR		0x0
 #define KERNEL_REALMODE_DATA_ADDR		KERNEL_REALMODE_CODE_ADDR
 
+/* protected mode segments */
+#define KERNEL_PROTECTEDMODE_STACK_SEG		0x18
+#define KERNEL_PROTECTEDMODE_CODE_SEG		0x8
+#define KERNEL_PROTECTEDMODE_DATA_SEG		0x10
+#define KERNEL_PROTECTEDMODE_STACK_ADDR		KERNEL_REALMODE_STACK_ADDR
+
+
+#if !defined(__GAS__)
+
+/*
+Type 1: Usable (normal) RAM
+Type 2: Reserved - unusable
+Type 3: ACPI reclaimable memory
+Type 4: ACPI NVS memory
+Type 5: Area containing bad memory
+*/
+
+#define MEMORY_USE_NORMAL			1
+#define MEMORY_USE_RESERVED			2
+#define MEMORY_USE_ACPI_RECLAIMABLE		3
+#define MEMORY_USE_ACPI_NVS			4
+#define MEMORY_USE_BAD_MEMORY_AREA		5
+
+#pragma pack(push,4)
+typedef struct phisical_address_map_entity
+{
+	uint64_t base; // base address QWORD
+	uint64_t length; // length QWORD
+	uint16_t type; // entry Type
+} phisical_address_map_entity_t;
+#pragma pack(pop)
+
 #endif
+
+#endif
+
