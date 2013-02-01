@@ -25,6 +25,22 @@
 #include "types.h"
 #endif
 
+/* version definitions */
+#define SET_VERSION(major, minor, build)	((major & 0xff) | ((minor & 0xff) << 8) | ((build & 0xff) << 16))
+#define GET_MAJOR_VERSION(vers)			(vers & 0xff)
+#define GET_MINOR_VERSION(vers)			((vers >> 8) & 0xff)
+#define GET_BUILD_VERSION(vers)			((vers >> 16) & 0xff)
+/* version */
+#define MAJOR_VERSION				1
+#define MINOR_VERSION				0
+#define BUILD_VERSION				0
+#define BUILD_ARCHITECTURE			I386
+/* version string */
+#define KERNEL_VERSION_FULL_STRING(x)		TO_STRING(x)
+#define KERNEL_VERSION_FULL			nanokernel v.MAJOR_VERSION.MINOR_VERSION.BUILD_VERSION \
+	BUILD_ARCHITECTURE compiled at __DATE__ __TIME__
+
+/* phisical memory map address */
 #define SYSTEM_ADDRESS_MAP_ENTRY		0x1000
 
 /* realmode segments */
@@ -42,8 +58,24 @@
 #define KERNEL_PROTECTEDMODE_STACK_SEG		0x18
 #define KERNEL_PROTECTEDMODE_CODE_SEG		0x8
 #define KERNEL_PROTECTEDMODE_DATA_SEG		0x10
+#define KERNEL_PSEUDO_REALMODE_DATA_SEG		0x28
+#define KERNEL_PSEUDO_REALMODE_CODE_SEG		0x20
 #define KERNEL_PROTECTEDMODE_STACK_ADDR		KERNEL_REALMODE_STACK_ADDR
 #define KERNEL_PROTECTEDMODE_STACK_SIZE		KERNEL_REALMODE_STACK_SIZE
+
+
+/* The flag for protected mode.  */
+#define CPU_CR0_PE_ON		0x1
+#define CPU_CR4_PAE_ON		0x00000020
+#define CPU_CR4_PSE_ON		0x00000010
+#define CPU_CR0_PAGING_ON	0x80000000
+#define CPU_AMD64_MSR		0xc0000080
+#define CPU_AMD64_MSR_ON	0x00000100
+
+/* C code exit signals */
+#define EXIT_COLD_BOOT		0x0
+#define EXIT_WARM_BOOT		0x1234
+#define EXIT_CPU_HALT		0x2 
 
 
 #if !defined(__GAS__)
@@ -72,6 +104,8 @@ typedef struct phisical_address_map_entity
 #pragma pack(pop)
 
 #endif
+
+#define TO_STRING(x)				#x
 
 #endif
 

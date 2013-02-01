@@ -20,8 +20,8 @@
 
 	.file	"realmode.S"
 
-.globl switch_to_protected_mode;
-.globl switch_to_real_mode;
+.globl k_switch_to_protected_mode;
+.globl k_switch_to_real_mode;
 
 	.section .rodata
 /*
@@ -94,5 +94,88 @@ gdtdesc:
 
 	.text
 
-switch_to_protected_mode:
+k_switch_to_protected_mode:
+	.code16
+
+	/* turn off interupts */
+	cli
+	/* load the GDT register */
+	movw	$KERNEL_REALMODE_DATA_SEG, %ax
+	movw	%ax, %ds
+	lgdt	gdtdesc
+
+	/* turn on protected mode */
+	movl	%cr0, %eax
+	orl	$CPU_CR0_PE_ON, %eax
+	movl	%eax, %cr0
+
+	/* jump to relocation, flush prefetch queue, and reload %cs */
+	ljmp	$KERNEL_PROTECTEDMODE_CODE_SEG, $protected_mode_exec_begin
+
+	.code32
+protected_mode_exec_begin:
+
+	/* reload other segment registers */
+	movw	$KERNEL_PROTECTEDMODE_DATA_SEG, %ax
+	movw	%ax, %ds
+	movw	%ax, %es
+	movw	%ax, %fs
+	movw	%ax, %gs
+	movw	$KERNEL_PROTECTEDMODE_STACK_SEG, %ax
+	movw	%ax, %ss
+
+/* turn on interrupts */
+	sti
+	xorl	%eax, %eax
+
+	ret
+
+k_switch_to_real_mode:
+	.code32
+
+	/* just in case, set GDT */
+	lgdt	gdtdesc
+
+	/* set up segment limits */
+	movw	$KERNEL_PSEUDO_REALMODE_DATA_SEG, %ax
+	movw	%ax, %ds	
+	movw	%ax, %es
+	movw	%ax, %fs
+	movw	%ax, %gs
+	movw	%ax, %ss
+
+	/* this might be an extra step */
+	/* jump to a 16 bit segment */
+	ljmp	$KERNEL_PSEUDO_REALMODE_CODE_SEG, $switch_tmp16_segment
+
+switch_tmp16_segment:
+	.code16
+
+	/* clear the PE bit of CR0 */
+	movl	%cr0, %eax
+	andl 	$(~CPU_CR0_PE_ON), %eax
+	movl	%eax, %cr0
+
+	/* flush prefetch queue, reload %cs */
+	ljmp	$KERNEL_REALMODE_CODE_SEG, $realmode_exec_return
+
+realmode_exec_return:
+	/* we are in real mode now
+	 * set up the real mode segment registers : DS, SS, ES
+	 */
+	/* zero %eax */
+	movw	$KERNEL_REALMODE_DATA_SEG, %ax
+	movw	%ax, %ds
+	xorw	%ax, %ax
+	movw	%ax, %es
+	movw	%ax, %fs
+	movw	%ax, %gs
+	movw	$KERNEL_REALMODE_STACK_SEG, %ax
+	movw	%ax, %ss
+
+
+	/* restore interrupts */
+	sti
+
+	ret
 

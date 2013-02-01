@@ -25,6 +25,7 @@
 .globl k_halt_system;
 .globl k_rm_message;
 .globl k_phisical_memory_map_size;
+.globl k_phisical_memory_map;
 
 	.text
 
@@ -69,7 +70,19 @@ start_system_initialization:
 	call 	k_reset_disk_system
 	call 	k_get_memory_info
 
-	movw	$0x0, %ax
+/* switch to protected mode */
+	call 	k_switch_to_protected_mode
+	.code32
+
+/* jump to kernel main C code */
+	call 	kmain
+	pushl	%eax
+
+	call	k_switch_to_real_mode
+	.code16
+	
+	popl	%eax
+/*	movw	$0x0, %ax */
 	call 	k_halt_system
 	
 k_get_memory_info:
@@ -206,6 +219,8 @@ message_lods:
 	.data
 k_phisical_memory_map_size:
 	.short	0x0
+k_phisical_memory_map:
+	.long	SYSTEM_ADDRESS_MAP_ENTRY
 
 	.section .rodata
 get_bios_memory_map_failed_mes:
