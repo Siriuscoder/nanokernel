@@ -119,6 +119,7 @@ Output:
 				as the continuation value, or by returning
 				carry.
 */
+#ifdef SYSTEM_ADDRESS_MAP_ENTRY
 	xorl	%ebx, %ebx
 	movl 	$0xE820, %eax
 	movw	%bx, %es /* 0x0 to es */
@@ -153,6 +154,7 @@ get_memory_map_loop:
 	jmp	get_memory_map_loop
 
 get_memory_map_done:
+#endif
 	ret
 
 k_reset_disk_system:
