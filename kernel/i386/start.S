@@ -83,8 +83,11 @@ start_system_initialization:
 	.code16
 
 /*	movw	$0x0, %ax */
-	call 	k_halt_system
-	
+	cmpl 	$EXIT_CPU_HALT, %eax
+	je	k_halt_system
+
+	jmp 	k_do_reboot
+
 k_get_memory_info:
 	.code16
 /*

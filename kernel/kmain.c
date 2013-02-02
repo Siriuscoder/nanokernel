@@ -21,6 +21,6 @@
 int kmain()
 {
 
-	return EXIT_COLD_BOOT;
+	return EXIT_CPU_HALT;
 }
 
