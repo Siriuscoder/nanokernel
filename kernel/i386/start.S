@@ -60,6 +60,7 @@ common_segments_init:
 /* set fs and gs to zero */
 	xorw	%ax, %ax
 	movw	%ax, %fs
+	movw	%ax, %es
 	movw	%ax, %gs	
 
 /* turn on interrupts */

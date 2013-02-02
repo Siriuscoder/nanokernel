@@ -98,10 +98,10 @@ k_switch_to_protected_mode:
 	.code16
 
 	/* turn off interrupts */
-	cli
-	pushw	%ax
+	cli	
+
 	/* load the GDT register */
-	movw	$KERNEL_REALMODE_DATA_SEG, %ax
+	movl	$KERNEL_REALMODE_DATA_SEG, %eax
 	movw	%ax, %ds
 	lgdt	gdtdesc
 
@@ -113,8 +113,8 @@ k_switch_to_protected_mode:
 	/* jump to relocation, flush prefetch queue, and reload %cs */
 	ljmp	$KERNEL_PROTECTEDMODE_CODE_SEG, $protected_mode_exec_begin
 
-	.code32
 protected_mode_exec_begin:
+	.code32
 
 	/* reload other segment registers */
 	movw	$KERNEL_PROTECTEDMODE_DATA_SEG, %ax
@@ -125,13 +125,19 @@ protected_mode_exec_begin:
 	movw	$KERNEL_PROTECTEDMODE_STACK_SEG, %ax
 	movw	%ax, %ss
 
-	popw	%ax
+	/* fix return address */
+	movzwl	(%esp), %eax
+	subl	$0x2, %esp
+	movl	%eax, (%esp)
+
 	ret
 
 k_switch_to_real_mode:
 	.code32
 
-	pushw	%ax
+	pushl	%ebp
+	movl	%esp, %ebp
+	pushl	%eax
 	/* just in case, set GDT */
 	lgdt	gdtdesc
 
@@ -171,10 +177,15 @@ realmode_exec_return:
 	movw	%ax, %gs
 	movw	$KERNEL_REALMODE_STACK_SEG, %ax
 	movw	%ax, %ss
-
-	popw	%ax
 	/* restore interrupts */
 	sti
+	
+	/* fix stack leak */
+	movw	0x4(%bp), %ax
+	movw	%ax, 0x6(%bp)
+	popl	%eax
+	popl	%ebp
+	addw	$0x2, %sp
 
 	ret
 
