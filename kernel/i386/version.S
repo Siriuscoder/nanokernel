@@ -23,6 +23,7 @@
 .globl k_major_version;
 .globl k_minor_version;
 .globl k_build_version;
+.globl k_version_signature;
 .globl k_version_full_string;
 
 	.section .rodata
@@ -33,6 +34,8 @@ k_minor_version:
 	.byte	MINOR_VERSION
 k_build_version:
 	.byte	BUILD_VERSION
+k_version_signature:
+	.long	SET_VERSION(MAJOR_VERSION, MINOR_VERSION, BUILD_VERSION)
 k_version_full_string:
 	.asciz 	KERNEL_VERSION_FULL_STRING(KERNEL_VERSION_FULL)
 

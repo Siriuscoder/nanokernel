@@ -97,8 +97,9 @@ gdtdesc:
 k_switch_to_protected_mode:
 	.code16
 
-	/* turn off interupts */
+	/* turn off interrupts */
 	cli
+	pushw	%ax
 	/* load the GDT register */
 	movw	$KERNEL_REALMODE_DATA_SEG, %ax
 	movw	%ax, %ds
@@ -124,15 +125,13 @@ protected_mode_exec_begin:
 	movw	$KERNEL_PROTECTEDMODE_STACK_SEG, %ax
 	movw	%ax, %ss
 
-/* turn on interrupts */
-	sti
-	xorl	%eax, %eax
-
+	popw	%ax
 	ret
 
 k_switch_to_real_mode:
 	.code32
 
+	pushw	%ax
 	/* just in case, set GDT */
 	lgdt	gdtdesc
 
@@ -173,7 +172,7 @@ realmode_exec_return:
 	movw	$KERNEL_REALMODE_STACK_SEG, %ax
 	movw	%ax, %ss
 
-
+	popw	%ax
 	/* restore interrupts */
 	sti
 

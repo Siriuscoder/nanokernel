@@ -36,10 +36,10 @@ start:
 	.code16
 /* OK, we starting kernel code at 07e0h:0000h */
 /* common registers initialize */
-	xorw	%ax, %ax
-	movw	%ax, %bx
-	movw	%ax, %cx
-	movw	%ax, %dx
+	xorl	%eax, %eax
+	movl	%eax, %ebx
+	movl	%eax, %ecx
+	movl	%eax, %edx
 
 	/* normalize code segment */
 	ljmp	$KERNEL_REALMODE_CODE_SEG, $common_segments_init
@@ -52,8 +52,8 @@ common_segments_init:
 /* setup new stack */
 	movw	$KERNEL_REALMODE_STACK_SEG, %ax
 	movw	%ax, %ss
-	movw	$KERNEL_REALMODE_STACK_ADDR, %sp
-	movw	%sp, %bp
+	movl	$KERNEL_REALMODE_STACK_ADDR, %esp
+	movl	%esp, %ebp
 /* setup data segment */
 	movw	$KERNEL_REALMODE_DATA_SEG, %ax
 	movw	%ax, %ds
@@ -76,12 +76,11 @@ start_system_initialization:
 
 /* jump to kernel main C code */
 	call 	kmain
-	pushl	%eax
 
+/* switch to realmode */
 	call	k_switch_to_real_mode
 	.code16
-	
-	popl	%eax
+
 /*	movw	$0x0, %ax */
 	call 	k_halt_system
 	
@@ -193,7 +192,9 @@ k_halt_system:
 	leaw 	halt_mes, %si
 	call 	k_rm_message
 	cli
+hlt_end:
   	hlt
+	jmp 	hlt_end
 
 get_bios_memory_map_failed:
 	.code16
