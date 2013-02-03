@@ -46,6 +46,10 @@ typedef __UINT32_TYPE__ uint32_t;
 typedef __UINT64_TYPE__ uint64_t;
 #endif
 
+#ifdef __SIZE_TYPE__
+typedef __SIZE_TYPE__ 	size_t;
+#endif
+
 /* 7.8.1.2 Minimum-width integer types */
 
 typedef __INT_LEAST8_TYPE__ int_least8_t;
@@ -77,6 +81,13 @@ typedef __INTPTR_TYPE__ intptr_t;
 typedef __UINTPTR_TYPE__ uintptr_t;
 #endif
 
+typedef void	 		*ptr_t;
+
+/* Type to use for unaligned operations.  */
+typedef uint8_t			byte;
+
+#define NULL_PTR		((ptr_t)0x0)
+#define NULL			NULL_PTR
 /* 7.8.1.5 Greatest-width integer types */
 
 typedef __INTMAX_TYPE__ intmax_t;

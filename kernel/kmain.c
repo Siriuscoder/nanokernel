@@ -17,10 +17,27 @@
 */
 
 #include "kernel.h"
+#include "console.h"
+
+/* console init structure */
+const consoleEntry_t consoleEntry = {
+	(ptr_t)0xB8000,
+	80,
+	25
+};
 
 int kmain()
 {
+	if(console_init(&consoleEntry) != 0)
+		return EXIT_PANIC;
 
+	console_write("Boot process done.. Starting the kernel\n");
+	console_write("Console init OK..\n");
+	console_write("Kernel version: ");
+	console_write(k_version_full_string);
+	console_putc('\n');
+
+	console_write("Halt kernel now..");
 	return EXIT_CPU_HALT;
 }
 

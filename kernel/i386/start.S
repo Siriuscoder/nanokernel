@@ -185,16 +185,20 @@ k_reset_disk_system:
 /* set ax to 0x1234 for warm boot, and 0x0000 to cold boot */
 k_do_reboot:
 	.code16
+/*
 	leaw 	reboot_mes, %si
 	call 	k_rm_message
+*/
 	movw	$0x0472, %di
 	movw	%ax, (%di)
 	ljmp	$0xf000, $0xfff0
 
 k_halt_system:
 	.code16
+/*
 	leaw 	halt_mes, %si
 	call 	k_rm_message
+*/
 	cli
 hlt_end:
   	hlt

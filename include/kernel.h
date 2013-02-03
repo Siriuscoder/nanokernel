@@ -75,7 +75,8 @@
 /* C code exit signals */
 #define EXIT_COLD_BOOT		0x0
 #define EXIT_WARM_BOOT		0x1234
-#define EXIT_CPU_HALT		0x2 
+#define EXIT_CPU_HALT		0x2
+#define EXIT_PANIC		0xDEAD
 
 
 #if !defined(__GAS__)
@@ -99,9 +100,17 @@ typedef struct phisical_address_map_entity
 {
 	uint64_t base; // base address QWORD
 	uint64_t length; // length QWORD
-	uint16_t type; // entry Type
+	uint32_t type; // entry Type
 } phisical_address_map_entity_t;
 #pragma pack(pop)
+
+/* phisical map structure pointers */
+extern phisical_address_map_entity_t k_phisical_memory_map[];
+extern uint16_t k_phisical_memory_map_size;
+
+/* version info pointers from version.S */
+extern uint32_t k_version_signature;
+extern char k_version_full_string[];
 
 #endif
 
