@@ -70,6 +70,8 @@ typedef unsigned long long uint64_t;
 #endif
 
 #ifdef __SIZE_TYPE__
+typedef __SIZE_TYPE__ 	size_t;
+#else
 typedef unsigned long int 	size_t;
 #endif
 
@@ -83,7 +85,18 @@ typedef __UINT_LEAST8_TYPE__ uint_least8_t;
 typedef __UINT_LEAST16_TYPE__ uint_least16_t;
 typedef __UINT_LEAST32_TYPE__ uint_least32_t;
 typedef __UINT_LEAST64_TYPE__ uint_least64_t;
+#else
+typedef int8_t    int_least8_t;
+typedef int16_t   int_least16_t;
+typedef int32_t   int_least32_t;
+typedef int64_t   int_least64_t;
+typedef uint8_t   uint_least8_t;
+typedef uint16_t  uint_least16_t;
+typedef uint32_t  uint_least32_t;
+typedef uint64_t  uint_least64_t;
+#endif
 
+#ifdef __INT_FAST8_TYPE__
 /* 7.8.1.3 Fastest minimum-width integer types */
 typedef __INT_FAST8_TYPE__ int_fast8_t;
 typedef __INT_FAST16_TYPE__ int_fast16_t;
@@ -93,6 +106,15 @@ typedef __UINT_FAST8_TYPE__ uint_fast8_t;
 typedef __UINT_FAST16_TYPE__ uint_fast16_t;
 typedef __UINT_FAST32_TYPE__ uint_fast32_t;
 typedef __UINT_FAST64_TYPE__ uint_fast64_t;
+#else
+typedef int8_t    int_fast8_t;
+typedef int16_t   int_fast16_t;
+typedef int32_t   int_fast32_t;
+typedef int64_t   int_fast64_t;
+typedef uint8_t   uint_fast8_t;
+typedef uint16_t  uint_fast16_t;
+typedef uint32_t  uint_fast32_t;
+typedef uint64_t  uint_fast64_t;
 #endif
 
 /* 7.8.1.4 Integer types capable of holding object pointers */
