@@ -21,9 +21,6 @@
 	.file	"start.S"
 
 .globl _start, start;
-.globl k_do_reboot;
-.globl k_halt_system;
-.globl k_rm_message;
 .globl k_phisical_memory_map_size;
 .globl k_phisical_memory_map;
 
@@ -68,6 +65,7 @@ common_segments_init:
 
 start_system_initialization:
 
+	call	k_disable_cursor
 	call 	k_reset_disk_system
 	call 	k_get_memory_info
 
@@ -182,23 +180,37 @@ k_reset_disk_system:
 
 	ret
 
+k_disable_cursor:
+	.code16
+/* 	
+	Set text-mode cursor shape AH=01h
+	CH = Scan Row Start, CL = Scan Row End
+
+	Normally a character cell has 8 scan lines, 0-7. So, CX=0607h is a normal underline cursor, 
+	CX=0007h is a full-block cursor. If bit 5 of CH is set, that often means "Hide cursor". 
+	So CX=2607h is an invisible cursor. Some video cards have 16 scan lines, 00h-0Fh.
+	Some video cards don't use bit 5 of CH. With these, make Start>End (e.g. CX=0706h)
+*/
+/* save cursor position to cx */
+	movb	$0x3, %ah
+	xorb	%bh, %bh
+	int     $0x10
+
+	movb	$0x1, %ah
+	movb	$0x20, %ch
+	int     $0x10
+
+	ret
+
 /* set ax to 0x1234 for warm boot, and 0x0000 to cold boot */
 k_do_reboot:
 	.code16
-/*
-	leaw 	reboot_mes, %si
-	call 	k_rm_message
-*/
 	movw	$0x0472, %di
 	movw	%ax, (%di)
 	ljmp	$0xf000, $0xfff0
 
 k_halt_system:
 	.code16
-/*
-	leaw 	halt_mes, %si
-	call 	k_rm_message
-*/
 	cli
 hlt_end:
   	hlt
@@ -234,13 +246,4 @@ k_phisical_memory_map:
 	.section .rodata
 get_bios_memory_map_failed_mes:
 	.asciz "Get BIOS memory map failed..\n"
-reboot_mes:
-	.asciz "Rebooting system now..\n"
-halt_mes:
-	.asciz "Halt system now..\n"
 
-
-
-
-
-	
