@@ -16,39 +16,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "kernel.h"
-#include "console.h"
 #include "cpuinfo.h"
 
-/* console init structure */
-const consoleEntry_t consoleEntry = {
-	(ptr_t)0xB8000,
-	80,
-	25
-};
 
-int kmain()
+extern int32_t k_check_cpuid();
+
+
+int32_t kquery_cpu_info()
 {
-	if(console_init(&consoleEntry) != 0)
-		return EXIT_PANIC;
+	if(!k_check_cpuid())
+		return 0;
 
-	console_write("Boot process done.. Starting the kernel\n");
-	console_write("Console init OK..\n");
-	console_write("Kernel version: ");
-	console_write(k_version_full_string);
-	console_putc('\n');
-
-	console_write("Check CPUID: ");
-	if(kquery_cpu_info())
-	{
-		console_write("Supported\n");
-	}
-	else
-	{
-		console_write("Not supported\n");
-	}
-
-	console_write("Halt kernel now..");
-	return EXIT_CPU_HALT;
+	return 1;
 }
 

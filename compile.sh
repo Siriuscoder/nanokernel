@@ -19,8 +19,10 @@ echo -n "Building the kernel.."
 gcc -m32 -I./include -D__GAS__ -c kernel/i386/start.S
 gcc -m32 -I./include -D__GAS__ -c kernel/i386/version.S
 gcc -m32 -I./include -D__GAS__ -c kernel/i386/protmode.S
+gcc -m32 -I./include -D__GAS__ -c kernel/i486/cpu.S
 gcc -m32 -I./include -fmessage-length=0 -Wall -g0 -O0 -fno-inline -c kernel/kmain.c
 gcc -m32 -I./include -fmessage-length=0 -Wall -g0 -O0 -fno-inline -c kernel/console.c
+gcc -m32 -I./include -fmessage-length=0 -Wall -g0 -O0 -fno-inline -c kernel/cpuinfo.c
 gcc -m32 -I./include -fmessage-length=0 -w -g0 -O0 -fno-inline -c kernel/std/membase.c
 ld -mi386linux -M -T kernel/link.ld -o kernel.img *.o 1>linkage.map
 

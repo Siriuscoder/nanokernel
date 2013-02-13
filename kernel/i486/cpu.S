@@ -16,39 +16,40 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "kernel.h"
-#include "console.h"
-#include "cpuinfo.h"
+	.file	"cpu.S"
 
-/* console init structure */
-const consoleEntry_t consoleEntry = {
-	(ptr_t)0xB8000,
-	80,
-	25
-};
 
-int kmain()
-{
-	if(console_init(&consoleEntry) != 0)
-		return EXIT_PANIC;
+	.globl	k_check_cpuid;
+	.globl	k_get_cpu_info;
 
-	console_write("Boot process done.. Starting the kernel\n");
-	console_write("Console init OK..\n");
-	console_write("Kernel version: ");
-	console_write(k_version_full_string);
-	console_putc('\n');
+	.text
+	.code32
 
-	console_write("Check CPUID: ");
-	if(kquery_cpu_info())
-	{
-		console_write("Supported\n");
-	}
-	else
-	{
-		console_write("Not supported\n");
-	}
+/*
+The Intel486 family and subsequent Intel processors provide a
+straightforward method for determining whether the processor's
+internal architecture is able to execute the CPUID instruction.
+This method uses the ID flag in bit 21 of the EFLAGS register. If
+software can change the value of this flag, the CPUID instruction
+is executable
+*/
+k_check_cpuid:
 
-	console_write("Halt kernel now..");
-	return EXIT_CPU_HALT;
-}
+	pushfl
+	popl 	%eax
+	movl 	%eax, %ebx
+	xorl 	$0x200000, %eax
+	pushl 	%eax
+	popfl
+	pushfl
+	popl 	%eax
+	xorl 	%eax, %ebx
+	jne 	cpuid_supported
+/* return zero if not supported */
+	xorl	%eax, %eax
+
+cpuid_supported:
+	ret
+
+
 
