@@ -21,6 +21,10 @@
 
 	.globl	k_check_cpuid;
 	.globl	k_get_cpu_info;
+	.globl	k_get_msr;
+	.globl	k_set_msr;
+	.globl	k_irq_enable;
+	.globl	k_irq_disable;
 
 	.text
 	.code32
@@ -51,5 +55,55 @@ k_check_cpuid:
 cpuid_supported:
 	ret
 
+/* ReaD from Model-Specific Register */
+/* msr address */
+/* out: uint32_t hw */
+/* out: uint32_t lw */
+k_get_msr:
+	
+	movl	4(%esp), %ecx
+	rdmsr
+	movl	8(%esp), %ebx
+	movl	%edx, (%ebx)
+	movl	12(%esp), %ebx
+	movl	%eax, (%ebx)
+	ret
+/* WRite to Model-Specific Register */
+/* msr address */
+/* uint32_t hw */
+/* uint32_t lw */
+k_set_msr:
 
+	movl	4(%esp), %ecx
+	movl	8(%esp), %edx
+	movl	12(%esp), %eax
+	wrmsr
+	ret
+
+/* in uint32_t mode */
+/* out uint32_t eax */
+/* out uint32_t ebx */
+/* out uint32_t ecx */
+/* out uint32_t edx */
+k_get_cpu_info:
+	movl	4(%esp), %eax
+	cpuid
+
+	movl	8(%esp), %edi
+	movl	%eax, (%edi)
+	movl	12(%esp), %edi
+	movl	%ebx, (%edi)
+	movl	16(%esp), %edi
+	movl	%ecx, (%edi)
+	movl	20(%esp), %edi
+	movl	%edx, (%edi)
+	ret	
+	
+k_irq_enable:
+	sti
+	ret
+	
+k_irq_disable:
+	cli
+	ret
 

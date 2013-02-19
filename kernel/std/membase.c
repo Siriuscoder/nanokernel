@@ -687,7 +687,7 @@ memcmp_not_common_alignment(long int srcp1, long int srcp2, size_t len)
 }
 
 int
-kmemcmp(ptr_t s1, ptr_t s2, size_t len)
+k_memcmp(ptr_t s1, ptr_t s2, size_t len)
 {
 	op_t a0;
 	op_t b0;
@@ -745,7 +745,7 @@ kmemcmp(ptr_t s1, ptr_t s2, size_t len)
 }
 
 ptr_t
-kmemchr(const ptr_t s, int c, size_t n)
+k_memchr(const ptr_t s, int c, size_t n)
 {
 	const unsigned char *char_ptr;
 	const unsigned long int *longword_ptr;
@@ -781,9 +781,6 @@ kmemchr(const ptr_t s, int c, size_t n)
 	case 4:
 		magic_bits = 0x7efefeffL;
 		break;
-	case 8:
-		magic_bits = (0x7efefefeL << 32) | 0xfefefeffL;
-		break;
 	default:
 		return NULL;
 	}
@@ -791,10 +788,6 @@ kmemchr(const ptr_t s, int c, size_t n)
 	/* Set up a longword, each of whose bytes is C.  */
 	charmask = c | (c << 8);
 	charmask |= charmask << 16;
-	if (sizeof(longword) > 4)
-		charmask |= charmask << 32;
-	if (sizeof(longword) > 8)
-		return NULL;
 
 	/* Instead of the traditional loop which tests each character,
 	 we will test a longword at a time.  The tricky part is testing
@@ -891,7 +884,7 @@ kmemchr(const ptr_t s, int c, size_t n)
 }
 
 ptr_t
-kmemcpy(ptr_t dstpp, const ptr_t srcpp, size_t len)
+k_memcpy(ptr_t dstpp, const ptr_t srcpp, size_t len)
 {
 	unsigned long int dstp = (long int) dstpp;
 	unsigned long int srcp = (long int) srcpp;
@@ -923,7 +916,7 @@ kmemcpy(ptr_t dstpp, const ptr_t srcpp, size_t len)
 
 /* Return the first occurrence of NEEDLE in HAYSTACK.  */
 ptr_t
-kmemmem(const ptr_t haystack, const size_t haystack_len, const ptr_t needle,
+k_memmem(const ptr_t haystack, const size_t haystack_len, const ptr_t needle,
 		const size_t needle_len)
 {
 	register const char *begin;
@@ -935,7 +928,7 @@ kmemmem(const ptr_t haystack, const size_t haystack_len, const ptr_t needle,
 
 	for (begin = (const char *) haystack; begin <= last_possible; ++begin)
 		if (begin[0] == ((const char *) needle)[0]
-				&& !kmemcmp((const ptr_t) &begin[1],
+				&& !k_memcmp((const ptr_t) &begin[1],
 						(const ptr_t) ((const char *) needle + 1),
 						needle_len - 1))
 			return (ptr_t) begin;
@@ -944,7 +937,7 @@ kmemmem(const ptr_t haystack, const size_t haystack_len, const ptr_t needle,
 }
 
 ptr_t
-kmemmove(ptr_t dest, const ptr_t src, size_t len)
+k_memmove(ptr_t dest, const ptr_t src, size_t len)
 {
 	unsigned long int dstp = (long int) dest;
 	unsigned long int srcp = (long int) src;
@@ -1006,7 +999,7 @@ kmemmove(ptr_t dest, const ptr_t src, size_t len)
 }
 
 ptr_t
-kmemset(ptr_t dstpp, int c, size_t len)
+k_memset(ptr_t dstpp, int c, size_t len)
 {
 	long int dstp = (long int) dstpp;
 
@@ -1018,8 +1011,10 @@ kmemset(ptr_t dstpp, int c, size_t len)
 		cccc = (unsigned char) c;
 		cccc |= cccc << 8;
 		cccc |= cccc << 16;
+/*
 		if (OPSIZ > 4)
 			cccc |= cccc << 32;
+*/
 
 		/* There are at least some bytes to set.
 		 No need to test for LEN == 0 in this alignment loop.  */

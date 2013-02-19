@@ -31,17 +31,17 @@ typedef struct
 	size_t yLen;
 } consoleEntry_t;
 
-int console_init(const consoleEntry_t *entry);
+int k_console_init(const consoleEntry_t *entry);
 
-int console_clean();
+int k_console_clean();
 
-int console_set_cursor_pos(size_t x, size_t y);
+int k_console_set_cursor_pos(size_t x, size_t y);
 
-int console_seek(size_t pos);
+int k_console_seek(size_t pos);
 
-int console_putc(char c);
+int k_console_putc(char c);
 
-size_t console_write(char *message);
+size_t k_console_write(char *message);
 
 
 

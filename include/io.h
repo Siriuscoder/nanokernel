@@ -16,30 +16,30 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CPUINFO_HEADER
-#define CPUINFO_HEADER	1
+#ifndef IO_HEADER
+#define IO_HEADER	1
 
 #include "kernel.h"
 
-typedef struct __cpuinfo
-{
-	char brandString[50];
-	char vendorID[15];
-	byte extendedFamily;
-	byte extendedModel;
-	byte processorType;
-	byte familyCode;
-	byte modelNumber;
-	byte steppingID;
-	byte apicPresence;
-} cpuinfo_t;
+#ifndef __GAS__
+/* Forces the CPU to wait for an I/O operation to complete. 
+only use this when there's nothing like a status register 
+or an IRQ to tell you the info has been received. */
+void k_io_wait();
 
-int32_t k_query_cpu_info(cpuinfo_t *cpuinfo);
+/* Sends a byte (or word or dword) on a I/O location. 
+Traditional names are 'outb', 'outw' and 'outl' respectively. 
+The "a" modifier enforces 'val' to be placed in the eax register 
+before the asm command is issued and "Nd" allows for one-byte 
+constant values to be assembled as constants, freeing the edx 
+register for other cases. */
+void k_io_port_outb(uint16_t port, byte data);
 
-/* check presence of CPUID instruction */
-int32_t k_check_cpuid();
-/* CPUID exec */
-void k_get_cpu_info(uint32_t mode, uint32_t *eax, uint32_t *ebx,
-	uint32_t *ecx, uint32_t *edx);
+/* Receives a byte (or word or dword) from an I/O location.
+Traditional names are 'inb', 'inw' and 'inl' respectively.
+*/
+byte k_io_port_inb(uint16_t port);
+
+#endif
 
 #endif

@@ -17,15 +17,23 @@
 */
 
 #include "cpuinfo.h"
+#include "std/membase.h"
 
 
-extern int32_t k_check_cpuid();
-
-
-int32_t kquery_cpu_info()
+int32_t k_query_cpu_info(cpuinfo_t *cpuinfo)
 {
-	if(!k_check_cpuid())
+	if(!cpuinfo)
 		return 0;
+
+	k_memset(cpuinfo, 0, sizeof(cpuinfo_t));
+
+	if(!k_check_cpuid())
+	{
+		cpuinfo->apicPresence = 0;
+		return 0;
+	}
+
+	
 
 	return 1;
 }

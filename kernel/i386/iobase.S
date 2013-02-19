@@ -16,30 +16,39 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CPUINFO_HEADER
-#define CPUINFO_HEADER	1
+	.file	"iobase.S"
 
-#include "kernel.h"
 
-typedef struct __cpuinfo
-{
-	char brandString[50];
-	char vendorID[15];
-	byte extendedFamily;
-	byte extendedModel;
-	byte processorType;
-	byte familyCode;
-	byte modelNumber;
-	byte steppingID;
-	byte apicPresence;
-} cpuinfo_t;
+	.globl	k_io_wait;
+	.globl	k_io_port_outb;
+	.globl	k_io_port_inb;
 
-int32_t k_query_cpu_info(cpuinfo_t *cpuinfo);
+	.text
+	.code32
 
-/* check presence of CPUID instruction */
-int32_t k_check_cpuid();
-/* CPUID exec */
-void k_get_cpu_info(uint32_t mode, uint32_t *eax, uint32_t *ebx,
-	uint32_t *ecx, uint32_t *edx);
+k_io_wait:
 
-#endif
+	jmp	to_next_jmp
+to_next_jmp:
+	jmp	to_ret
+to_ret:
+	ret
+
+/* in word port */
+/* in byte data */
+k_io_port_outb:
+	
+	movw	4(%esp), %dx
+	movb	6(%esp), %al
+	outb	%al, %dx
+	ret
+
+/* in word port */
+k_io_port_inb:
+
+	movw	4(%esp), %dx
+	inb	%dx, %al
+	ret
+
+
+

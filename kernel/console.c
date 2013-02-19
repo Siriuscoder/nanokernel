@@ -36,7 +36,7 @@ static struct
 	consoleEntry_t entry;
 } consIntern;
 
-static size_t console_newline()
+static size_t k_console_newline()
 {
 	size_t curLine;
 	size_t newLine;
@@ -47,7 +47,7 @@ static size_t console_newline()
 	{
 		newLine = curLine;
 		/* copy from second line to begin */
-		kmemcpy(consIntern.entry.memEntry,
+		k_memcpy(consIntern.entry.memEntry,
 			consIntern.entry.memEntry + consIntern.lineSize,
 			consIntern.buffSize - consIntern.lineSize);
 	}
@@ -60,19 +60,19 @@ static size_t console_newline()
 	return consIntern.pos;
 }
 
-int console_init(const consoleEntry_t *entry)
+int k_console_init(const consoleEntry_t *entry)
 {
-	kmemcpy(&consIntern.entry, (ptr_t)entry, sizeof(consoleEntry_t));
+	k_memcpy(&consIntern.entry, (ptr_t)entry, sizeof(consoleEntry_t));
 	consIntern.pos = 0;
 	consIntern.lineSize = entry->xLen * sizeof(consoleEntity_t);
 	consIntern.buffSize = consIntern.lineSize * entry->yLen;
 	consIntern.consoleMaxSize = entry->xLen * entry->yLen;
 	consIntern.firstEntity = (consoleEntity_t *)consIntern.entry.memEntry;
 
-	return console_clean();
+	return k_console_clean();
 }
 
-int console_clean()
+int k_console_clean()
 {
 	int i = 0;
 
@@ -86,24 +86,24 @@ int console_clean()
 	return 0;
 }
 
-size_t console_write(char *message)
+size_t k_console_write(char *message)
 {
 	char *base = message;
 	while ((*message) != 0)
 	{
-		console_putc(*message);
+		k_console_putc(*message);
 		message++;
 	}
 
 	return (size_t)(message - base);
 }
 
-int console_putc(char c)
+int k_console_putc(char c)
 {
 	size_t newPos;
 	if(c == '\n')
 	{
-		console_newline();
+		k_console_newline();
 		return 1;
 	}
 
@@ -112,7 +112,7 @@ int console_putc(char c)
 		int tabCounter = 0;
 		while(tabCounter < TAB_WHITE_SPACES)
 		{
-			console_putc(' ');
+			k_console_putc(' ');
 			tabCounter++;
 		}
 	}
@@ -121,13 +121,13 @@ int console_putc(char c)
 
 	newPos = consIntern.pos+1;
 	if(newPos >= consIntern.consoleMaxSize)
-		newPos = console_newline();
+		newPos = k_console_newline();
 	
 	consIntern.pos = newPos;
 	return 1;
 }
 
-int console_set_cursor_pos(size_t x, size_t y)
+int k_console_set_cursor_pos(size_t x, size_t y)
 {
 	if(x > consIntern.entry.xLen ||
 		y > consIntern.entry.yLen)
@@ -138,7 +138,7 @@ int console_set_cursor_pos(size_t x, size_t y)
 }
 
 
-int console_seek(size_t pos)
+int k_console_seek(size_t pos)
 {
 	if(pos >= consIntern.consoleMaxSize)
 		return -1;

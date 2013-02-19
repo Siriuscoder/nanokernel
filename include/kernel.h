@@ -105,7 +105,7 @@ typedef struct phisical_address_map_entity
 #pragma pack(pop)
 
 /* phisical map structure pointers */
-extern phisical_address_map_entity_t k_phisical_memory_map[];
+extern phisical_address_map_entity_t *k_phisical_memory_map;
 extern uint16_t k_phisical_memory_map_size;
 
 /* version info pointers from version.S */

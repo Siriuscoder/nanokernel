@@ -74,7 +74,7 @@ start_system_initialization:
 	.code32
 
 /* jump to kernel main C code */
-	call 	kmain
+	call 	k_main
 
 /* switch to realmode */
 	call	k_switch_to_real_mode

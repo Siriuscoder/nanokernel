@@ -130,10 +130,16 @@ protected_mode_exec_begin:
 	subl	$0x2, %esp
 	movl	%eax, (%esp)
 
+	/* restore interrupts */
+	sti
+
 	ret
 
 k_switch_to_real_mode:
 	.code32
+
+	/* turn off interrupts */
+	cli
 
 	pushl	%ebp
 	movl	%esp, %ebp

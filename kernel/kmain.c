@@ -27,28 +27,29 @@ const consoleEntry_t consoleEntry = {
 	25
 };
 
-int kmain()
+/* cpu info structure */
+static cpuinfo_t cpuInfo;
+
+int k_main()
 {
-	if(console_init(&consoleEntry) != 0)
+	if(k_console_init(&consoleEntry) != 0)
 		return EXIT_PANIC;
 
-	console_write("Boot process done.. Starting the kernel\n");
-	console_write("Console init OK..\n");
-	console_write("Kernel version: ");
-	console_write(k_version_full_string);
-	console_putc('\n');
+	k_console_write("Boot process done.. Starting the kernel\n");
+	k_console_write("Console init OK..\n");
+	k_console_write("Kernel version: ");
+	k_console_write(k_version_full_string);
+	k_console_putc('\n');
 
-	console_write("Check CPUID: ");
-	if(kquery_cpu_info())
+	k_console_write("Query cpu info.. ");
+	if(k_query_cpu_info(&cpuInfo))
 	{
-		console_write("Supported\n");
+		k_console_write("Supported\n");
 	}
 	else
-	{
-		console_write("Not supported\n");
-	}
+		k_console_write("Not supported\n");
 
-	console_write("Halt kernel now..");
+	k_console_write("Halt kernel now..");
 	return EXIT_CPU_HALT;
 }
 

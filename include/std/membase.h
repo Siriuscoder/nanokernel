@@ -60,18 +60,18 @@
 
 /* memory manipulate functions */
 int
-kmemcmp(ptr_t s1, ptr_t s2, size_t len);
+k_memcmp(ptr_t s1, ptr_t s2, size_t len);
 ptr_t
-kmemchr(const ptr_t s, int c, size_t n);
+k_memchr(const ptr_t s, int c, size_t n);
 ptr_t
-kmemcpy(ptr_t dstpp, const ptr_t srcpp, size_t len);
+k_memcpy(ptr_t dstpp, const ptr_t srcpp, size_t len);
 ptr_t
-kmemmem(const ptr_t haystack, const size_t haystack_len, const ptr_t needle,
+k_memmem(const ptr_t haystack, const size_t haystack_len, const ptr_t needle,
 		const size_t needle_len);
 ptr_t
-kmemmove(ptr_t dest, const ptr_t src, size_t len);
+k_memmove(ptr_t dest, const ptr_t src, size_t len);
 ptr_t
-kmemset(ptr_t dstpp, int c, size_t len);
+k_memset(ptr_t dstpp, int c, size_t len);
 
 #endif /* MEMBASE_H_ */
 
