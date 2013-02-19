@@ -32,6 +32,8 @@ typedef struct __cpuinfo
 	byte modelNumber;
 	byte steppingID;
 	byte apicPresence;
+	byte msrSupported;
+	byte procCount;
 } cpuinfo_t;
 
 int32_t k_query_cpu_info(cpuinfo_t *cpuinfo);
@@ -41,5 +43,7 @@ int32_t k_check_cpuid();
 /* CPUID exec */
 void k_get_cpu_info(uint32_t mode, uint32_t *eax, uint32_t *ebx,
 	uint32_t *ecx, uint32_t *edx);
+
+void k_cpuinfo_print(cpuinfo_t *cpuinfo);
 
 #endif

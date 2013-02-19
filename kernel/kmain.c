@@ -45,6 +45,7 @@ int k_main()
 	if(k_query_cpu_info(&cpuInfo))
 	{
 		k_console_write("Supported\n");
+		k_cpuinfo_print(&cpuInfo);
 	}
 	else
 		k_console_write("Not supported\n");
