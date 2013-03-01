@@ -16,48 +16,33 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/* Programing interrupt controler interface */
+
+#ifndef PIC_HEADER
+#define PIC_HEADER	1
+
 #include "kernel.h"
-#include "console.h"
-#include "cpuinfo.h"
 
-/* console init structure */
-const consoleEntry_t consoleEntry = {
-	(ptr_t)0xB8000,
-	80,
-	25
-};
+int k_pic_init();
 
-int init_cpu()
-{
-	k_console_write("Query cpu info.. ");
-	if(k_refresh_cpu_info())
-	{
-		k_console_write("Supported\n");
-		k_cpuinfo_print(k_get_cpuinfo());
-	}
-	else
-		k_console_write("Not supported\n");
+uint16_t k_pic_get_irq_mask();
+void k_pic_set_irq_mask(uint16_t mask);
 
-	/* init interrupt controler (i8259) */
+/* hardware disable PIC */
+void k_pic_disable();
 
-	return 1;
-}
+/* mask IRQ vectors */
+void k_pic_disable_irq_line(byte irq);
 
-int k_main()
-{
-	if(k_console_init(&consoleEntry) != 0)
-		return EXIT_PANIC;
+void k_pic_enable_irq_line(byte irq);
 
-	k_console_write("Boot process done.. Starting the kernel\n");
-	k_console_write("Console init OK..\n");
-	k_console_write("Kernel version: ");
-	k_console_write(k_version_full_string);
-	k_console_putc('\n');
+/* Returns the combined value of the cascaded PICs irq request register */
+uint16_t k_pic_get_irr(void);
+ 
+/* Returns the combined value of the cascaded PICs in-service register */
+uint16_t k_pic_get_isr(void);
 
-	if(!init_cpu())
-		return EXIT_PANIC;
+/* send EOI (end of interrupt command) */
+void k_pic_eoi(byte irq);
 
-	k_console_write("Halt kernel now..");
-	return EXIT_CPU_HALT;
-}
-
+#endif

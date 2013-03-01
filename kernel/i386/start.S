@@ -83,6 +83,8 @@ start_system_initialization:
 /*	movw	$0x0, %ax */
 	cmpl 	$EXIT_CPU_HALT, %eax
 	je	k_halt_system
+	cmpl 	$EXIT_PANIC, %eax
+	je	k_halt_system
 
 	jmp 	k_do_reboot
 

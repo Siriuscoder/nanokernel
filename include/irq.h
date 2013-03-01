@@ -16,30 +16,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef CPUINFO_HEADER
-#define CPUINFO_HEADER	1
+#ifndef IRQ_HEADER
+#define IRQ_HEADER	1
 
-#include "kernel.h"
-
-typedef struct __cpuinfo
-{
-	char brandString[50];
-	char vendorID[15];
-	byte extendedFamily;
-	byte extendedModel;
-	byte processorType;
-	byte familyCode;
-	byte modelNumber;
-	byte steppingID;
-	byte apicPresence;
-	byte msrSupported;
-	byte procCount;
-} cpuinfo_t;
-
-int32_t k_refresh_cpu_info();
-
-void k_cpuinfo_print(cpuinfo_t *cpuinfo);
-
-cpuinfo_t *k_get_cpuinfo();
 
 #endif
+

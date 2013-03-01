@@ -23,8 +23,8 @@
 	.globl	k_get_cpu_info;
 	.globl	k_get_msr;
 	.globl	k_set_msr;
-	.globl	k_irq_enable;
-	.globl	k_irq_disable;
+	.globl	k_iasync_enable;
+	.globl	k_iasync_disable;
 
 	.text
 	.code32
@@ -99,11 +99,11 @@ k_get_cpu_info:
 	movl	%edx, (%edi)
 	ret	
 	
-k_irq_enable:
+k_iasync_enable:
 	sti
 	ret
 	
-k_irq_disable:
+k_iasync_disable:
 	cli
 	ret
 

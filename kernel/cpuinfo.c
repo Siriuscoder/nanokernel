@@ -68,45 +68,51 @@ Stepping ID 0-3
 #define GET_EXTENDED_MODEL(eax)		(byte)((eax >> 16) & 0x0000000f)
 #define GET_EXTENDED_FAMILY(eax)	(byte)((eax >> 20) & 0x000000ff)
 
+/* cpu info structure */
+static cpuinfo_t cpuInfo; 
+
+/* check presence of CPUID instruction */
+int32_t k_check_cpuid();
+/* CPUID exec */
+void k_get_cpu_info(uint32_t mode, uint32_t *eax, uint32_t *ebx,
+	uint32_t *ecx, uint32_t *edx);
 
 
-int32_t k_query_cpu_info(cpuinfo_t *cpuinfo)
+
+int32_t k_refresh_cpu_info()
 {
 	uint32_t eax = 0, ebx = 0, ecx = 0, edx = 0, i, count;
-	if(!cpuinfo)
-		return 0;
-
-	k_memset(cpuinfo, 0, sizeof(cpuinfo_t));
+	k_memset(&cpuInfo, 0, sizeof(cpuinfo_t));
 
 	if(!k_check_cpuid())
 	{
-		cpuinfo->apicPresence = 0;
+		cpuInfo.apicPresence = 0;
 		return 0;
 	}
 
 	k_get_cpu_info(0, &eax, &ebx, &ecx, &edx);
-	((uint32_t *)cpuinfo->vendorID)[0] = ebx;
-	((uint32_t *)cpuinfo->vendorID)[1] = edx;
-	((uint32_t *)cpuinfo->vendorID)[2] = ecx;
+	((uint32_t *)cpuInfo.vendorID)[0] = ebx;
+	((uint32_t *)cpuInfo.vendorID)[1] = edx;
+	((uint32_t *)cpuInfo.vendorID)[2] = ecx;
 
 	k_get_cpu_info(1, &eax, &ebx, &ecx, &edx);
-	cpuinfo->extendedFamily = GET_EXTENDED_FAMILY(eax);
-	cpuinfo->extendedModel = GET_EXTENDED_MODEL(eax);
-	cpuinfo->processorType = GET_PROCESSOR_TYPE(eax);
-	cpuinfo->familyCode = GET_FAMILY_CODE(eax);
-	cpuinfo->modelNumber = GET_MODEL_NUMBER(eax);
-	cpuinfo->steppingID = GET_SEPPING_ID(eax);
+	cpuInfo.extendedFamily = GET_EXTENDED_FAMILY(eax);
+	cpuInfo.extendedModel = GET_EXTENDED_MODEL(eax);
+	cpuInfo.processorType = GET_PROCESSOR_TYPE(eax);
+	cpuInfo.familyCode = GET_FAMILY_CODE(eax);
+	cpuInfo.modelNumber = GET_MODEL_NUMBER(eax);
+	cpuInfo.steppingID = GET_SEPPING_ID(eax);
 
-	cpuinfo->apicPresence = (edx & CPUID_FLAG_APIC) ? 1 : 0;
-	cpuinfo->msrSupported = (edx & CPUID_FLAG_MSR) ? 1 : 0;
+	cpuInfo.apicPresence = (edx & CPUID_FLAG_APIC) ? 1 : 0;
+	cpuInfo.msrSupported = (edx & CPUID_FLAG_MSR) ? 1 : 0;
 
 	for(i = 0x80000002, count = 0; i <= 0x80000004; i++, count += 4)
 	{
 		k_get_cpu_info(i, &eax, &ebx, &ecx, &edx);
-		((uint32_t *)cpuinfo->brandString)[count+0] = eax;
-		((uint32_t *)cpuinfo->brandString)[count+1] = ebx;
-		((uint32_t *)cpuinfo->brandString)[count+2] = ecx;
-		((uint32_t *)cpuinfo->brandString)[count+3] = edx;
+		((uint32_t *)cpuInfo.brandString)[count+0] = eax;
+		((uint32_t *)cpuInfo.brandString)[count+1] = ebx;
+		((uint32_t *)cpuInfo.brandString)[count+2] = ecx;
+		((uint32_t *)cpuInfo.brandString)[count+3] = edx;
 	}
 
 	return 1;
@@ -128,5 +134,10 @@ void k_cpuinfo_print(cpuinfo_t *cpuinfo)
 	cpuinfo->msrSupported ? k_console_write("true\n") : k_console_write("false\n");
 
 	k_console_write("\n");
+}
+
+cpuinfo_t *k_get_cpuinfo()
+{
+	return &cpuInfo;
 }
 
