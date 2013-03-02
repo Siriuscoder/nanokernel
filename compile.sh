@@ -20,7 +20,9 @@ gcc -m32 -I./include -D__GAS__ -c kernel/i386/port.S
 gcc -m32 -I./include -D__GAS__ -c kernel/i386/start.S
 gcc -m32 -I./include -D__GAS__ -c kernel/i386/version.S
 gcc -m32 -I./include -D__GAS__ -c kernel/i386/protmode.S
+gcc -m32 -I./include -D__GAS__ -c kernel/i386/inthandlers.S
 gcc -m32 -I./include -D__GAS__ -c kernel/i486/cpu.S
+gcc -m32 -I./include -fmessage-length=0 -Wall -g0 -O0 -c kernel/i386/int.c
 gcc -m32 -I./include -fmessage-length=0 -Wall -g0 -O0 -fno-inline -c kernel/kmain.c
 gcc -m32 -I./include -fmessage-length=0 -Wall -g0 -O0 -fno-inline -c kernel/console.c
 gcc -m32 -I./include -fmessage-length=0 -Wall -g0 -O0 -fno-inline -c kernel/cpuinfo.c

@@ -19,6 +19,12 @@
 #ifndef IRQ_HEADER
 #define IRQ_HEADER	1
 
+#define IDT_IRQ_VECTORS_COUNT		16
+
+#ifndef __GAS__
+
+
+#endif
 
 #endif
 

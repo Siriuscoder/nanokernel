@@ -22,12 +22,36 @@
 #include "kernel.h"
 #include "irq.h"
 
+#define IDT_INTEL_EXCEPTION_COUNT		32
+#define IDT_COUNT_MAX					(IDT_INTEL_EXCEPTION_COUNT+IDT_IRQ_VECTORS_COUNT)
+
+#define IDT_INTERRUPT_GATE_FLAG			0x8E
+#define IDT_TRAP_GATE_FLAG				0x8F
+#define IDT_TASK_GATE_FLAG				0x85
+
 #ifndef __GAS__
+
+/* Defines an IDT entry */
+#pragma pack(push, 1)
+typedef struct idt_entry
+{
+    uint16_t base_lo;
+    uint16_t sel;
+    byte always0;
+    byte flags;
+    uint16_t base_hi;
+} idtEntry_t;
+#pragma pack(pop)
 
 /* async interrupts enable */
 void k_iasync_enable();
 /* async interrupts disable */
 void k_iasync_disable();
+
+/* set gate */
+void k_idt_set_int_gate(byte intNum, uint32_t handler, uint16_t codeSelector, byte DPL);
+void k_idt_set_task_gate(byte intNum, uint16_t tssSelector, byte DPL);
+void k_idt_set_trap_gate(byte intNum, uint32_t handler, uint16_t codeSelector, byte DPL);
 
 #endif
 #endif

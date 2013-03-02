@@ -20,10 +20,11 @@
 
 	.file	"realmode.S"
 
+.globl k_gdt;
 .globl k_switch_to_protected_mode;
 .globl k_switch_to_real_mode;
 
-	.section .rodata
+	.data
 /*
  * This is the Global Descriptor Table
  *
@@ -44,10 +45,10 @@
  *  description.
  */
 
-/* force 4-byte alignment */
-	.p2align	2
+/* force 8-byte alignment */
+	.p2align	3
 
-gdt:
+k_gdt:
 	.word	0, 0
 	.byte	0, 0, 0, 0
 
@@ -86,11 +87,12 @@ gdt:
 	.word	0xFFFF, 0
 	.byte	0, 0x92, 0, 0
 
-
+/* force 4-byte alignment */
+	.p2align	2
 /* this is the GDT descriptor */
 gdtdesc:
 	.word	0x2F			/* limit */
-	.long	gdt			/* addr */
+	.long	k_gdt			/* addr */
 
 	.text
 
