@@ -16,45 +16,13 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* Programing interrupt controler interface */
-
-#ifndef PIC_HEADER
-#define PIC_HEADER	1
+#ifndef SCREEN_HEADER
+#define SCREEN_HEADER	1
 
 #include "kernel.h"
+#include "console.h"
 
 bool
-k_pic_init();
-
-uint16_t
-k_pic_get_irq_mask();
-void
-k_pic_set_irq_mask(uint16_t mask);
-
-/* hardware disable PIC */
-void
-k_pic_disable();
-/* hardware disable APIC */
-void
-k_apic_disable();
-
-/* mask IRQ vectors */
-void
-k_pic_disable_irq_line(byte irq);
-
-void
-k_pic_enable_irq_line(byte irq);
-
-/* Returns the combined value of the cascaded PICs irq request register */
-uint16_t
-k_pic_get_irr(void);
-
-/* Returns the combined value of the cascaded PICs in-service register */
-uint16_t
-k_pic_get_isr(void);
-
-/* send EOI (end of interrupt command) */
-void
-k_pic_eoi(byte irq);
+k_init_screen();
 
 #endif

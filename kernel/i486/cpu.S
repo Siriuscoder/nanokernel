@@ -63,10 +63,10 @@ k_get_msr:
 	
 	movl	4(%esp), %ecx
 	rdmsr
-	movl	8(%esp), %ebx
-	movl	%edx, (%ebx)
-	movl	12(%esp), %ebx
-	movl	%eax, (%ebx)
+	movl	8(%esp), %edi
+	movl	%edx, (%edi)
+	movl	12(%esp), %edi
+	movl	%eax, (%edi)
 	ret
 /* WRite to Model-Specific Register */
 /* msr address */

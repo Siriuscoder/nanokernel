@@ -36,7 +36,7 @@ typedef struct __cpuinfo
 	byte procCount;
 } cpuinfo_t;
 
-int32_t k_refresh_cpu_info();
+bool k_refresh_cpu_info();
 
 void k_cpuinfo_print(cpuinfo_t *cpuinfo);
 

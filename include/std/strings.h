@@ -82,10 +82,13 @@ k_strncmp(const char *s1, const char *s2, size_t n);
 char *
 k_strncpy(char *s1, const char *s2, size_t n);
 
-int k_isupper(char c);
+int
+k_isupper(char c);
 
-char k_toupper(char c);
+char
+k_toupper(char c);
 
-char k_tolower(char c);
+char
+k_tolower(char c);
 
 #endif

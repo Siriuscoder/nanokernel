@@ -16,39 +16,22 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-	.file	"iobase.S"
+#include "screen.h"
+
+/* console init structure */
+const consoleEntry_t consoleEntry = {
+	(ptr_t)0xB8000,
+	80,
+	25
+};
 
 
-	.globl	k_io_wait;
-	.globl	k_io_port_outb;
-	.globl	k_io_port_inb;
+bool k_init_screen()
+{
+	if(!k_console_init(&consoleEntry))
+		return false;
+	/* clean console memory */
+	k_console_clean();
 
-	.text
-	.code32
-
-k_io_wait:
-
-	jmp	to_next_jmp
-to_next_jmp:
-	jmp	to_ret
-to_ret:
-	ret
-
-/* in word port */
-/* in byte data */
-k_io_port_outb:
-	
-	movw	4(%esp), %dx
-	movb	6(%esp), %al
-	outb	%al, %dx
-	ret
-
-/* in word port */
-k_io_port_inb:
-
-	movw	4(%esp), %dx
-	inb		%dx, %al
-	ret
-
-
-
+	return true;
+}

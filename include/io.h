@@ -21,6 +21,10 @@
 
 #include "kernel.h"
 
+#define IA32_APIC_BASE_MSR 			0x1B
+#define IA32_APIC_BASE_MSR_ENABLE 	0x800
+#define IA32_APIC_BASE_MSR_DISABLE 	0xF7FF
+
 #ifndef __GAS__
 /* Forces the CPU to wait for an I/O operation to complete. 
 only use this when there's nothing like a status register 
@@ -39,6 +43,18 @@ void k_io_port_outb(uint16_t port, byte data);
 Traditional names are 'inb', 'inw' and 'inl' respectively.
 */
 byte k_io_port_inb(uint16_t port);
+
+/*
+ * Write a 64 bits value to a MSR. The 'A' constraint
+ * stands for concatenation of registers EAX and EDX.
+ */
+void k_set_msr(uintptr_t msrAddr, uint32_t hw, uint32_t lw);
+
+/*
+ * Read a 64 bits value from a MSR. The 'A' constraint
+ * stands for concatenation of registers EAX and EDX.
+ */
+void k_get_msr(uintptr_t msrAddr, uint32_t *hw, uint32_t *lw);
 
 #endif
 

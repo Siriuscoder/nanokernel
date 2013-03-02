@@ -1,20 +1,20 @@
 /*  This file is part of simple kernel.
-    Project NanoKernel (for study purposes only)
-    Copyright (C) 2013  Sirius (Vdov Nikita)
+ Project NanoKernel (for study purposes only)
+ Copyright (C) 2013  Sirius (Vdov Nikita)
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #ifndef TYPES_H
 #define TYPES_H
@@ -70,9 +70,9 @@ typedef unsigned long long uint64_t;
 #endif
 
 #ifdef __SIZE_TYPE__
-typedef __SIZE_TYPE__ 	size_t;
+typedef __SIZE_TYPE__ size_t;
 #else
-typedef unsigned long int 	size_t;
+typedef unsigned long int size_t;
 #endif
 
 #ifdef __INT_LEAST8_TYPE__
@@ -86,14 +86,14 @@ typedef __UINT_LEAST16_TYPE__ uint_least16_t;
 typedef __UINT_LEAST32_TYPE__ uint_least32_t;
 typedef __UINT_LEAST64_TYPE__ uint_least64_t;
 #else
-typedef int8_t    int_least8_t;
-typedef int16_t   int_least16_t;
-typedef int32_t   int_least32_t;
-typedef int64_t   int_least64_t;
-typedef uint8_t   uint_least8_t;
-typedef uint16_t  uint_least16_t;
-typedef uint32_t  uint_least32_t;
-typedef uint64_t  uint_least64_t;
+typedef int8_t int_least8_t;
+typedef int16_t int_least16_t;
+typedef int32_t int_least32_t;
+typedef int64_t int_least64_t;
+typedef uint8_t uint_least8_t;
+typedef uint16_t uint_least16_t;
+typedef uint32_t uint_least32_t;
+typedef uint64_t uint_least64_t;
 #endif
 
 #ifdef __INT_FAST8_TYPE__
@@ -107,14 +107,14 @@ typedef __UINT_FAST16_TYPE__ uint_fast16_t;
 typedef __UINT_FAST32_TYPE__ uint_fast32_t;
 typedef __UINT_FAST64_TYPE__ uint_fast64_t;
 #else
-typedef int8_t    int_fast8_t;
-typedef int16_t   int_fast16_t;
-typedef int32_t   int_fast32_t;
-typedef int64_t   int_fast64_t;
-typedef uint8_t   uint_fast8_t;
-typedef uint16_t  uint_fast16_t;
-typedef uint32_t  uint_fast32_t;
-typedef uint64_t  uint_fast64_t;
+typedef int8_t int_fast8_t;
+typedef int16_t int_fast16_t;
+typedef int32_t int_fast32_t;
+typedef int64_t int_fast64_t;
+typedef uint8_t uint_fast8_t;
+typedef uint16_t uint_fast16_t;
+typedef uint32_t uint_fast32_t;
+typedef uint64_t uint_fast64_t;
 #endif
 
 /* 7.8.1.4 Integer types capable of holding object pointers */
@@ -122,19 +122,19 @@ typedef uint64_t  uint_fast64_t;
 #ifdef __INTPTR_TYPE__
 typedef __INTPTR_TYPE__ intptr_t;
 #else
-typedef int             *intptr_t;
+typedef int *intptr_t;
 #endif
 
 #ifdef __UINTPTR_TYPE__
 typedef __UINTPTR_TYPE__ uintptr_t;
 #else
-typedef unsigned int     *uintptr_t;
+typedef unsigned int *uintptr_t;
 #endif
 
-typedef void	 		*ptr_t;
+typedef void *ptr_t;
 
 /* Type to use for unaligned operations.  */
-typedef uint8_t			byte;
+typedef uint8_t byte;
 
 #define NULL_PTR		((ptr_t)0x0)
 #define NULL			NULL_PTR
@@ -307,5 +307,25 @@ typedef __UINTMAX_TYPE__ uintmax_t;
 #define UINTMAX_C(c) __UINTMAX_C(c)
 
 #endif /* !defined __cplusplus || defined __STDC_CONSTANT_MACROS */
+
+#if 0
+typedef _Bool bool;
+#else
+/**
+ * The is no reason to follow strict ABI in kernel code and to define boolean
+ * type as 1-byte _Bool. Make it native word sized.
+ *
+ * May be I'm not right and it would be better to introduce something like
+ * bool_t to avoid confusion with bool defined by C99 standard.
+ */
+typedef int bool;
+#endif
+
+#define false 	0
+#define true  	1
+
+/* include args */
+/* Allows functions to accept an indefinite number of arguments. */
+#include "std/stdarg.h"
 
 #endif

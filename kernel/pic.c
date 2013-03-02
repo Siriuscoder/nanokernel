@@ -118,8 +118,8 @@
 #define PIC2_ICW3       (I_AM_SLAVE_2)
 #define PIC2_ICW4       (SNF_MODE_DIS | NONBUFD_MODE | NRML_EOI_MOD | I8086_EMM_MOD)
 
-byte IRQ_master_mask;
-byte IRQ_slave_mask;
+static byte IRQ_master_mask;
+static byte IRQ_slave_mask;
 
 static void pic_remap(uint16_t masterOffset, uint16_t slaveOffset)
 {
@@ -182,6 +182,16 @@ void k_pic_disable()
 	k_io_port_outb(PIC2_DATA, PICS_MASK);
 }
 
+void k_apic_disable()
+{
+	uint32_t hw, lw;
+	k_get_msr(IA32_APIC_BASE_MSR, &hw, &lw);
+
+	hw = 0;
+	lw &= IA32_APIC_BASE_MSR_DISABLE;
+	k_set_msr(IA32_APIC_BASE_MSR, hw, lw);
+}
+
 uint16_t k_pic_get_irq_mask()
 {
 	byte master;
@@ -202,7 +212,7 @@ void k_pic_set_irq_mask(uint16_t mask)
 	k_io_port_outb(PIC2_DATA, slave);
 }
 
-int k_pic_init()
+bool k_pic_init()
 {
 	/* save old irq masks */
 	IRQ_master_mask = k_io_port_inb(PIC1_DATA);
@@ -220,8 +230,8 @@ int k_pic_init()
 	pic_remap(PIC1_BASE, PIC2_BASE);
 
 	pic_restore_mask();
-	k_iasync_enable();
-	return 1;
+	//k_iasync_enable();
+	return true;
 }
 
 /* mask IRQ vectors */

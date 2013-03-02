@@ -1,20 +1,20 @@
 /*  This file is part of simple kernel.
-    Project NanoKernel (for study purposes only)
-    Copyright (C) 2013  Sirius (Vdov Nikita)
+ Project NanoKernel (for study purposes only)
+ Copyright (C) 2013  Sirius (Vdov Nikita)
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #include "cpuinfo.h"
 #include "std/membase.h"
@@ -54,13 +54,13 @@
 #define CPUID_FLAG_PBE          0x80000000      /* Pending Break Event. */
 
 /*
-Extended Family 20-27
-Extended Model 16-19
-Processor Type 12-13
-Family Code 8-11
-Model Number 4-7
-Stepping ID 0-3
-*/
+ Extended Family 20-27
+ Extended Model 16-19
+ Processor Type 12-13
+ Family Code 8-11
+ Model Number 4-7
+ Stepping ID 0-3
+ */
 #define GET_SEPPING_ID(eax)		(byte)(eax & 0x0000000f)
 #define GET_MODEL_NUMBER(eax)		(byte)((eax >> 4) & 0x0000000f)
 #define GET_FAMILY_CODE(eax)		(byte)((eax >> 8) & 0x0000000f)
@@ -69,31 +69,32 @@ Stepping ID 0-3
 #define GET_EXTENDED_FAMILY(eax)	(byte)((eax >> 20) & 0x000000ff)
 
 /* cpu info structure */
-static cpuinfo_t cpuInfo; 
+static cpuinfo_t cpuInfo;
 
 /* check presence of CPUID instruction */
-int32_t k_check_cpuid();
+int32_t
+k_check_cpuid();
 /* CPUID exec */
-void k_get_cpu_info(uint32_t mode, uint32_t *eax, uint32_t *ebx,
-	uint32_t *ecx, uint32_t *edx);
+void
+k_get_cpu_info(uint32_t mode, uint32_t *eax, uint32_t *ebx, uint32_t *ecx,
+		uint32_t *edx);
 
-
-
-int32_t k_refresh_cpu_info()
+bool
+k_refresh_cpu_info()
 {
 	uint32_t eax = 0, ebx = 0, ecx = 0, edx = 0, i, count;
 	k_memset(&cpuInfo, 0, sizeof(cpuinfo_t));
 
-	if(!k_check_cpuid())
+	if (!k_check_cpuid())
 	{
 		cpuInfo.apicPresence = 0;
-		return 0;
+		return false;
 	}
 
 	k_get_cpu_info(0, &eax, &ebx, &ecx, &edx);
-	((uint32_t *)cpuInfo.vendorID)[0] = ebx;
-	((uint32_t *)cpuInfo.vendorID)[1] = edx;
-	((uint32_t *)cpuInfo.vendorID)[2] = ecx;
+	((uint32_t *) cpuInfo.vendorID)[0] = ebx;
+	((uint32_t *) cpuInfo.vendorID)[1] = edx;
+	((uint32_t *) cpuInfo.vendorID)[2] = ecx;
 
 	k_get_cpu_info(1, &eax, &ebx, &ecx, &edx);
 	cpuInfo.extendedFamily = GET_EXTENDED_FAMILY(eax);
@@ -106,19 +107,20 @@ int32_t k_refresh_cpu_info()
 	cpuInfo.apicPresence = (edx & CPUID_FLAG_APIC) ? 1 : 0;
 	cpuInfo.msrSupported = (edx & CPUID_FLAG_MSR) ? 1 : 0;
 
-	for(i = 0x80000002, count = 0; i <= 0x80000004; i++, count += 4)
+	for (i = 0x80000002, count = 0; i <= 0x80000004; i++, count += 4)
 	{
 		k_get_cpu_info(i, &eax, &ebx, &ecx, &edx);
-		((uint32_t *)cpuInfo.brandString)[count+0] = eax;
-		((uint32_t *)cpuInfo.brandString)[count+1] = ebx;
-		((uint32_t *)cpuInfo.brandString)[count+2] = ecx;
-		((uint32_t *)cpuInfo.brandString)[count+3] = edx;
+		((uint32_t *) cpuInfo.brandString)[count + 0] = eax;
+		((uint32_t *) cpuInfo.brandString)[count + 1] = ebx;
+		((uint32_t *) cpuInfo.brandString)[count + 2] = ecx;
+		((uint32_t *) cpuInfo.brandString)[count + 3] = edx;
 	}
 
-	return 1;
+	return true;
 }
 
-void k_cpuinfo_print(cpuinfo_t *cpuinfo)
+void
+k_cpuinfo_print(cpuinfo_t *cpuinfo)
 {
 	k_console_write("\n");
 	k_console_write("CPU VendorID: ");
@@ -129,14 +131,17 @@ void k_cpuinfo_print(cpuinfo_t *cpuinfo)
 	k_console_write("\n");
 
 	k_console_write("Local APIC Presence: ");
-	cpuinfo->apicPresence ? k_console_write("true\n") : k_console_write("false\n");
+	cpuinfo->apicPresence ?
+			k_console_write("true\n") : k_console_write("false\n");
 	k_console_write("MSR Operations Supported: ");
-	cpuinfo->msrSupported ? k_console_write("true\n") : k_console_write("false\n");
+	cpuinfo->msrSupported ?
+			k_console_write("true\n") : k_console_write("false\n");
 
 	k_console_write("\n");
 }
 
-cpuinfo_t *k_get_cpuinfo()
+cpuinfo_t *
+k_get_cpuinfo()
 {
 	return &cpuInfo;
 }

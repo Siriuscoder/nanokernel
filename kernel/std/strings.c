@@ -468,7 +468,7 @@ k_strchr(const char *s, int c)
 
 	/* H,le the first few characters by reading one character at a time.
 	 Do this until CHAR_PTR is aligned on a longword boundary.  */
-	for (char_ptr = (unsigned char *)s;
+	for (char_ptr = (unsigned char *) s;
 			((unsigned long int) char_ptr & (sizeof(longword) - 1)) != 0;
 			++char_ptr)
 		if (*char_ptr == c)
@@ -495,11 +495,11 @@ k_strchr(const char *s, int c)
 	case 4:
 		magic_bits = 0x7efefeffL;
 		break;
-/*
-	case 8:
-		magic_bits = (0x7efefefeL << 32) | 0xfefefeffL;
-		break;
-*/
+		/*
+		 case 8:
+		 magic_bits = (0x7efefefeL << 32) | 0xfefefeffL;
+		 break;
+		 */
 	default:
 		return NULL;
 	}
@@ -507,12 +507,12 @@ k_strchr(const char *s, int c)
 	/* Set up a longword, each of whose bytes is C.  */
 	charmask = c | (c << 8);
 	charmask |= charmask << 16;
-/*
-	if (sizeof(longword) > 4)
-		charmask |= charmask << 32;
-	if (sizeof(longword) > 8)
-		return NULL;
-*/
+	/*
+	 if (sizeof(longword) > 4)
+	 charmask |= charmask << 32;
+	 if (sizeof(longword) > 8)
+	 return NULL;
+	 */
 
 	/* Instead of the traditional loop which tests each character,
 	 we will test a longword at a time.  The tricky part is testing
@@ -644,25 +644,27 @@ k_strcat(char *dest, const char *src)
 	return dest;
 }
 
-
-int k_isupper(char c)
+int
+k_isupper(char c)
 {
 	return (c >= 'A' && c <= 'Z') ? 1 : 0;
 }
 
-char k_toupper(char c)
+char
+k_toupper(char c)
 {
-	if(k_isupper(c))
+	if (k_isupper(c))
 		return c;
 
-	return (c - 'a')+ 'A';
+	return (c - 'a') + 'A';
 }
 
-char k_tolower(char c)
+char
+k_tolower(char c)
 {
-	if(!k_isupper(c))
+	if (!k_isupper(c))
 		return c;
 
-	return (c - 'A')+ 'a';
+	return (c - 'A') + 'a';
 }
 

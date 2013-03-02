@@ -31,9 +31,9 @@ typedef struct
 	size_t yLen;
 } consoleEntry_t;
 
-int k_console_init(const consoleEntry_t *entry);
+bool k_console_init(const consoleEntry_t *entry);
 
-int k_console_clean();
+bool k_console_clean();
 
 int k_console_set_cursor_pos(size_t x, size_t y);
 

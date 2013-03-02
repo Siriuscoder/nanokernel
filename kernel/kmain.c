@@ -17,35 +17,38 @@
 */
 
 #include "kernel.h"
-#include "console.h"
+#include "screen.h"
 #include "cpuinfo.h"
+#include "pic.h"
 
-/* console init structure */
-const consoleEntry_t consoleEntry = {
-	(ptr_t)0xB8000,
-	80,
-	25
-};
-
-int init_cpu()
+static bool init_interrupts()
 {
 	k_console_write("Query cpu info.. ");
 	if(k_refresh_cpu_info())
 	{
 		k_console_write("Supported\n");
 		k_cpuinfo_print(k_get_cpuinfo());
+
+		/* disable local APIC if presence */
+		if(k_get_cpuinfo()->apicPresence)
+		{
+			if(k_get_cpuinfo()->msrSupported)
+				k_apic_disable();
+		}
 	}
 	else
 		k_console_write("Not supported\n");
 
 	/* init interrupt controler (i8259) */
+	if(!k_pic_init())
+		return false;
 
-	return 1;
+	return true;
 }
 
 int k_main()
 {
-	if(k_console_init(&consoleEntry) != 0)
+	if(!k_init_screen())
 		return EXIT_PANIC;
 
 	k_console_write("Boot process done.. Starting the kernel\n");
@@ -54,7 +57,7 @@ int k_main()
 	k_console_write(k_version_full_string);
 	k_console_putc('\n');
 
-	if(!init_cpu())
+	if(!init_interrupts())
 		return EXIT_PANIC;
 
 	k_console_write("Halt kernel now..");

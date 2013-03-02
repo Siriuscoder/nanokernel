@@ -60,7 +60,7 @@ static size_t k_console_newline()
 	return consIntern.pos;
 }
 
-int k_console_init(const consoleEntry_t *entry)
+bool k_console_init(const consoleEntry_t *entry)
 {
 	k_memcpy(&consIntern.entry, (ptr_t)entry, sizeof(consoleEntry_t));
 	consIntern.pos = 0;
@@ -69,10 +69,10 @@ int k_console_init(const consoleEntry_t *entry)
 	consIntern.consoleMaxSize = entry->xLen * entry->yLen;
 	consIntern.firstEntity = (consoleEntity_t *)consIntern.entry.memEntry;
 
-	return k_console_clean();
+	return true;
 }
 
-int k_console_clean()
+bool k_console_clean()
 {
 	int i = 0;
 
@@ -83,7 +83,7 @@ int k_console_clean()
 		p->attrib = WHITE_ON_DARK_ATTR;
 	}
 
-	return 0;
+	return true;
 }
 
 size_t k_console_write(char *message)
