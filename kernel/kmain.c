@@ -20,9 +20,13 @@
 #include "screen.h"
 #include "cpuinfo.h"
 #include "pic.h"
+#include "int.h"
 
 static bool init_interrupts()
 {
+	/* disable external interrupts */
+	k_iasync_disable();
+
 	k_console_write("Query cpu info.. ");
 	if(k_refresh_cpu_info())
 	{
@@ -39,9 +43,17 @@ static bool init_interrupts()
 	else
 		k_console_write("Not supported\n");
 
+	/* set idt routines */
+	if(!k_idt_init())
+		return false;
+	k_console_write("OK\n");
 	/* init interrupt controler (i8259) */
 	if(!k_pic_init())
 		return false;
+	k_console_write("OK\n");
+	/* enable external interrupts */
+	k_iasync_enable();
+	for(;;);
 
 	return true;
 }
@@ -56,6 +68,7 @@ int k_main()
 	k_console_write("Kernel version: ");
 	k_console_write(k_version_full_string);
 	k_console_putc('\n');
+
 
 	if(!init_interrupts())
 		return EXIT_PANIC;

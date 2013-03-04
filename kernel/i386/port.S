@@ -16,7 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-	.file	"iobase.S"
+	.file	"port.S"
 
 
 	.globl	k_io_wait;
@@ -38,15 +38,15 @@ to_ret:
 /* in byte data */
 k_io_port_outb:
 	
-	movw	4(%esp), %dx
-	movb	6(%esp), %al
+	movl	4(%esp), %edx
+	movl	8(%esp), %eax
 	outb	%al, %dx
 	ret
 
 /* in word port */
 k_io_port_inb:
 
-	movw	4(%esp), %dx
+	movl	4(%esp), %edx
 	inb		%dx, %al
 	ret
 

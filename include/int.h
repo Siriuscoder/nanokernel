@@ -29,6 +29,33 @@
 #define IDT_TRAP_GATE_FLAG				0x8F
 #define IDT_TASK_GATE_FLAG				0x85
 
+#define IDT_GATE_DPL_0					0x00
+#define IDT_GATE_DPL_1					0x20
+#define IDT_GATE_DPL_2					0x40
+#define IDT_GATE_DPL_3					0x60
+
+#define EXC_DIVIDE_ERROR				0x00
+#define EXC_NMI							0x02
+#define EXC_BREAKPOINT					0x03
+#define EXC_OVERFLOW					0x04
+#define EXC_BOUND_RANGE_EXCEEDED		0x05
+#define EXC_INVALID_OPCODE				0x06
+#define EXC_DEVICE_NOT_AVAILABLE		0x07
+#define EXC_DOUBLE_FAULT				0x08
+#define EXC_INVALID_TSS					0x0A
+#define EXC_SEGMENT_NOT_PRESENT			0x0B
+#define EXC_STACK_SEGMENT_FAULT			0x0C
+#define EXC_GENERAL_PROTECTION			0x0D
+#define EXC_PAGE_FAULT					0x0E
+#define EXC_FPU_ERROR					0x10
+#define EXC_ALIGMENT_CHECK				0x11
+#define EXC_MACHINE_CHECK				0x12
+#define EXC_FLOATING_POINT				0x13
+
+#define INT_NO_PARAM					0x00
+#define INT_WITH_PARAM					0x01
+#define INT_IRQ							0x02
+
 #ifndef __GAS__
 
 /* Defines an IDT entry */
@@ -49,9 +76,11 @@ void k_iasync_enable();
 void k_iasync_disable();
 
 /* set gate */
-void k_idt_set_int_gate(byte intNum, uint32_t handler, uint16_t codeSelector, byte DPL);
+void k_idt_set_int_gate(byte intNum, const ptr_t handler, uint16_t codeSelector, byte DPL);
 void k_idt_set_task_gate(byte intNum, uint16_t tssSelector, byte DPL);
-void k_idt_set_trap_gate(byte intNum, uint32_t handler, uint16_t codeSelector, byte DPL);
+void k_idt_set_trap_gate(byte intNum, const ptr_t handler, uint16_t codeSelector, byte DPL);
+
+bool k_idt_init();
 
 #endif
 #endif

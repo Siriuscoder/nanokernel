@@ -27,10 +27,6 @@
 #define PIC2_COMMAND    PIC2
 #define PIC2_DATA       (PIC2 + 1)
 
-/* Default location in the IDT at which we program the PICs */
-#define PIC1_BASE             0x20
-#define PIC2_BASE             0x28
-
 /* ICW1 (Initialization Control Word) */
 #define ICW_TEMPLATE          0x10
 #define LEVL_TRIGGER          0x08
@@ -118,9 +114,6 @@
 #define PIC2_ICW3       (I_AM_SLAVE_2)
 #define PIC2_ICW4       (SNF_MODE_DIS | NONBUFD_MODE | NRML_EOI_MOD | I8086_EMM_MOD)
 
-static byte IRQ_master_mask;
-static byte IRQ_slave_mask;
-
 static void pic_remap(uint16_t masterOffset, uint16_t slaveOffset)
 {
 /*
@@ -170,12 +163,6 @@ static uint16_t pic_get_irq_reg(int32_t ocw3)
     	return (hr << 8) | lr;
 }
 
-static void pic_restore_mask()
-{
-	k_io_port_outb(PIC1_DATA, IRQ_master_mask);
-	k_io_port_outb(PIC2_DATA, IRQ_slave_mask);
-}
-
 void k_pic_disable()
 {
 	k_io_port_outb(PIC1_DATA, PICM_MASK);
@@ -215,9 +202,9 @@ void k_pic_set_irq_mask(uint16_t mask)
 bool k_pic_init()
 {
 	/* save old irq masks */
-	IRQ_master_mask = k_io_port_inb(PIC1_DATA);
-	IRQ_slave_mask = k_io_port_inb(PIC2_DATA);
-
+	//IRQ_master_mask = k_io_port_inb(PIC1_DATA);
+	//IRQ_slave_mask = k_io_port_inb(PIC2_DATA);
+	k_iasync_disable();
 	/* Normally, IRQs 0 to 7 are mapped to entries 8 to 15. This
 	*  is a problem in protected mode, because IDT entry 8 is a
 	*  Double Fault! Without remapping, every time IRQ0 fires,
@@ -226,10 +213,11 @@ bool k_pic_init()
 	*  Interrupt Controller (PICs - also called the 8259's) in
 	*  order to make IRQ0 to 15 be remapped to IDT entries 32 to
 	*  47 */
-	k_iasync_disable();
-	pic_remap(PIC1_BASE, PIC2_BASE);
 
-	pic_restore_mask();
+	pic_remap(IRQ_MASTER_BASE, IRQ_SLAVE_BASE);
+
+	k_pic_set_irq_mask(0xfffd);
+	//pic_restore_mask();
 	//k_iasync_enable();
 	return true;
 }
@@ -237,16 +225,16 @@ bool k_pic_init()
 /* mask IRQ vectors */
 void k_pic_disable_irq_line(byte irq)
 {
-    	uint16_t port;
-    	uint8_t value;
+    uint16_t port;
+    uint8_t value;
  
-    	if(irq < 8)
-        	port = PIC1_DATA;
+    if(irq < 8)
+        port = PIC1_DATA;
 	else
 	{
 		port = PIC2_DATA;
-        	irq -= 8;
-    	}
+        irq -= 8;
+    }
 
 	value = k_io_port_inb(port) | (1 << irq);
 	k_io_port_outb(port, value);
@@ -254,16 +242,16 @@ void k_pic_disable_irq_line(byte irq)
 
 void k_pic_enable_irq_line(byte irq)
 {
-    	uint16_t port;
-    	uint8_t value;
+    uint16_t port;
+    uint8_t value;
  
-    	if(irq < 8)
-        	port = PIC1_DATA;
+    if(irq < 8)
+        port = PIC1_DATA;
 	else
 	{
 		port = PIC2_DATA;
-        	irq -= 8;
-    	}
+        irq -= 8;
+    }
 
 	value = k_io_port_inb(port) & ~(1 << irq);
 	k_io_port_outb(port, value);

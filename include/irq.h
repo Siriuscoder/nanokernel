@@ -21,6 +21,31 @@
 
 #define IDT_IRQ_VECTORS_COUNT		16
 
+/* Default location in the IDT at which we program the PICs */
+#define IRQ_MASTER_BASE             0x20
+#define IRQ_SLAVE_BASE          	0x28
+
+#define IRQ_MASTER_TIMER			0x00
+#define IRQ_MASTER_KEYBOARD			0x01
+#define IRQ_MASTER_CASCADE			0x02
+#define IRQ_MASTER_COM_2_4			0x03
+#define IRQ_MASTER_COM_1_3			0x04
+#define IRQ_MASTER_LPT2				0x05
+#define IRQ_MASTER_FDC				0x06
+#define IRQ_MASTER_LPT1				0x07
+
+#define IRQ_SLAVE_RTC				0x08
+#define IRQ_SLAVE_IRQ2_REDIRECT		0x09
+#define IRQ_SLAVE_RESERVED_02		0x0A
+#define IRQ_SLAVE_RESERVED_03		0x0B
+#define IRQ_SLAVE_RESERVED_04		0x0C
+#define IRQ_SLAVE_COPROC			0x0D
+#define IRQ_SLAVE_HDC				0x0E
+#define IRQ_SLAVE_RESERVED_07		0x0F
+
+#define IRQ_MAKEINT_MASTER(x)		(x+IRQ_MASTER_BASE)
+#define IRQ_MAKEINT_SLAVE(x)		(x-8+IRQ_SLAVE_BASE)
+
 #ifndef __GAS__
 
 

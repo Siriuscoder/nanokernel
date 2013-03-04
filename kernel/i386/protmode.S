@@ -127,6 +127,7 @@ protected_mode_exec_begin:
 	movw	$KERNEL_PROTECTEDMODE_STACK_SEG, %ax
 	movw	%ax, %ss
 
+	sti
 	/* fix return address */
 	movzwl	(%esp), %eax
 	subl	$0x2, %esp

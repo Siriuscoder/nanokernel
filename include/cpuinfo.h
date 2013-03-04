@@ -31,9 +31,10 @@ typedef struct __cpuinfo
 	byte familyCode;
 	byte modelNumber;
 	byte steppingID;
-	byte apicPresence;
-	byte msrSupported;
+	bool apicPresence;
+	bool msrSupported;
 	byte procCount;
+	bool cpuInfoSupported;
 } cpuinfo_t;
 
 bool k_refresh_cpu_info();

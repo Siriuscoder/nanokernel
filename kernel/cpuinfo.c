@@ -87,7 +87,9 @@ k_refresh_cpu_info()
 
 	if (!k_check_cpuid())
 	{
-		cpuInfo.apicPresence = 0;
+		cpuInfo.apicPresence = false;
+		cpuInfo.msrSupported = false;
+		cpuInfo.cpuInfoSupported = false;
 		return false;
 	}
 

@@ -18,7 +18,18 @@
 
 #include "int.h"
 #include "std/membase.h"
+#include "pic.h"
+#include "console.h"
+#include "io.h"
 
+#define DECLARE_INTERRUPT_POINTER(x)	extern void x(void); const ptr_t x##_ptr = (ptr_t)x;
+#define INTERRUPT_POINTER(x)			(x##_ptr)
+
+typedef struct
+{
+	ptr_t 	phandler;
+	bool 	trap;
+} p_inthandler_t;
 /*
  * INTERRUPT DESCRIPTOR TABLE (IDT)
  *
@@ -81,22 +92,61 @@
 extern void k_load_idt_descriptor();
 extern idtEntry_t k_idt[];
 
+DECLARE_INTERRUPT_POINTER(k_stub_handler);
+
+DECLARE_INTERRUPT_POINTER(k_DE_handler);
+DECLARE_INTERRUPT_POINTER(k_NMI_handler);
+DECLARE_INTERRUPT_POINTER(k_BP_handler);
+DECLARE_INTERRUPT_POINTER(k_OF_handler);
+DECLARE_INTERRUPT_POINTER(k_BR_handler);
+DECLARE_INTERRUPT_POINTER(k_UD_handler);
+DECLARE_INTERRUPT_POINTER(k_NM_handler);
+DECLARE_INTERRUPT_POINTER(k_DF_handler);
+DECLARE_INTERRUPT_POINTER(k_TS_handler);
+DECLARE_INTERRUPT_POINTER(k_NP_handler);
+DECLARE_INTERRUPT_POINTER(k_SS_handler);
+DECLARE_INTERRUPT_POINTER(k_GP_handler);
+DECLARE_INTERRUPT_POINTER(k_PF_handler);
+DECLARE_INTERRUPT_POINTER(k_MF_handler);
+DECLARE_INTERRUPT_POINTER(k_AC_handler);
+DECLARE_INTERRUPT_POINTER(k_MC_handler);
+DECLARE_INTERRUPT_POINTER(k_XM_handler);
+
+DECLARE_INTERRUPT_POINTER(k_irq_master_00);
+DECLARE_INTERRUPT_POINTER(k_irq_master_01);
+DECLARE_INTERRUPT_POINTER(k_irq_master_02);
+DECLARE_INTERRUPT_POINTER(k_irq_master_03);
+DECLARE_INTERRUPT_POINTER(k_irq_master_04);
+DECLARE_INTERRUPT_POINTER(k_irq_master_05);
+DECLARE_INTERRUPT_POINTER(k_irq_master_06);
+DECLARE_INTERRUPT_POINTER(k_irq_master_07);
+
+DECLARE_INTERRUPT_POINTER(k_irq_slave_00);
+DECLARE_INTERRUPT_POINTER(k_irq_slave_01);
+DECLARE_INTERRUPT_POINTER(k_irq_slave_02);
+DECLARE_INTERRUPT_POINTER(k_irq_slave_03);
+DECLARE_INTERRUPT_POINTER(k_irq_slave_04);
+DECLARE_INTERRUPT_POINTER(k_irq_slave_05);
+DECLARE_INTERRUPT_POINTER(k_irq_slave_06);
+DECLARE_INTERRUPT_POINTER(k_irq_slave_07);
+
 static void setup_idt_descriptor(byte intNum, idtEntry_t *desc)
 {
 	k_memcpy(&k_idt[intNum], desc, sizeof(idtEntry_t));
 }
 
-void k_idt_set_int_gate(byte intNum, uint32_t handler, uint16_t codeSelector, byte DPL)
+void k_idt_set_int_gate(byte intNum, const ptr_t handler, uint16_t codeSelector, byte DPL)
 {
 	idtEntry_t gate;
+	long int handlerPtr = (long int)handler;
 
 	gate.always0 = 0;
-	gate.base_lo = handler & 0xffff;
-	gate.base_hi = (handler >> 16) & 0xffff;
+	gate.base_lo = handlerPtr & 0xffff;
+	gate.base_hi = (handlerPtr >> 16) & 0xffff;
 
 	gate.sel = codeSelector;
 	gate.flags = IDT_INTERRUPT_GATE_FLAG;
-	gate.flags |= (DPL << 5);
+	gate.flags |= DPL;
 
 	setup_idt_descriptor(intNum, &gate);
 }
@@ -111,25 +161,222 @@ void k_idt_set_task_gate(byte intNum, uint16_t tssSelector, byte DPL)
 
 	gate.sel = tssSelector;
 	gate.flags = IDT_TASK_GATE_FLAG;
-	gate.flags |= (DPL << 5);
+	gate.flags |= DPL;
 
 	setup_idt_descriptor(intNum, &gate);
 }
 
-void k_idt_set_trap_gate(byte intNum, uint32_t handler, uint16_t codeSelector, byte DPL)
+void k_idt_set_trap_gate(byte intNum, const ptr_t handler, uint16_t codeSelector, byte DPL)
 {
 	idtEntry_t gate;
+	long int handlerPtr = (long int)handler;
 
 	gate.always0 = 0;
-	gate.base_lo = handler & 0xffff;
-	gate.base_hi = (handler >> 16) & 0xffff;
+	gate.base_lo = handlerPtr & 0xffff;
+	gate.base_hi = (handlerPtr >> 16) & 0xffff;
 
 	gate.sel = codeSelector;
 	gate.flags = IDT_TRAP_GATE_FLAG;
-	gate.flags |= (DPL << 5);
+	gate.flags |= DPL;
 
 	setup_idt_descriptor(intNum, &gate);
 }
+
+bool k_idt_init()
+{
+	/* clean idt first */
+	k_memset(&k_idt[0], 0, sizeof(idtEntry_t) * IDT_COUNT_MAX);
+
+	/* setup exceptions handlers gates */
+	k_idt_set_int_gate(EXC_DIVIDE_ERROR, INTERRUPT_POINTER(k_DE_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+
+	k_idt_set_int_gate(1, INTERRUPT_POINTER(k_stub_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+
+	k_idt_set_int_gate(EXC_NMI, INTERRUPT_POINTER(k_NMI_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+
+	k_idt_set_trap_gate(EXC_BREAKPOINT, INTERRUPT_POINTER(k_BP_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+
+	k_idt_set_trap_gate(EXC_OVERFLOW, INTERRUPT_POINTER(k_OF_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+
+	k_idt_set_int_gate(EXC_BOUND_RANGE_EXCEEDED, INTERRUPT_POINTER(k_BR_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+
+	k_idt_set_int_gate(EXC_INVALID_OPCODE, INTERRUPT_POINTER(k_UD_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+
+	k_idt_set_int_gate(EXC_DEVICE_NOT_AVAILABLE, INTERRUPT_POINTER(k_NM_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+
+	k_idt_set_int_gate(EXC_DOUBLE_FAULT, INTERRUPT_POINTER(k_DF_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+
+	k_idt_set_int_gate(9, INTERRUPT_POINTER(k_stub_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+
+	k_idt_set_int_gate( EXC_INVALID_TSS, INTERRUPT_POINTER(k_TS_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+
+	k_idt_set_int_gate(EXC_SEGMENT_NOT_PRESENT, INTERRUPT_POINTER(k_NP_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+
+	k_idt_set_int_gate(EXC_STACK_SEGMENT_FAULT, INTERRUPT_POINTER(k_SS_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+
+	k_idt_set_int_gate(EXC_GENERAL_PROTECTION, INTERRUPT_POINTER(k_GP_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+
+	k_idt_set_int_gate(EXC_PAGE_FAULT, INTERRUPT_POINTER(k_PF_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+
+	k_idt_set_int_gate(15, INTERRUPT_POINTER(k_stub_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+
+	k_idt_set_int_gate(EXC_FPU_ERROR, INTERRUPT_POINTER(k_MF_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(EXC_ALIGMENT_CHECK, INTERRUPT_POINTER(k_AC_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(EXC_MACHINE_CHECK, INTERRUPT_POINTER(k_MC_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(EXC_FLOATING_POINT, INTERRUPT_POINTER(k_XM_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+
+	k_idt_set_int_gate(20, INTERRUPT_POINTER(k_stub_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(21, INTERRUPT_POINTER(k_stub_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(22, INTERRUPT_POINTER(k_stub_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(23, INTERRUPT_POINTER(k_stub_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(24, INTERRUPT_POINTER(k_stub_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(25, INTERRUPT_POINTER(k_stub_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(26, INTERRUPT_POINTER(k_stub_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(27, INTERRUPT_POINTER(k_stub_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(28, INTERRUPT_POINTER(k_stub_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(29, INTERRUPT_POINTER(k_stub_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(30, INTERRUPT_POINTER(k_stub_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(31, INTERRUPT_POINTER(k_stub_handler),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+
+
+	/* setup IQR master handlers gates */
+	k_idt_set_int_gate(IRQ_MAKEINT_MASTER(IRQ_MASTER_TIMER), INTERRUPT_POINTER(k_irq_master_00),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(IRQ_MAKEINT_MASTER(IRQ_MASTER_KEYBOARD), INTERRUPT_POINTER(k_irq_master_01),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(IRQ_MAKEINT_MASTER(IRQ_MASTER_CASCADE), INTERRUPT_POINTER(k_irq_master_02),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(IRQ_MAKEINT_MASTER(IRQ_MASTER_COM_2_4), INTERRUPT_POINTER(k_irq_master_03),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(IRQ_MAKEINT_MASTER(IRQ_MASTER_COM_1_3), INTERRUPT_POINTER(k_irq_master_04),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(IRQ_MAKEINT_MASTER(IRQ_MASTER_LPT2), INTERRUPT_POINTER(k_irq_master_05),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(IRQ_MAKEINT_MASTER(IRQ_MASTER_FDC), INTERRUPT_POINTER(k_irq_master_06),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(IRQ_MAKEINT_MASTER(IRQ_MASTER_LPT1), INTERRUPT_POINTER(k_irq_master_07),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+
+	/* setup IQR slave handlers gates */
+	k_idt_set_int_gate(IRQ_MAKEINT_SLAVE(IRQ_SLAVE_RTC), INTERRUPT_POINTER(k_irq_slave_00),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(IRQ_MAKEINT_SLAVE(IRQ_SLAVE_IRQ2_REDIRECT), INTERRUPT_POINTER(k_irq_slave_01),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(IRQ_MAKEINT_SLAVE(IRQ_SLAVE_RESERVED_02), INTERRUPT_POINTER(k_irq_slave_02),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(IRQ_MAKEINT_SLAVE(IRQ_SLAVE_RESERVED_03), INTERRUPT_POINTER(k_irq_slave_03),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(IRQ_MAKEINT_SLAVE(IRQ_SLAVE_RESERVED_04), INTERRUPT_POINTER(k_irq_slave_04),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(IRQ_MAKEINT_SLAVE(IRQ_SLAVE_COPROC), INTERRUPT_POINTER(k_irq_slave_05),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(IRQ_MAKEINT_SLAVE(IRQ_SLAVE_HDC), INTERRUPT_POINTER(k_irq_slave_06),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+	k_idt_set_int_gate(IRQ_MAKEINT_SLAVE(IRQ_SLAVE_RESERVED_07), INTERRUPT_POINTER(k_irq_slave_07),
+			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
+
+	k_load_idt_descriptor();
+
+	return true;
+}
+
+/* Lower-case digits.  */
+static const char _itoa_lower_digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+/* Upper-case digits.  */
+static const char _itoa_upper_digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+static char *itoa(uint32_t value, char *buflim, size_t size,
+      unsigned int base, int upper_case)
+{
+  /* Base-36 digits for numbers.  */
+  const char *digits = upper_case ? _itoa_upper_digits : _itoa_lower_digits;
+
+  register char *bp = buflim+size-1;
+
+  *bp = 0;
+  if(value == 0)
+  {
+	  *--bp = '0';
+  }
+
+  while (value > 0)
+  {
+      *--bp = digits[value % base];
+      value /= base;
+  }
+
+  return bp;
+}
+
+
+void k_handle_exception_with_code(uint32_t except, int32_t code, int32_t addr)
+{
+	/* handle interrupt code */
+	char buff[30];
+	k_console_write("k_handle_exception_with_code ");
+/*	k_console_write(itoa(except, buff+30, 10, 0));
+	k_console_write(" ");
+	k_console_write(itoa(code11, buff+30, 10, 0));
+	k_console_write(" ");
+	k_console_write(itoa(addr, buff+30, 10, 0));
+*/
+	k_console_write("\n");
+}
+
+void k_handle_exception_no_code(uint32_t except)
+{
+	/* handle interrupt code */
+	char buff[20];
+	k_console_write("k_handle_exception_no_code ");
+	k_console_write(itoa(except, buff, sizeof(buff), 10, 0));
+	k_console_write("\n");
+}
+
+void k_handle_irq(uint32_t irq)
+{
+	/* handle interrupt code */
+	k_console_write("k_handle_irq\n");
+	if(irq == 1)
+	{
+		k_io_port_inb(0x60);
+	}
+
+	k_pic_eoi((byte)irq);
+}
+
+
 
 
 
