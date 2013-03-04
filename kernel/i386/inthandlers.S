@@ -81,8 +81,6 @@ k_idt_descriptor:
 	.code32
 
 k_load_idt_descriptor:
-	movw	$KERNEL_REALMODE_DATA_SEG, %ax
-	movw	%ax, %ds
 	lidt	k_idt_descriptor
 	ret
 

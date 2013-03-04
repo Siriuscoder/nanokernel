@@ -22,6 +22,8 @@
 #include "pic.h"
 #include "int.h"
 
+extern void k_breakpoint();
+
 static bool init_interrupts()
 {
 	/* disable external interrupts */
@@ -46,14 +48,13 @@ static bool init_interrupts()
 	/* set idt routines */
 	if(!k_idt_init())
 		return false;
-	k_console_write("OK\n");
+
 	/* init interrupt controler (i8259) */
 	if(!k_pic_init())
 		return false;
-	k_console_write("OK\n");
+
 	/* enable external interrupts */
 	k_iasync_enable();
-	for(;;);
 
 	return true;
 }
@@ -72,6 +73,12 @@ int k_main()
 
 	if(!init_interrupts())
 		return EXIT_PANIC;
+
+	int i = 5;
+	/* non fatal operation */
+	for(; i > 0; i--)
+		k_breakpoint();
+
 
 	k_console_write("Halt kernel now..");
 	return EXIT_CPU_HALT;

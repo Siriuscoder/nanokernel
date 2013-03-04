@@ -22,6 +22,7 @@
 	.globl	k_io_wait;
 	.globl	k_io_port_outb;
 	.globl	k_io_port_inb;
+	.globl	k_breakpoint;
 
 	.text
 	.code32
@@ -48,6 +49,10 @@ k_io_port_inb:
 
 	movl	4(%esp), %edx
 	inb		%dx, %al
+	ret
+
+k_breakpoint:
+	int		$0x3
 	ret
 
 

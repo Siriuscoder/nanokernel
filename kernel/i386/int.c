@@ -341,26 +341,28 @@ static char *itoa(uint32_t value, char *buflim, size_t size,
 }
 
 
-void k_handle_exception_with_code(uint32_t except, int32_t code, int32_t addr)
+void k_handle_exception_with_code(uint32_t except, int32_t code, uint32_t addr)
 {
 	/* handle interrupt code */
-	char buff[30];
+	char buff[20];
 	k_console_write("k_handle_exception_with_code ");
-/*	k_console_write(itoa(except, buff+30, 10, 0));
-	k_console_write(" ");
-	k_console_write(itoa(code11, buff+30, 10, 0));
-	k_console_write(" ");
-	k_console_write(itoa(addr, buff+30, 10, 0));
-*/
+	k_console_write(itoa(except, buff, sizeof(buff), 10, 0));
+	k_console_write(", code ");
+	k_console_write(itoa(code, buff, sizeof(buff), 10, 0));
+	k_console_write(", address ");
+	k_console_write(itoa(addr, buff, sizeof(buff), 16, 0));
+
 	k_console_write("\n");
 }
 
-void k_handle_exception_no_code(uint32_t except)
+void k_handle_exception_no_code(uint32_t except, uint32_t addr)
 {
 	/* handle interrupt code */
 	char buff[20];
 	k_console_write("k_handle_exception_no_code ");
 	k_console_write(itoa(except, buff, sizeof(buff), 10, 0));
+	k_console_write(", address ");
+	k_console_write(itoa(addr, buff, sizeof(buff), 16, 0));
 	k_console_write("\n");
 }
 
