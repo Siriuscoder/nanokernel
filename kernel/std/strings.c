@@ -19,6 +19,11 @@
 #include "std/membase.h"
 #include "std/strings.h"
 
+/* Lower-case digits.  */
+static const char _itoa_lower_digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+/* Upper-case digits.  */
+static const char _itoa_upper_digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
 char *
 k_strncpy(char *s1, const char *s2, size_t n)
 {
@@ -668,3 +673,148 @@ k_tolower(char c)
 	return (c - 'A') + 'a';
 }
 
+char *
+k_itoa(int32_t value, char *buflim, size_t size, unsigned int base,
+		int upper_case)
+{
+	/* Base-36 digits for numbers.  */
+	const char *digits = upper_case ? _itoa_upper_digits : _itoa_lower_digits;
+	register char *bp = buflim + size - 1;
+
+	*bp = 0;
+	if (value == 0)
+	{
+		*--bp = '0';
+	}
+
+	while (value > 0)
+	{
+		*--bp = digits[value % base];
+		value /= base;
+	}
+
+	return bp;
+}
+
+/* Convert NPTR to an `unsigned long int' or `long int' in base BASE.
+ If BASE is 0 the base is determined by the presence of a leading
+ zero, indicating octal or a leading "0x" or "0X", indicating hexadecimal.
+ If BASE is < 2 or > 36, it is reset to 10.
+ If ENDPTR is not NULL, a pointer to the character after the last
+ one converted is stored in *ENDPTR.  */
+int32_t
+k_strtol(const char *nptr, char **endptr, int base)
+{
+	int negative;
+	register unsigned long int cutoff;
+	register unsigned int cutlim;
+	register unsigned long int i;
+	register const char *s;
+	register unsigned char c;
+	const char *save;
+	int overflow;
+
+	if (base < 0 || base == 1 || base > 36)
+		base = 10;
+
+	s = nptr;
+
+	if (*s == '\0')
+		goto noconv;
+
+	/* Check for a sign.  */
+	if (*s == '-')
+	{
+		negative = 1;
+		++s;
+	}
+	else if (*s == '+')
+	{
+		negative = 0;
+		++s;
+	}
+	else
+		negative = 0;
+
+	if (base == 16 && s[0] == '0' && k_toupper(s[1]) == 'X')
+		s += 2;
+
+	/* If BASE is zero, figure it out ourselves.  */
+	if (base == 0)
+	{
+		if (*s == '0')
+		{
+			if (k_toupper(s[1]) == 'X')
+			{
+				s += 2;
+				base = 16;
+			}
+			else
+				base = 8;
+		}
+		else
+			base = 10;
+	}
+
+	/* Save the pointer so we can check later if anything happened.  */
+	save = s;
+
+	cutoff = INT32_MAX / (unsigned long int) base;
+	cutlim = INT32_MIN % (unsigned long int) base;
+
+	overflow = 0;
+	i = 0;
+	for (c = *s; c != '\0'; c = *++s)
+	{
+		c -= '0';
+
+		if (c >= base)
+			break;
+		/* Check for overflow.  */
+		if (i > cutoff || (i == cutoff && c > cutlim))
+			overflow = 1;
+		else
+		{
+			i *= (unsigned long int) base;
+			i += c;
+		}
+	}
+
+	/* Check if anything actually happened.  */
+	if (s == save)
+		goto noconv;
+
+	/* Store in ENDPTR the address of one character
+	 past the last character we converted.  */
+	if (endptr != NULL)
+		*endptr = (char *) s;
+
+	/* Check for a value that is within the range of
+	 `unsigned long int', but outside the range of `long int'.  */
+	if (i
+			> (negative ?
+					-(unsigned long int) INT32_MIN :
+					(unsigned long int) INT32_MAX))
+		overflow = 1;
+
+	if (overflow)
+	{
+		return negative ? INT32_MIN : INT32_MAX;
+	}
+
+	/* Return the result of the appropriate sign.  */
+	return (negative ? -i : i);
+
+	noconv:
+	/* There was no number to convert.  */
+	if (endptr != NULL)
+		*endptr = (char *) nptr;
+	return 0L;
+}
+
+/* Convert a string to an int.  */
+int
+k_atoi(const char *nptr)
+{
+	return ((int) k_strtol(nptr, (char **) NULL, 10));
+}

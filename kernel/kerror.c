@@ -16,39 +16,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-	.file	"port.S"
+#include "kerror.h"
+#include "std/print.h"
 
+void k_panic(int errCode, int addCode, char *str)
+{
 
-	.globl	k_io_wait;
-	.globl	k_io_port_outb;
-	.globl	k_io_port_inb;
-
-	.text
-	.code32
-
-k_io_wait:
-
-	jmp	to_next_jmp
-to_next_jmp:
-	jmp	to_ret
-to_ret:
-	ret
-
-/* in word port */
-/* in byte data */
-k_io_port_outb:
-	
-	movl	4(%esp), %edx
-	movl	8(%esp), %eax
-	outb	%al, %dx
-	ret
-
-/* in word port */
-k_io_port_inb:
-
-	movl	4(%esp), %edx
-	inb		%dx, %al
-	ret
+	k_abort();
+}
 
 
 

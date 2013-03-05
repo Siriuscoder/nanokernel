@@ -204,7 +204,7 @@ bool k_pic_init()
 	/* save old irq masks */
 	//IRQ_master_mask = k_io_port_inb(PIC1_DATA);
 	//IRQ_slave_mask = k_io_port_inb(PIC2_DATA);
-	k_iasync_disable();
+	//k_iasync_disable();
 	/* Normally, IRQs 0 to 7 are mapped to entries 8 to 15. This
 	*  is a problem in protected mode, because IDT entry 8 is a
 	*  Double Fault! Without remapping, every time IRQ0 fires,
@@ -213,7 +213,6 @@ bool k_pic_init()
 	*  Interrupt Controller (PICs - also called the 8259's) in
 	*  order to make IRQ0 to 15 be remapped to IDT entries 32 to
 	*  47 */
-
 	pic_remap(IRQ_MASTER_BASE, IRQ_SLAVE_BASE);
 
 	k_pic_set_irq_mask(0xfffd);

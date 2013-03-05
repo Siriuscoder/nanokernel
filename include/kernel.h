@@ -112,6 +112,15 @@ extern uint16_t k_phisical_memory_map_size;
 extern uint32_t k_version_signature;
 extern char k_version_full_string[];
 
+/* stop/interrupt funct */
+void k_abort();
+
+void k_reboot(int how);
+
+void k_freeze();
+
+void k_breakpoint();
+
 #endif
 
 #define TO_STRING(x)				#x

@@ -19,7 +19,7 @@
 #include "cpuinfo.h"
 #include "std/membase.h"
 #include "std/strings.h"
-#include "console.h"
+#include "std/print.h"
 
 /* CPUID Flags. */
 #define CPUID_FLAG_FPU          0x1             /* Floating Point Unit. */
@@ -118,28 +118,27 @@ k_refresh_cpu_info()
 		((uint32_t *) cpuInfo.brandString)[count + 3] = edx;
 	}
 
+	cpuInfo.cpuInfoSupported = true;
+
 	return true;
 }
 
 void
 k_cpuinfo_print(cpuinfo_t *cpuinfo)
 {
-	k_console_write("\n");
-	k_console_write("CPU VendorID: ");
-	k_console_write(cpuinfo->vendorID);
-	k_console_write("\n");
-	k_console_write("CPU Brand: ");
-	k_console_write(cpuinfo->brandString);
-	k_console_write("\n");
+	if(!cpuinfo->cpuInfoSupported)
+	{
+		k_print("CPU info not supported..\n");
+		return ;
+	}
 
-	k_console_write("Local APIC Presence: ");
-	cpuinfo->apicPresence ?
-			k_console_write("true\n") : k_console_write("false\n");
-	k_console_write("MSR Operations Supported: ");
-	cpuinfo->msrSupported ?
-			k_console_write("true\n") : k_console_write("false\n");
+	k_print("\nCPU VendorID: %s\n", cpuinfo->vendorID);
+	k_print("CPU Brand: %s\n", cpuinfo->brandString);
 
-	k_console_write("\n");
+	k_print("Local APIC Presence: %s\n",
+			cpuinfo->apicPresence ? "true" : "false");
+	k_print("MSR Operations Supported: %s\n\n",
+			cpuinfo->msrSupported ? "true" : "false");
 }
 
 cpuinfo_t *

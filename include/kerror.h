@@ -16,39 +16,39 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-	.file	"port.S"
+#ifndef ERROR_H_
+#define ERROR_H_
 
+#include "kernel.h"
 
-	.globl	k_io_wait;
-	.globl	k_io_port_outb;
-	.globl	k_io_port_inb;
+#define INIT_FAILED				0xE000
+#define PIC_INIT_FAILED			0xE001
+#define INT_INIT_FAILED			0xE002
+#define CON_INIT_FAILED			0xE003
+#define DRV_INIT_FAILED			0xE004
+#define SCR_INIT_FAILED			0xE005
+#define CPU_EXCEPTION			0xE006
 
-	.text
-	.code32
+#pragma pack(push, 1)
+typedef struct
+{
+	int16_t		ss;
+	int16_t		cs;
+	int16_t		gs;
+	int16_t		fs;
+	int16_t		es;
+	int16_t		ds;
+	int32_t 	edi;
+	int32_t 	esi;
+	int32_t 	ebp;
+	int32_t		esp;
+	int32_t		ebx;
+	int32_t 	edx;
+	int32_t 	ecx;
+	int32_t 	eax;
+} regs_t;
+#pragma pack(pop)
 
-k_io_wait:
+void k_panic(int errCode, int addCode, char *str);
 
-	jmp	to_next_jmp
-to_next_jmp:
-	jmp	to_ret
-to_ret:
-	ret
-
-/* in word port */
-/* in byte data */
-k_io_port_outb:
-	
-	movl	4(%esp), %edx
-	movl	8(%esp), %eax
-	outb	%al, %dx
-	ret
-
-/* in word port */
-k_io_port_inb:
-
-	movl	4(%esp), %edx
-	inb		%dx, %al
-	ret
-
-
-
+#endif /* ERROR_H_ */

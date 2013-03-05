@@ -163,6 +163,8 @@ k_switch_to_handler:
 	pushw	%es
 	pushw	%fs
 	pushw	%gs
+	pushw	%cs
+	pushw	%ss
 
 	/* get int handler call method */
 	movl	-8(%ebp), %eax
@@ -205,6 +207,7 @@ with_code:
 	addl	$0xc, %esp
 
 fini_int:
+	addl	$0x4, %esp
 	popw	%gs
 	popw	%fs
 	popw	%es

@@ -91,4 +91,15 @@ k_toupper(char c);
 char
 k_tolower(char c);
 
+char *
+k_itoa(int32_t value, char *buflim, size_t size, unsigned int base,
+		int upper_case);
+
+int32_t
+k_strtol(const char *nptr, char **endptr, int base);
+
+/* Convert a string to an int.  */
+int
+k_atoi(const char *nptr);
+
 #endif

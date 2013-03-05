@@ -15,40 +15,44 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-	.file	"port.S"
-
-
-	.globl	k_io_wait;
-	.globl	k_io_port_outb;
-	.globl	k_io_port_inb;
-
+	.file "stop.S"
 	.text
+
+#include "kernel.h"
+
+	.globl k_abort;
+	.globl k_reboot;
+	.globl k_freeze;
+	.globl k_breakpoint;
+
+k_abort:
 	.code32
+	/* switch to realmode */
+	call	k_switch_to_real_mode
+	.code16
 
-k_io_wait:
+	jmp		k_halt_system_16
 
-	jmp	to_next_jmp
-to_next_jmp:
-	jmp	to_ret
-to_ret:
+k_reboot:
+	.code32
+	movl	%esp, %ebp
+	/* switch to realmode */
+	call	k_switch_to_real_mode
+	.code16
+
+	movl	4(%bp), %eax
+	jmp		k_do_reboot_16
+
+k_freeze:
+	.code32
+	nop
+	nop
+	jmp		k_freeze
+
+k_breakpoint:
+	movl	$0x5, %eax
+	movl	$0x6, %ebx
+	movl	$0x7, %ecx
+	int		$0x3
 	ret
-
-/* in word port */
-/* in byte data */
-k_io_port_outb:
-	
-	movl	4(%esp), %edx
-	movl	8(%esp), %eax
-	outb	%al, %dx
-	ret
-
-/* in word port */
-k_io_port_inb:
-
-	movl	4(%esp), %edx
-	inb		%dx, %al
-	ret
-
-
 

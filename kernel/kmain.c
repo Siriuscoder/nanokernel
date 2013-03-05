@@ -16,63 +16,28 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "kernel.h"
 #include "screen.h"
 #include "cpuinfo.h"
-#include "pic.h"
 #include "int.h"
+#include "kerror.h"
+#include "std/print.h"
 
-extern void k_breakpoint();
 
-static bool init_interrupts()
-{
-	/* disable external interrupts */
-	k_iasync_disable();
 
-	k_console_write("Query cpu info.. ");
-	if(k_refresh_cpu_info())
-	{
-		k_console_write("Supported\n");
-		k_cpuinfo_print(k_get_cpuinfo());
-
-		/* disable local APIC if presence */
-		if(k_get_cpuinfo()->apicPresence)
-		{
-			if(k_get_cpuinfo()->msrSupported)
-				k_apic_disable();
-		}
-	}
-	else
-		k_console_write("Not supported\n");
-
-	/* set idt routines */
-	if(!k_idt_init())
-		return false;
-
-	/* init interrupt controler (i8259) */
-	if(!k_pic_init())
-		return false;
-
-	/* enable external interrupts */
-	k_iasync_enable();
-
-	return true;
-}
-
-int k_main()
+void k_main()
 {
 	if(!k_init_screen())
-		return EXIT_PANIC;
+		k_panic(SCR_INIT_FAILED, 0, NULL);
 
-	k_console_write("Boot process done.. Starting the kernel\n");
-	k_console_write("Console init OK..\n");
-	k_console_write("Kernel version: ");
-	k_console_write(k_version_full_string);
-	k_console_putc('\n');
+	k_print("Boot process done.. Starting the kernel\n");
+	k_print("Console init OK..\n");
+	k_print("Kernel version: %s\n", k_version_full_string);
 
+	k_refresh_cpu_info();
+	k_cpuinfo_print(k_get_cpuinfo());
 
-	if(!init_interrupts())
-		return EXIT_PANIC;
+	if(!k_interrupts_init())
+		k_panic(INT_INIT_FAILED, 0, NULL);
 
 	int i = 5;
 	/* non fatal operation */
@@ -80,7 +45,7 @@ int k_main()
 		k_breakpoint();
 
 
-	k_console_write("Halt kernel now..");
-	return EXIT_CPU_HALT;
+	k_print("Halt kernel now..");
+	k_abort();
 }
 

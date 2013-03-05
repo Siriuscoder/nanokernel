@@ -81,6 +81,7 @@ void k_idt_set_task_gate(byte intNum, uint16_t tssSelector, byte DPL);
 void k_idt_set_trap_gate(byte intNum, const ptr_t handler, uint16_t codeSelector, byte DPL);
 
 bool k_idt_init();
+bool k_interrupts_init();
 
 #endif
 #endif

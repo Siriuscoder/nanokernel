@@ -23,6 +23,8 @@
 .globl _start, start;
 .globl k_phisical_memory_map_size;
 .globl k_phisical_memory_map;
+.globl k_do_reboot_16;
+.globl k_halt_system_16;
 
 	.text
 
@@ -73,20 +75,8 @@ start_system_initialization:
 	call 	k_switch_to_protected_mode
 	.code32
 
-/* jump to kernel main C code */
+/* jump to kernel main C code and newer return */
 	call 	k_main
-
-/* switch to realmode */
-	call	k_switch_to_real_mode
-	.code16
-
-/*	movw	$0x0, %ax */
-	cmpl 	$EXIT_CPU_HALT, %eax
-	je	k_halt_system
-	cmpl 	$EXIT_PANIC, %eax
-	je	k_halt_system
-
-	jmp 	k_do_reboot
 
 k_get_memory_info:
 	.code16
@@ -205,13 +195,13 @@ k_disable_cursor:
 	ret
 
 /* set ax to 0x1234 for warm boot, and 0x0000 to cold boot */
-k_do_reboot:
+k_do_reboot_16:
 	.code16
 	movw	$0x0472, %di
 	movw	%ax, (%di)
 	ljmp	$0xf000, $0xfff0
 
-k_halt_system:
+k_halt_system_16:
 	.code16
 	cli
 hlt_end:
@@ -223,7 +213,7 @@ get_bios_memory_map_failed:
 	leaw 	get_bios_memory_map_failed_mes, %si
 	call 	k_rm_message
 /* stop processor */
-	jmp 	k_halt_system
+	jmp 	k_halt_system_16
 
 k_rm_message:
 	.code16

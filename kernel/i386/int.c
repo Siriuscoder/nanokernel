@@ -17,13 +17,17 @@
  */
 
 #include "int.h"
-#include "std/membase.h"
-#include "pic.h"
-#include "console.h"
-#include "io.h"
 
-#define DECLARE_INTERRUPT_POINTER(x)	extern void x(void); const ptr_t x##_ptr = (ptr_t)x;
-#define INTERRUPT_POINTER(x)			(x##_ptr)
+#include "std/membase.h"
+#include "std/print.h"
+#include "pic.h"
+#include "io.h"
+#include "cpuinfo.h"
+#include "kerror.h"
+
+
+#define DECLARE_INTERRUPT_POINTER(x)	extern void x(void);
+#define INTERRUPT_POINTER(x)			((ptr_t)x)
 
 typedef struct
 {
@@ -190,10 +194,10 @@ bool k_idt_init()
 	/* setup exceptions handlers gates */
 	k_idt_set_int_gate(EXC_DIVIDE_ERROR, INTERRUPT_POINTER(k_DE_handler),
 			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
-
+/*
 	k_idt_set_int_gate(1, INTERRUPT_POINTER(k_stub_handler),
 			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
-
+*/
 	k_idt_set_int_gate(EXC_NMI, INTERRUPT_POINTER(k_NMI_handler),
 			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
 
@@ -214,10 +218,10 @@ bool k_idt_init()
 
 	k_idt_set_int_gate(EXC_DOUBLE_FAULT, INTERRUPT_POINTER(k_DF_handler),
 			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
-
+/*
 	k_idt_set_int_gate(9, INTERRUPT_POINTER(k_stub_handler),
 			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
-
+*/
 	k_idt_set_int_gate( EXC_INVALID_TSS, INTERRUPT_POINTER(k_TS_handler),
 			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
 
@@ -232,10 +236,10 @@ bool k_idt_init()
 
 	k_idt_set_int_gate(EXC_PAGE_FAULT, INTERRUPT_POINTER(k_PF_handler),
 			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
-
+/*
 	k_idt_set_int_gate(15, INTERRUPT_POINTER(k_stub_handler),
 			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
-
+*/
 	k_idt_set_int_gate(EXC_FPU_ERROR, INTERRUPT_POINTER(k_MF_handler),
 			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
 	k_idt_set_int_gate(EXC_ALIGMENT_CHECK, INTERRUPT_POINTER(k_AC_handler),
@@ -312,70 +316,61 @@ bool k_idt_init()
 	return true;
 }
 
-/* Lower-case digits.  */
-static const char _itoa_lower_digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
-/* Upper-case digits.  */
-static const char _itoa_upper_digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-static char *itoa(uint32_t value, char *buflim, size_t size,
-      unsigned int base, int upper_case)
-{
-  /* Base-36 digits for numbers.  */
-  const char *digits = upper_case ? _itoa_upper_digits : _itoa_lower_digits;
-
-  register char *bp = buflim+size-1;
-
-  *bp = 0;
-  if(value == 0)
-  {
-	  *--bp = '0';
-  }
-
-  while (value > 0)
-  {
-      *--bp = digits[value % base];
-      value /= base;
-  }
-
-  return bp;
-}
-
 
 void k_handle_exception_with_code(uint32_t except, int32_t code, uint32_t addr)
 {
+	regs_t *regs = (regs_t *)(&addr + 1);
 	/* handle interrupt code */
-	char buff[20];
-	k_console_write("k_handle_exception_with_code ");
-	k_console_write(itoa(except, buff, sizeof(buff), 10, 0));
-	k_console_write(", code ");
-	k_console_write(itoa(code, buff, sizeof(buff), 10, 0));
-	k_console_write(", address ");
-	k_console_write(itoa(addr, buff, sizeof(buff), 16, 0));
-
-	k_console_write("\n");
+	k_print("k_handle_exception %d, code %d at 0x%x\n", except, code, addr);
+	k_print("print registers: eax=0x%x; ebx=0x%x; ds=0x%x; cs=0x%x\n",
+			regs->eax, regs->ebx, regs->ds, regs->cs);
 }
 
 void k_handle_exception_no_code(uint32_t except, uint32_t addr)
 {
+	regs_t *regs = (regs_t *)(&addr + 1);
 	/* handle interrupt code */
-	char buff[20];
-	k_console_write("k_handle_exception_no_code ");
-	k_console_write(itoa(except, buff, sizeof(buff), 10, 0));
-	k_console_write(", address ");
-	k_console_write(itoa(addr, buff, sizeof(buff), 16, 0));
-	k_console_write("\n");
+	k_print("k_handle_exception %d at 0x%x\n", except, addr);
+	k_print("print registers: eax=0x%x; ebx=0x%x; ds=0x%x; cs=0x%x\n",
+			regs->eax, regs->ebx, regs->ds, regs->cs);
 }
 
 void k_handle_irq(uint32_t irq)
 {
 	/* handle interrupt code */
-	k_console_write("k_handle_irq\n");
+	k_print("k_handle_irq line %d\n", irq);
 	if(irq == 1)
 	{
 		k_io_port_inb(0x60);
 	}
 
 	k_pic_eoi((byte)irq);
+}
+
+bool k_interrupts_init()
+{
+	/* disable external interrupts */
+	k_iasync_disable();
+
+	/* disable local APIC if presence */
+	if(k_get_cpuinfo()->apicPresence)
+	{
+		if(k_get_cpuinfo()->msrSupported)
+			k_apic_disable();
+	}
+
+	/* set idt routines */
+	if(!k_idt_init())
+		return false;
+
+	/* init interrupt controler (i8259) */
+	if(!k_pic_init())
+		return false;
+
+	/* enable external interrupts */
+	k_iasync_enable();
+
+	return true;
 }
 
 
