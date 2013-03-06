@@ -113,13 +113,18 @@ extern uint32_t k_version_signature;
 extern char k_version_full_string[];
 
 /* stop/interrupt funct */
-void k_abort();
+extern void k_abort();
 
-void k_reboot(int how);
+extern void k_reboot(int how);
 
-void k_freeze();
+extern void k_freeze();
 
-void k_breakpoint();
+extern void k_breakpoint();
+
+/* crash functions for debug only */
+extern void k_ss_crash();
+extern void k_gp_crash();
+extern void k_opcode_crash();
 
 #endif
 

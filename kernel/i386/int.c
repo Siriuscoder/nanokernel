@@ -29,11 +29,6 @@
 #define DECLARE_INTERRUPT_POINTER(x)	extern void x(void);
 #define INTERRUPT_POINTER(x)			((ptr_t)x)
 
-typedef struct
-{
-	ptr_t 	phandler;
-	bool 	trap;
-} p_inthandler_t;
 /*
  * INTERRUPT DESCRIPTOR TABLE (IDT)
  *
@@ -95,6 +90,30 @@ typedef struct
 
 extern void k_load_idt_descriptor();
 extern idtEntry_t k_idt[];
+
+const char *k_exception_descr[21] = {
+		"Divide Error",
+		"RESERVED",
+		"NMI Interrupt",
+		"Breakpoint",
+		"Overflow",
+		"BOUND Range Exceeded",
+		"Invalid Opcode",
+		"Device Not Available",
+		"Double Fault",
+		"Coprocessor Segment Overrun",
+		"Invalid TSS",
+		"Segment Not Present",
+		"Stack-Segment Fault",
+		"General Protection",
+		"Page Fault",
+		"RESERVED",
+		"x87 FPU Floating-Point Error",
+		"Alignment Check",
+		"Machine Check",
+		"SIMD Floating-Point Exception",
+		0x0
+};
 
 DECLARE_INTERRUPT_POINTER(k_stub_handler);
 
@@ -317,22 +336,12 @@ bool k_idt_init()
 }
 
 
-void k_handle_exception_with_code(uint32_t except, int32_t code, uint32_t addr)
+void k_handle_exception(uint32_t except, int32_t code, uint32_t addr)
 {
 	regs_t *regs = (regs_t *)(&addr + 1);
 	/* handle interrupt code */
-	k_print("k_handle_exception %d, code %d at 0x%x\n", except, code, addr);
-	k_print("print registers: eax=0x%x; ebx=0x%x; ds=0x%x; cs=0x%x\n",
-			regs->eax, regs->ebx, regs->ds, regs->cs);
-}
-
-void k_handle_exception_no_code(uint32_t except, uint32_t addr)
-{
-	regs_t *regs = (regs_t *)(&addr + 1);
-	/* handle interrupt code */
-	k_print("k_handle_exception %d at 0x%x\n", except, addr);
-	k_print("print registers: eax=0x%x; ebx=0x%x; ds=0x%x; cs=0x%x\n",
-			regs->eax, regs->ebx, regs->ds, regs->cs);
+	if(except != EXC_BREAKPOINT)
+		k_panic4(CPU_EXCEPTION, except, k_exception_descr[except], regs, addr);
 }
 
 void k_handle_irq(uint32_t irq)

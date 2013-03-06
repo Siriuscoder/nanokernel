@@ -176,11 +176,13 @@ k_switch_to_handler:
 	/* no code variant case */
 	/* save eip */
 	pushl	4(%ebp)
+	/* save err code - 0*/
+	pushl	$0x0
 	/* save exc no */
 	pushl	-4(%ebp)
-	call 	k_handle_exception_no_code
+	call 	k_handle_exception
 	/* restore stack */
-	addl	$0x8, %esp
+	addl	$0xc, %esp
 	jmp 	fini_int
 
 call_irq:
@@ -202,7 +204,7 @@ with_code:
 	pushl	4(%ebp)
 	/* save exc no */
 	pushl	-4(%ebp)
-	call 	k_handle_exception_with_code
+	call 	k_handle_exception
 	/* restore stack */
 	addl	$0xc, %esp
 

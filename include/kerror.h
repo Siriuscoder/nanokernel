@@ -49,6 +49,9 @@ typedef struct
 } regs_t;
 #pragma pack(pop)
 
-void k_panic(int errCode, int addCode, char *str);
+void k_panic1(int errCode);
+void k_panic3(int errCode, int addCode, const char *str);
+void k_panic4(int errCode, int addCode, const char *str,
+		const regs_t *regs, uint32_t address);
 
 #endif /* ERROR_H_ */

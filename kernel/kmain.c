@@ -27,7 +27,7 @@
 void k_main()
 {
 	if(!k_init_screen())
-		k_panic(SCR_INIT_FAILED, 0, NULL);
+		k_panic1(SCR_INIT_FAILED);
 
 	k_print("Boot process done.. Starting the kernel\n");
 	k_print("Console init OK..\n");
@@ -37,12 +37,7 @@ void k_main()
 	k_cpuinfo_print(k_get_cpuinfo());
 
 	if(!k_interrupts_init())
-		k_panic(INT_INIT_FAILED, 0, NULL);
-
-	int i = 5;
-	/* non fatal operation */
-	for(; i > 0; i--)
-		k_breakpoint();
+		k_panic1(INT_INIT_FAILED);
 
 
 	k_print("Halt kernel now..");

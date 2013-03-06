@@ -24,6 +24,9 @@
 	.globl k_reboot;
 	.globl k_freeze;
 	.globl k_breakpoint;
+	.globl k_ss_crash;
+	.globl k_gp_crash;
+	.globl k_opcode_crash;
 
 k_abort:
 	.code32
@@ -50,9 +53,31 @@ k_freeze:
 	jmp		k_freeze
 
 k_breakpoint:
-	movl	$0x5, %eax
-	movl	$0x6, %ebx
-	movl	$0x7, %ecx
+	movl	$0xD, %eax
+	movl	$0xE, %ebx
+	movl	$0xA, %ecx
+	movl	$0xD, %edx
 	int		$0x3
 	ret
+
+k_ss_crash:
+	movl	$0xD, %eax
+	movl	$0xE, %ebx
+	movl	$0xA, %ecx
+	movl	$0xD, %edx
+	movw	%ax, %ss
+
+k_gp_crash:
+	movl	$0xD, %eax
+	movl	$0xE, %ebx
+	movl	$0xA, %ecx
+	movl	$0xD, %edx
+	movw	%ax, %ds
+
+k_opcode_crash:
+	movl	$0xD, %eax
+	movl	$0xE, %ebx
+	movl	$0xA, %ecx
+	movl	$0xD, %edx
+	.long	0xffffffff
 
