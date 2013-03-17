@@ -33,6 +33,8 @@ gcc -m32 -I./include -fmessage-length=0 -Wall -g0 -O2 -c kernel/std/print.c
 gcc -m32 -I./include -fmessage-length=0 -Wall -g0 -O0 -c kernel/pic.c
 gcc -m32 -I./include -fmessage-length=0 -Wall -g0 -O0 -c kernel/screen.c
 gcc -m32 -I./include -fmessage-length=0 -Wall -g0 -O0 -c kernel/kerror.c
+gcc -m32 -I./include -fmessage-length=0 -Wall -g0 -O0 -c kernel/kmalloc.c
+gcc -m32 -I./include -fmessage-length=0 -Wall -g0 -O0 -c kernel/mempool.c
 ld -mi386linux -M -T kernel/link.ld -o kernel.img *.o 1>linkage.map
 
 if [ $? -eq 0 ] 

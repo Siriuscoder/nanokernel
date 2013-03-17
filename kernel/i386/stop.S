@@ -53,10 +53,6 @@ k_freeze:
 	jmp		k_freeze
 
 k_breakpoint:
-	movl	$0xD, %eax
-	movl	$0xE, %ebx
-	movl	$0xA, %ecx
-	movl	$0xD, %edx
 	int		$0x3
 	ret
 
