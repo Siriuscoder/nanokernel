@@ -69,7 +69,7 @@ real_start:
 	cli
 
 	/* setup stack */
-	/* stack located in lower memory, 
+	/* stack located in lower memory, */
 	/* below boot address we have 0x7c00-0x70 = 30 kb */
 	/* set stack segment = 0*/
 	movw	%ax, %ss

@@ -1,0 +1,45 @@
+#                                               -*- Autoconf -*-
+# Process this file with autoconf to produce a configure script.
+
+AC_PREREQ([2.68])
+AC_INIT([nanokernel], [0.0.1], [siriusnick@gmail.com])
+
+AC_CONFIG_SRCDIR([kernel/kmain.c])
+AC_CONFIG_HEADERS([include/config.h])
+
+AC_CANONICAL_HOST
+AM_INIT_AUTOMAKE(1.0.1 foreign)
+
+# default linker
+LINKER=ld
+AC_SUBST(LINKER)
+
+# Checks for programs.
+AC_PROG_CC
+AC_PROG_MAKE_SET
+AM_PROG_AS
+# Checks for libraries.
+
+# Checks for header files.
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_HEADER_STDBOOL
+AC_C_INLINE
+AC_TYPE_INT16_T
+AC_TYPE_INT32_T
+AC_TYPE_INT64_T
+AC_TYPE_INT8_T
+AC_TYPE_SIZE_T
+AC_TYPE_UINT16_T
+AC_TYPE_UINT32_T
+AC_TYPE_UINT64_T
+AC_TYPE_UINT8_T
+
+# Checks for library functions.
+
+AC_CONFIG_FILES([Makefile
+				kernel/Makefile
+				drivers/Makefile
+				loader/Makefile
+				include/Makefile])
+AC_OUTPUT
