@@ -61,7 +61,7 @@
  Model Number 4-7
  Stepping ID 0-3
  */
-#define GET_SEPPING_ID(eax)		(byte)(eax & 0x0000000f)
+#define GET_SEPPING_ID(eax)			(byte)(eax & 0x0000000f)
 #define GET_MODEL_NUMBER(eax)		(byte)((eax >> 4) & 0x0000000f)
 #define GET_FAMILY_CODE(eax)		(byte)((eax >> 8) & 0x0000000f)
 #define GET_PROCESSOR_TYPE(eax)		(byte)((eax >> 12) & 0x00000003)

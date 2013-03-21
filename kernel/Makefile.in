@@ -80,7 +80,9 @@ CCAS = @CCAS@
 CCASDEPMODE = @CCASDEPMODE@
 CCASFLAGS = @CCASFLAGS@
 CCDEPMODE = @CCDEPMODE@
-CFLAGS = @CFLAGS@
+
+# default CFLAGS
+CFLAGS = -g -O0
 CPP = @CPP@
 CPPFLAGS = @CPPFLAGS@
 CYGPATH_W = @CYGPATH_W@
@@ -167,7 +169,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AM_CPPFLAGS = -m32 -Wall -fmessage-length=0
+AM_CPPFLAGS = -m32 -Wall -fmessage-length=0 -fno-strict-aliasing
 AM_CCASFLAGS = -D__GAS__
 AM_LDFLAGS = -mi386linux -M -T link.ld
 LINK = @LINKER@ $(AM_LDFLAGS) $(LDFLAGS) -o kernel 1>linkage.map

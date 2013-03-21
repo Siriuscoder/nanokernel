@@ -1,6 +1,9 @@
-AM_CPPFLAGS = -m32 -Wall -fmessage-length=0
+AM_CPPFLAGS = -m32 -Wall -fmessage-length=0 -fno-strict-aliasing
 AM_CCASFLAGS = -D__GAS__
 AM_LDFLAGS = -mi386linux -M -T link.ld
+
+# default CFLAGS
+CFLAGS= -g -O0
 
 
 LINK=@LINKER@ $(AM_LDFLAGS) $(LDFLAGS) -o kernel 1>linkage.map
