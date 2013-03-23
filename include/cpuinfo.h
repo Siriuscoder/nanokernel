@@ -19,7 +19,7 @@
 #ifndef CPUINFO_HEADER
 #define CPUINFO_HEADER	1
 
-#include "kernel.h"
+#include <kernel.h>
 
 typedef struct __cpuinfo
 {

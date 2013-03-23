@@ -16,11 +16,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "screen.h"
-#include "cpuinfo.h"
-#include "int.h"
-#include "kerror.h"
-#include "std/print.h"
+#include <screen.h>
+#include <cpuinfo.h>
+#include <int.h>
+#include <kerror.h>
+#include <std/print.h>
 
 
 

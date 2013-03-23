@@ -19,7 +19,7 @@
 #ifndef PRINT_H_
 #define PRINT_H_
 
-#include "kernel.h"
+#include <kernel.h>
 
 int
 k_print(const char *format, ...);

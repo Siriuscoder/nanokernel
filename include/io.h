@@ -19,7 +19,7 @@
 #ifndef IO_HEADER
 #define IO_HEADER	1
 
-#include "kernel.h"
+#include <kernel.h>
 
 #define IA32_APIC_BASE_MSR 			0x1B
 #define IA32_APIC_BASE_MSR_ENABLE 	0x800

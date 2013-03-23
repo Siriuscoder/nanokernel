@@ -16,8 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "kerror.h"
-#include "std/print.h"
+#include <std/print.h>
+#include <kerror.h>
 
 static void k_print_regs(const regs_t *regs)
 {

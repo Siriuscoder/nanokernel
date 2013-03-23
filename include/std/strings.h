@@ -19,7 +19,7 @@
 #ifndef STRINGS_H
 #define STRINGS_H
 
-#include "types.h"
+#include <types.h>
 
 /* Append SRC on the end of DEST.  */
 char *

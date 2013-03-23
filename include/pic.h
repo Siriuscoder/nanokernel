@@ -21,7 +21,7 @@
 #ifndef PIC_HEADER
 #define PIC_HEADER	1
 
-#include "kernel.h"
+#include <kernel.h>
 
 bool
 k_pic_init();

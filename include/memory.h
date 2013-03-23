@@ -19,7 +19,7 @@
 #ifndef MEMORY_H_
 #define MEMORY_H_
 
-#include "types.h"
+#include <types.h>
 
 bool k_heap_init();
 

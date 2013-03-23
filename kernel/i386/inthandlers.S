@@ -18,7 +18,7 @@
 
 	.file "inthandlers.S"
 
-#include "int.h"
+#include <int.h>
 
 	.globl k_idt;
 	.globl k_load_idt_descriptor;

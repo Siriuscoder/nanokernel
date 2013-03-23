@@ -56,7 +56,7 @@
 #ifndef MEMBASE_H_
 #define MEMBASE_H_
 
-#include "types.h"
+#include <types.h>
 
 /* memory manipulate functions */
 int

@@ -19,10 +19,10 @@
 #ifndef KERNEL_HEADER
 #define KERNEL_HEADER	1
 
-#include "loader.h"
+#include <loader.h>
 
 #ifndef __GAS__
-#include "types.h"
+#include <types.h>
 #endif
 
 /* version definitions */

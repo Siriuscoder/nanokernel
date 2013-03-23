@@ -16,9 +16,9 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "std/membase.h"
-#include "memory.h"
-#include "mempool.h"
+#include <std/membase.h>
+#include <memory.h>
+#include <mempool.h>
 
 static MemPool_t memPool;
 

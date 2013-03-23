@@ -19,6 +19,9 @@
 #ifndef LOADER_HEADER
 #define LOADER_HEADER	1
 
+#ifdef NAVE_CONFIG
+#include <config.h>
+#endif
 
 #define BOOL_LOADER_BODY_SIZE			0x1FE
 /* boot drive index (0x00 for floppy disk A)*/

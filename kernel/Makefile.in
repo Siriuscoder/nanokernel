@@ -169,7 +169,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AM_CPPFLAGS = -m32 -Wall -fmessage-length=0 -fno-strict-aliasing
+AM_CPPFLAGS = -m32 -Wall -fmessage-length=0 -fno-strict-aliasing -fno-inline 
 AM_CCASFLAGS = -D__GAS__
 AM_LDFLAGS = -mi386linux -M -T link.ld
 LINK = @LINKER@ $(AM_LDFLAGS) $(LDFLAGS) -o kernel 1>linkage.map

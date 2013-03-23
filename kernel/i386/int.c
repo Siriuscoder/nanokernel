@@ -16,15 +16,14 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "int.h"
+#include <std/membase.h>
+#include <std/print.h>
+#include <pic.h>
+#include <io.h>
+#include <cpuinfo.h>
+#include <kerror.h>
 
-#include "std/membase.h"
-#include "std/print.h"
-#include "pic.h"
-#include "io.h"
-#include "cpuinfo.h"
-#include "kerror.h"
-
+#include <int.h>
 
 #define DECLARE_INTERRUPT_POINTER(x)	extern void x(void);
 #define INTERRUPT_POINTER(x)			((ptr_t)x)

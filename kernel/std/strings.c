@@ -16,8 +16,8 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "std/membase.h"
-#include "std/strings.h"
+#include <std/membase.h>
+#include <std/strings.h>
 
 /* Lower-case digits.  */
 static const char _itoa_lower_digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";

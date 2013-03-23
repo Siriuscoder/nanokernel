@@ -1,4 +1,4 @@
-AM_CPPFLAGS = -m32 -Wall -fmessage-length=0 -fno-strict-aliasing
+AM_CPPFLAGS = -m32 -Wall -fmessage-length=0 -fno-strict-aliasing -fno-inline 
 AM_CCASFLAGS = -D__GAS__
 AM_LDFLAGS = -mi386linux -M -T link.ld
 

@@ -43,10 +43,10 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "std/print.h"
-#include "std/strings.h"
+#include <std/print.h>
+#include <std/strings.h>
 
-#include "console.h"
+#include <console.h>
 
 #define PAD_RIGHT 1
 #define PAD_ZERO 2

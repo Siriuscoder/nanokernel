@@ -16,7 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "console.h"
+#include <console.h>
 
 #define WHITE_ON_DARK_ATTR 0x07 // white on black text
 

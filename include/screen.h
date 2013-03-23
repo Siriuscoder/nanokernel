@@ -19,8 +19,7 @@
 #ifndef SCREEN_HEADER
 #define SCREEN_HEADER	1
 
-#include "kernel.h"
-#include "console.h"
+#include <kernel.h>
 
 bool
 k_init_screen();

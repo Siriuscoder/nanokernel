@@ -16,9 +16,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "pic.h"
-#include "io.h"
-#include "int.h"
+#include <pic.h>
+#include <io.h>
+#include <int.h>
 
 #define PIC1            0x20   /* IO base address for master PIC */
 #define PIC2            0xA0   /* IO base address for slave PIC */

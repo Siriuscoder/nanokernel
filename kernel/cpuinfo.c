@@ -16,10 +16,10 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "cpuinfo.h"
-#include "std/membase.h"
-#include "std/strings.h"
-#include "std/print.h"
+#include <cpuinfo.h>
+#include <std/membase.h>
+#include <std/strings.h>
+#include <std/print.h>
 
 /* CPUID Flags. */
 #define CPUID_FLAG_FPU          0x1             /* Floating Point Unit. */

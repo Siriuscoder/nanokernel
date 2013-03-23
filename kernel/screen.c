@@ -16,7 +16,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "screen.h"
+#include <console.h>
+#include <screen.h>
 
 /* console init structure */
 const consoleEntry_t consoleEntry = {

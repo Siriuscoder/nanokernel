@@ -19,8 +19,8 @@
 #ifndef INT_HEADER
 #define INT_HEADER	1
 
-#include "kernel.h"
-#include "irq.h"
+#include <kernel.h>
+#include <irq.h>
 
 #define IDT_INTEL_EXCEPTION_COUNT		32
 #define IDT_COUNT_MAX					(IDT_INTEL_EXCEPTION_COUNT+IDT_IRQ_VECTORS_COUNT)

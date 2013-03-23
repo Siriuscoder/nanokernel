@@ -19,7 +19,7 @@
 #ifndef ERROR_H_
 #define ERROR_H_
 
-#include "kernel.h"
+#include <kernel.h>
 
 #define INIT_FAILED				0xE000
 #define PIC_INIT_FAILED			0xE001
