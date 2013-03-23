@@ -21,6 +21,17 @@
 
 #include <types.h>
 
+typedef ptr_t (*malloc_func)(size_t);
+typedef void (*free_func)(ptr_t);
+typedef ptr_t (*realloc_func)(ptr_t, size_t);
+
+typedef struct mallocInfo
+{
+	malloc_func malloc;
+	free_func free;
+	realloc_func realloc;
+} mallocInfo_t;
+
 bool k_heap_init();
 
 ptr_t

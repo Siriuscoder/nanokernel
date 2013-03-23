@@ -16,40 +16,40 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <screen.h>
-#include <cpuinfo.h>
-#include <int.h>
-#include <kerror.h>
-#include <std/print.h>
 #include <driver.h>
 
-void k_return()
+extern const driverInfo_t drivers_definition[];
+
+void drivers_start(size_t argc, char **args)
 {
-	k_print("Halt kernel now..");
-	k_abort();
+	int i;
+
+	for(i = 0; ; i++)
+	{
+		if(drivers_definition[i].driverName[0] == 0)
+		{
+			break;
+		}
+
+		drivers_definition[i].initDriver(argc, args);
+		drivers_definition[i].start();
+	}
 }
 
-void k_main()
+void drivers_stop()
 {
-	if(!k_init_screen())
-		k_panic1(SCR_INIT_FAILED);
+	int i;
 
-	k_print("Boot process done.. Starting the kernel\n");
-	k_print("Console init OK..\n");
-	k_print("Kernel version: %s\n", k_version_full_string);
+	for(i = 0; ; i++)
+	{
+		if(drivers_definition[i].driverName[0] == 0)
+		{
+			break;
+		}
 
-	k_refresh_cpu_info();
-	k_cpuinfo_print(k_get_cpuinfo());
-
-	if(!k_interrupts_init())
-		k_panic1(INT_INIT_FAILED);
-
-	drivers_start(0, NULL);
-
-	/* do work */
-
-	drivers_stop();
-
-	k_return();
+		drivers_definition[i].shutdownDriver();
+		drivers_definition[i].stop();
+	}
 }
+
 

@@ -1,7 +1,7 @@
 
 SUBDIRS = 	loader \
+			drivers \
 			kernel \
-	  		drivers \
 	  		include 
 
 EXTRA_DIST = 

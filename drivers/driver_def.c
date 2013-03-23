@@ -16,40 +16,34 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <screen.h>
-#include <cpuinfo.h>
-#include <int.h>
-#include <kerror.h>
-#include <std/print.h>
 #include <driver.h>
 
-void k_return()
-{
-	k_print("Halt kernel now..");
-	k_abort();
-}
-
-void k_main()
-{
-	if(!k_init_screen())
-		k_panic1(SCR_INIT_FAILED);
-
-	k_print("Boot process done.. Starting the kernel\n");
-	k_print("Console init OK..\n");
-	k_print("Kernel version: %s\n", k_version_full_string);
-
-	k_refresh_cpu_info();
-	k_cpuinfo_print(k_get_cpuinfo());
-
-	if(!k_interrupts_init())
-		k_panic1(INT_INIT_FAILED);
-
-	drivers_start(0, NULL);
-
-	/* do work */
-
-	drivers_stop();
-
-	k_return();
-}
+const driverInfo_t drivers_definition[] = {
+		{
+				"Keyboard generic",
+				"SiriusDrivers",
+				NULL,
+				NULL,
+				NULL,
+				NULL,
+				{
+						k_malloc,
+						k_free,
+						k_realloc
+				}
+		},
+		{
+				"\0",
+				"\0",
+				NULL,
+				NULL,
+				NULL,
+				NULL,
+				{
+						NULL,
+						NULL,
+						NULL
+				}
+		}
+};
 

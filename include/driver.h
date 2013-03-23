@@ -16,40 +16,31 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <screen.h>
-#include <cpuinfo.h>
-#include <int.h>
-#include <kerror.h>
-#include <std/print.h>
-#include <driver.h>
+#ifndef DRIVER_H_
+#define DRIVER_H_
 
-void k_return()
+#include <types.h>
+#include <memory.h>
+
+typedef bool (*init_driver)(size_t, char **);
+typedef bool (*shutdown_driver)(void);
+
+typedef bool (*start_driver)(void);
+typedef bool (*stop_driver)(void);
+
+typedef struct driverInfo
 {
-	k_print("Halt kernel now..");
-	k_abort();
-}
+	char driverName[50];
+	char driverVendor[50];
+	init_driver initDriver;
+	shutdown_driver shutdownDriver;
+	start_driver start;
+	stop_driver stop;
+	mallocInfo_t mallocInfo;
+} driverInfo_t;
 
-void k_main()
-{
-	if(!k_init_screen())
-		k_panic1(SCR_INIT_FAILED);
+void drivers_start(size_t argc, char **args);
 
-	k_print("Boot process done.. Starting the kernel\n");
-	k_print("Console init OK..\n");
-	k_print("Kernel version: %s\n", k_version_full_string);
+void drivers_stop();
 
-	k_refresh_cpu_info();
-	k_cpuinfo_print(k_get_cpuinfo());
-
-	if(!k_interrupts_init())
-		k_panic1(INT_INIT_FAILED);
-
-	drivers_start(0, NULL);
-
-	/* do work */
-
-	drivers_stop();
-
-	k_return();
-}
-
+#endif /* DRIVER_H_ */

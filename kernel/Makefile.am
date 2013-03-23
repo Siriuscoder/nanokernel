@@ -10,6 +10,7 @@ LINK=@LINKER@ $(AM_LDFLAGS) $(LDFLAGS) -o kernel 1>linkage.map
 
 noinst_PROGRAMS = kernel
 
+kernel_LDADD = $(top_builddir)/drivers/libdriver_def.a
 kernel_SOURCES = i386/int.c \
 				 i386/inthandlers.S \
 				 i386/port.S \
@@ -28,6 +29,7 @@ kernel_SOURCES = i386/int.c \
 				 kmalloc.c \
 				 mempool.c \
 				 pic.c \
-				 screen.c
+				 screen.c \
+				 driver.c
 
 EXTRA_DIST = link.ld

@@ -52,9 +52,9 @@ am_kernel_OBJECTS = int.$(OBJEXT) inthandlers.$(OBJEXT) port.$(OBJEXT) \
 	print.$(OBJEXT) strings.$(OBJEXT) console.$(OBJEXT) \
 	cpuinfo.$(OBJEXT) kerror.$(OBJEXT) kmain.$(OBJEXT) \
 	kmalloc.$(OBJEXT) mempool.$(OBJEXT) pic.$(OBJEXT) \
-	screen.$(OBJEXT)
+	screen.$(OBJEXT) driver.$(OBJEXT)
 kernel_OBJECTS = $(am_kernel_OBJECTS)
-kernel_LDADD = $(LDADD)
+kernel_DEPENDENCIES = $(top_builddir)/drivers/libdriver_def.a
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -115,6 +115,7 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+RANLIB = @RANLIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
@@ -173,6 +174,7 @@ AM_CPPFLAGS = -m32 -Wall -fmessage-length=0 -fno-strict-aliasing -fno-inline
 AM_CCASFLAGS = -D__GAS__
 AM_LDFLAGS = -mi386linux -M -T link.ld
 LINK = @LINKER@ $(AM_LDFLAGS) $(LDFLAGS) -o kernel 1>linkage.map
+kernel_LDADD = $(top_builddir)/drivers/libdriver_def.a
 kernel_SOURCES = i386/int.c \
 				 i386/inthandlers.S \
 				 i386/port.S \
@@ -191,7 +193,8 @@ kernel_SOURCES = i386/int.c \
 				 kmalloc.c \
 				 mempool.c \
 				 pic.c \
-				 screen.c
+				 screen.c \
+				 driver.c
 
 EXTRA_DIST = link.ld
 all: all-am
@@ -244,6 +247,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/console.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cpu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cpuinfo.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/driver.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/int.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inthandlers.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kerror.Po@am__quote@
