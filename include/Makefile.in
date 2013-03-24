@@ -151,7 +151,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 noinst_HEADERS = *.h \
-				std/*.h
+				std/*.h \
+				utils/*.h
 
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am

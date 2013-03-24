@@ -22,6 +22,31 @@
 #include <types.h>
 #include <memory.h>
 
+#define DECLARE_DRIVER(name, dr_name, dr_vendor) \
+		const struct driverInfo_t name = { \
+			dr_name, \
+			dr_vendor, \
+			driver_init_entry, \
+			driver_shutdown_entry, \
+			driver_start_entry, \
+			driver_stop_entry, \
+			{ \
+					k_malloc, \
+					k_free, \
+					k_realloc \
+			} \
+		};
+
+#define DECLARE_DRIVER_WITH_MEM_MANAGER(name, dr_name, dr_vendor, dr_mem) \
+		const struct driverInfo_t name = { \
+			dr_name, \
+			dr_vendor, \
+			init_driver_entry, \
+			shutdown_driver_entry, \
+			start_driver_entry, \
+			dr_mem \
+		};
+
 typedef bool (*init_driver)(size_t, char **);
 typedef bool (*shutdown_driver)(void);
 

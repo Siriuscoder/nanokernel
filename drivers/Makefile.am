@@ -6,6 +6,6 @@ CFLAGS= -g -O0
 
 lib_LIBRARIES = libdriver_def.a
 
-libdriver_def_a_SOURCES = driver_def.c
+libdriver_def_a_SOURCES = driverdef.c
 
 EXTRA_DIST = 

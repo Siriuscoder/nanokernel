@@ -71,7 +71,7 @@ AR = ar
 ARFLAGS = cru
 libdriver_def_a_AR = $(AR) $(ARFLAGS)
 libdriver_def_a_LIBADD =
-am_libdriver_def_a_OBJECTS = driver_def.$(OBJEXT)
+am_libdriver_def_a_OBJECTS = driverdef.$(OBJEXT)
 libdriver_def_a_OBJECTS = $(am_libdriver_def_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -190,7 +190,7 @@ top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -m32 -Wall -fmessage-length=0
 AM_CCASFLAGS = -D__GAS__
 lib_LIBRARIES = libdriver_def.a
-libdriver_def_a_SOURCES = driver_def.c
+libdriver_def_a_SOURCES = driverdef.c
 EXTRA_DIST = 
 all: all-am
 
@@ -269,7 +269,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/driver_def.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/driverdef.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

@@ -1,4 +1,4 @@
-AM_CPPFLAGS = -m32 -Wall -fmessage-length=0 -fno-strict-aliasing -fno-inline 
+AM_CPPFLAGS = -m32 -Wall -fmessage-length=0 -fno-strict-aliasing
 AM_CCASFLAGS = -D__GAS__
 AM_LDFLAGS = -mi386linux -M -T link.ld
 
@@ -22,6 +22,8 @@ kernel_SOURCES = i386/int.c \
 				 std/membase.c \
 				 std/print.c \
 				 std/strings.c \
+				 utils/list.c \
+				 utils/tree.c \
 				 console.c \
 				 cpuinfo.c \
 				 kerror.c \
