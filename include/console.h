@@ -26,7 +26,7 @@
 
 typedef struct 
 {
-	ptr_t *memEntry;
+	ptr_t memEntry;
 	size_t xLen;
 	size_t yLen;
 } consoleEntry_t;

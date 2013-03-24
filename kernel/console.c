@@ -43,7 +43,7 @@ static size_t k_console_newline()
 
 	curLine = consIntern.pos / consIntern.entry.xLen;
 	/* if it is last line in console buffer shift to up */
-	if((curLine+1) >= consIntern.entry.yLen)
+	if(curLine+1 >= consIntern.entry.yLen)
 	{
 		newLine = curLine;
 		/* copy from second line to begin */
@@ -100,7 +100,6 @@ size_t k_console_write(char *message)
 
 int k_console_putc(char c)
 {
-	size_t newPos;
 	if(c == '\n')
 	{
 		k_console_newline();
@@ -119,11 +118,10 @@ int k_console_putc(char c)
 
 	(consIntern.firstEntity + consIntern.pos)->symbol = c;
 
-	newPos = consIntern.pos+1;
-	if(newPos >= consIntern.consoleMaxSize)
-		newPos = k_console_newline();
-	
-	consIntern.pos = newPos;
+	consIntern.pos++;
+	if(consIntern.pos >= consIntern.consoleMaxSize)
+		k_console_newline();
+
 	return 1;
 }
 

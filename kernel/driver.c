@@ -47,8 +47,8 @@ void drivers_stop()
 			break;
 		}
 
-		drivers_definition[i].shutdownDriver();
 		drivers_definition[i].stop();
+		drivers_definition[i].shutdownDriver();
 	}
 }
 

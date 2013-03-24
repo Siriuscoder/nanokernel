@@ -44,11 +44,12 @@ void k_main()
 	if(!k_interrupts_init())
 		k_panic1(INT_INIT_FAILED);
 
-	drivers_start(0, NULL);
+	//drivers_start(0, NULL);
 
 	/* do work */
+	for(;;);
 
-	drivers_stop();
+	//drivers_stop();
 
 	k_return();
 }
