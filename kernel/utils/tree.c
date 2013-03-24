@@ -57,7 +57,7 @@ tree_unlink_link(struct tree_link *link)
 }
 
 struct tree_link *
-tree_find(struct tree_link *tree, tree_link_predicate_t predicate)
+tree_find_arg(struct tree_link *tree, tree_link_arg_predicate_t predicate, void *arg)
 {
 	struct list_link *iter, *enditer;
 	struct tree_link *item;
@@ -71,7 +71,7 @@ tree_find(struct tree_link *tree, tree_link_predicate_t predicate)
 	for(; iter != enditer; iter = list_next(iter))
 	{
 		item = MEMBERCAST(struct tree_link, iter, listLink);
-		if (predicate(item))
+		if (predicate(item, arg))
 		{
 			return item;
 		}
@@ -81,5 +81,11 @@ tree_find(struct tree_link *tree, tree_link_predicate_t predicate)
 	}
 
 	return NULL;
+}
+
+void
+tree_foreach(struct tree_link *tree, tree_link_predicate_t predicate)
+{
+	tree_find_arg(tree, predicate, NULL);
 }
 
