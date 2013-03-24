@@ -76,7 +76,7 @@ tree_find_arg(struct tree_link *tree, tree_link_arg_predicate_t predicate, void 
 			return item;
 		}
 
-		if((item = tree_find(item, predicate)) != NULL)
+		if((item = tree_find_arg(item, predicate, arg)) != NULL)
 			return item;
 	}
 
@@ -84,8 +84,7 @@ tree_find_arg(struct tree_link *tree, tree_link_arg_predicate_t predicate, void 
 }
 
 void
-tree_foreach(struct tree_link *tree, tree_link_predicate_t predicate)
+tree_foreach(struct tree_link *tree, tree_link_arg_predicate_t predicate)
 {
 	tree_find_arg(tree, predicate, NULL);
 }
-

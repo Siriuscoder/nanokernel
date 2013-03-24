@@ -97,6 +97,6 @@ struct tree_link *
 tree_find_arg(struct tree_link *tree, tree_link_arg_predicate_t predicate, void *arg);
 
 void
-tree_foreach(struct tree_link *tree, tree_link_predicate_t predicate);
+tree_foreach(struct tree_link *tree, tree_link_arg_predicate_t predicate);
 
 #endif /* TREE_H_ */
