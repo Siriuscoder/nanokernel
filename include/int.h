@@ -70,6 +70,11 @@ typedef struct idt_entry
 } idtEntry_t;
 #pragma pack(pop)
 
+typedef void
+(*ISR_handler_t)(int32_t code, uint32_t addr);
+typedef void
+(*IRQ_handler_t)();
+
 /* async interrupts enable */
 void k_iasync_enable();
 /* async interrupts disable */
@@ -79,6 +84,9 @@ void k_iasync_disable();
 void k_idt_set_int_gate(byte intNum, const ptr_t handler, uint16_t codeSelector, byte DPL);
 void k_idt_set_task_gate(byte intNum, uint16_t tssSelector, byte DPL);
 void k_idt_set_trap_gate(byte intNum, const ptr_t handler, uint16_t codeSelector, byte DPL);
+void k_attach_isr_handler(byte isrNum, ISR_handler_t handler);
+void k_attach_irq_handler(byte irqNum, IRQ_handler_t handler);
+void k_detach_handler(byte isrNum, void *handler);
 
 bool k_idt_init();
 bool k_interrupts_init();

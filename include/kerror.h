@@ -28,6 +28,8 @@
 #define DRV_INIT_FAILED			0xE004
 #define SCR_INIT_FAILED			0xE005
 #define CPU_EXCEPTION			0xE006
+#define OUT_OF_MEMORY			0xE007
+#define HEAP_INIT_FAILED		0xE007
 
 #pragma pack(push, 1)
 typedef struct

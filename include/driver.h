@@ -20,7 +20,7 @@
 #define DRIVER_H_
 
 #include <types.h>
-#include <memory.h>
+#include <mem.h>
 
 #define DECLARE_DRIVER(name, dr_name, dr_vendor) \
 		const struct driverInfo_t name = { \

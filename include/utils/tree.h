@@ -40,13 +40,13 @@ struct tree_link
 /**
  * Type of functions, returning true or false for given tree_link.
  */
-typedef int
+typedef bool
 (*tree_link_predicate_t)(struct tree_link *link);
 
 /**
  * Type of functions, returning true or false for given tree_link with some argument.
  */
-typedef int
+typedef bool
 (*tree_link_arg_predicate_t)(struct tree_link *link, void *arg);
 
 /*

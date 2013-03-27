@@ -18,15 +18,18 @@
 
 #include <std/membase.h>
 #include <std/print.h>
+#include <utils/list.h>
+#include <mem.h>
 #include <pic.h>
 #include <io.h>
 #include <cpuinfo.h>
 #include <kerror.h>
-
 #include <int.h>
+
 
 #define DECLARE_INTERRUPT_POINTER(x)	extern void x(void);
 #define INTERRUPT_POINTER(x)			((ptr_t)x)
+#define ISR_DESCR_MAX					21
 
 /*
  * INTERRUPT DESCRIPTOR TABLE (IDT)
@@ -90,7 +93,7 @@
 extern void k_load_idt_descriptor();
 extern idtEntry_t k_idt[];
 
-const char *k_exception_descr[21] = {
+const char *k_exception_descr[ISR_DESCR_MAX] = {
 		"Divide Error",
 		"RESERVED",
 		"NMI Interrupt",
@@ -112,6 +115,15 @@ const char *k_exception_descr[21] = {
 		"Machine Check",
 		"SIMD Floating-Point Exception",
 		0x0
+};
+
+static struct list *int_handlers;
+struct int_handler_descr_t
+{
+	ISR_handler_t isrHandler;
+	IRQ_handler_t irqHandler;
+/** List link inside of list */
+	struct list_link listLink;
 };
 
 DECLARE_INTERRUPT_POINTER(k_stub_handler);
@@ -155,6 +167,16 @@ DECLARE_INTERRUPT_POINTER(k_irq_slave_07);
 static void setup_idt_descriptor(byte intNum, idtEntry_t *desc)
 {
 	k_memcpy(&k_idt[intNum], desc, sizeof(idtEntry_t));
+}
+
+static void init_handler_lists()
+{
+	int i;
+	int_handlers = (struct list *)k_malloc(sizeof(struct list) * 0x100);
+	for(i = 0; i < 0x100; i++)
+	{
+		list_init(&int_handlers[i]);
+	}
 }
 
 void k_idt_set_int_gate(byte intNum, const ptr_t handler, uint16_t codeSelector, byte DPL)
@@ -339,7 +361,7 @@ void k_handle_exception(uint32_t except, int32_t code, uint32_t addr)
 {
 	regs_t *regs = (regs_t *)(&addr + 1);
 	/* handle interrupt code */
-	if(except != EXC_BREAKPOINT)
+	if(except != EXC_BREAKPOINT && except < ISR_DESCR_MAX)
 		k_panic4(CPU_EXCEPTION, except, k_exception_descr[except], regs, addr);
 }
 
@@ -375,10 +397,60 @@ bool k_interrupts_init()
 	if(!k_pic_init())
 		return false;
 
+	init_handler_lists();
 	/* enable external interrupts */
 	k_iasync_enable();
 
 	return true;
+}
+
+void k_attach_isr_handler(byte isrNum, ISR_handler_t handler)
+{
+	struct int_handler_descr_t *hdl;
+	hdl = (struct int_handler_descr_t *)k_malloc(sizeof(struct int_handler_descr_t));
+
+	hdl->irqHandler = NULL;
+	hdl->isrHandler = handler;
+	list_link_init(&hdl->listLink);
+
+	list_add_last_link(&hdl->listLink, &(int_handlers[isrNum]));
+}
+
+void k_attach_irq_handler(byte irqNum, IRQ_handler_t handler)
+{
+	struct int_handler_descr_t *hdl;
+	hdl = (struct int_handler_descr_t *)k_malloc(sizeof(struct int_handler_descr_t));
+
+	hdl->isrHandler = NULL;
+	hdl->irqHandler = handler;
+	list_link_init(&hdl->listLink);
+
+	list_add_last_link(&hdl->listLink, &(int_handlers[irqNum]));
+}
+
+static bool handler_descr_comparator(struct list_link *link, void *arg)
+{
+	struct int_handler_descr_t *cur =
+			MEMBERCAST(struct int_handler_descr_t, link, listLink);
+	if(cur->irqHandler == arg)
+		return true;
+	if(cur->isrHandler == arg)
+		return true;
+
+	return false;
+}
+
+void k_detach_handler(byte intNum, void *handler)
+{
+	struct list_link *link;
+	struct int_handler_descr_t *cur;
+
+	if((link = list_find_arg(&int_handlers[intNum], handler_descr_comparator, handler)) != NULL)
+	{
+		list_unlink_link(link);
+		cur = MEMBERCAST(struct int_handler_descr_t, link, listLink);
+		k_free(cur);
+	}
 }
 
 

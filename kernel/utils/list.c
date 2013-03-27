@@ -242,3 +242,18 @@ list_prev(struct list_link *link)
 	return link->prev;
 }
 
+struct list_link *
+list_find_arg(struct list *in_list, list_link_arg_predicate_t predicate, void *arg)
+{
+	struct list_link *it;
+
+
+	for(it = in_list->l.next; it != &(in_list->l); it = list_next(it))
+	{
+		if(predicate(it, arg))
+			return it;
+	}
+
+	return NULL;
+}
+

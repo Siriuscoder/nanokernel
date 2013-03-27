@@ -31,8 +31,10 @@ void drivers_start(size_t argc, char **args)
 			break;
 		}
 
-		drivers_definition[i].initDriver(argc, args);
-		drivers_definition[i].start();
+		if(drivers_definition[i].initDriver)
+			drivers_definition[i].initDriver(argc, args);
+		if(drivers_definition[i].start)
+			drivers_definition[i].start();
 	}
 }
 
@@ -47,8 +49,10 @@ void drivers_stop()
 			break;
 		}
 
-		drivers_definition[i].stop();
-		drivers_definition[i].shutdownDriver();
+		if(drivers_definition[i].stop)
+			drivers_definition[i].stop();
+		if(drivers_definition[i].shutdownDriver)
+			drivers_definition[i].shutdownDriver();
 	}
 }
 

@@ -81,33 +81,6 @@
 
 #if !defined(__GAS__)
 
-/*
-Type 1: Usable (normal) RAM
-Type 2: Reserved - unusable
-Type 3: ACPI reclaimable memory
-Type 4: ACPI NVS memory
-Type 5: Area containing bad memory
-*/
-
-#define MEMORY_USE_NORMAL			1
-#define MEMORY_USE_RESERVED			2
-#define MEMORY_USE_ACPI_RECLAIMABLE		3
-#define MEMORY_USE_ACPI_NVS			4
-#define MEMORY_USE_BAD_MEMORY_AREA		5
-
-#pragma pack(push,4)
-typedef struct phisical_address_map_entity
-{
-	uint64_t base; // base address QWORD
-	uint64_t length; // length QWORD
-	uint32_t type; // entry Type
-} phisical_address_map_entity_t;
-#pragma pack(pop)
-
-/* phisical map structure pointers */
-extern phisical_address_map_entity_t *k_phisical_memory_map;
-extern uint16_t k_phisical_memory_map_size;
-
 /* version info pointers from version.S */
 extern uint32_t k_version_signature;
 extern char k_version_full_string[];

@@ -24,6 +24,12 @@ struct list
 };
 
 /**
+ * Type of functions, returning true or false for given tree_link with some argument.
+ */
+typedef bool
+(*list_link_arg_predicate_t)(struct list_link *link, void *arg);
+
+/**
  * @param list
  *   Pointer to the list being initialized.
  * @return
@@ -96,5 +102,8 @@ list_next(struct list_link *link);
 
 struct list_link *
 list_prev(struct list_link *link);
+
+struct list_link *
+list_find_arg(struct list *in_list, list_link_arg_predicate_t predicate, void *arg);
 
 #endif /* LIST_H_ */

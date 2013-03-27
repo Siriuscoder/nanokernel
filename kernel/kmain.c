@@ -31,6 +31,9 @@ void k_return()
 
 void k_main()
 {
+	if(!k_heap_init())
+		k_panic1(HEAP_INIT_FAILED);
+
 	if(!k_init_screen())
 		k_panic1(SCR_INIT_FAILED);
 
@@ -40,16 +43,17 @@ void k_main()
 
 	k_refresh_cpu_info();
 	k_cpuinfo_print(k_get_cpuinfo());
+	k_memory_dump();
 
 	if(!k_interrupts_init())
 		k_panic1(INT_INIT_FAILED);
 
-	//drivers_start(0, NULL);
+	drivers_start(0, NULL);
 
 	/* do work */
 	for(;;);
 
-	//drivers_stop();
+	drivers_stop();
 
 	k_return();
 }

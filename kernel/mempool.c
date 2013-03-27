@@ -16,6 +16,7 @@
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <std/membase.h>
+#include <kerror.h>
 #include <mempool.h>
 
 static const byte BitTable[256] = { 0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5,
@@ -31,9 +32,14 @@ static const byte BitTable[256] = { 0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4,
 		8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, };
 
 static void *
-SystemAlloc(MemPool_t *pool, size_t size)
+phisic_mem_capture(MemPool_t *pool, size_t size)
 {
-	return NULL;
+	ptr_t mem = pool->phisicalMemPtr;
+	if(pool->phisicalMemPtr > pool->phisicalMemPtrMax)
+		k_panic1(OUT_OF_MEMORY);
+
+	pool->phisicalMemPtr += size;
+	return mem;
 }
 
 static uint32_t
@@ -111,7 +117,7 @@ find_new_block_for_list(MemPool_t *pool, byte listNum)
 				(PHYSICAL_MEMORY_CAPTURE_VOLUME_LOG > listNum) ?
 						PHYSICAL_MEMORY_CAPTURE_VOLUME_LOG : listNum;
 
-		result = SystemAlloc(pool, 1U << size_of_new_os_block_log);
+		result = phisic_mem_capture(pool, 1U << size_of_new_os_block_log);
 		if (!result)
 			return false;
 		split_block_and_add_to_lists(pool, result, listNum, size_of_new_os_block_log);
