@@ -17,24 +17,21 @@
 */
 
 #include <driver.h>
+#include <std/print.h>
 
-extern const driverInfo_t drivers_definition[];
+extern const driverInfo_t *drivers_definition[];
 
 void drivers_start(size_t argc, char **args)
 {
 	int i;
 
-	for(i = 0; ; i++)
+	for(i = 0; drivers_definition[i] != NULL; i++)
 	{
-		if(drivers_definition[i].driverName[0] == 0)
+		if(drivers_definition[i]->initDriver)
 		{
-			break;
+			if(drivers_definition[i]->initDriver(argc, args))
+				k_print("driver loaded OK: %s\n", drivers_definition[i]->driverName);
 		}
-
-		if(drivers_definition[i].initDriver)
-			drivers_definition[i].initDriver(argc, args);
-		if(drivers_definition[i].start)
-			drivers_definition[i].start();
 	}
 }
 
@@ -42,17 +39,12 @@ void drivers_stop()
 {
 	int i;
 
-	for(i = 0; ; i++)
+	for(i = 0; drivers_definition[i] != NULL; i++)
 	{
-		if(drivers_definition[i].driverName[0] == 0)
+		if(drivers_definition[i]->shutdownDriver)
 		{
-			break;
+			drivers_definition[i]->shutdownDriver();
 		}
-
-		if(drivers_definition[i].stop)
-			drivers_definition[i].stop();
-		if(drivers_definition[i].shutdownDriver)
-			drivers_definition[i].shutdownDriver();
 	}
 }
 

@@ -22,14 +22,12 @@
 #include <types.h>
 #include <mem.h>
 
-#define DECLARE_DRIVER(name, dr_name, dr_vendor) \
-		const struct driverInfo_t name = { \
+#define DECLARE_DRIVER(name, dr_name, dr_vendor, init, shutdown) \
+		const driverInfo_t name = { \
 			dr_name, \
 			dr_vendor, \
-			driver_init_entry, \
-			driver_shutdown_entry, \
-			driver_start_entry, \
-			driver_stop_entry, \
+			init, \
+			shutdown, \
 			{ \
 					k_malloc, \
 					k_free, \
@@ -37,21 +35,17 @@
 			} \
 		};
 
-#define DECLARE_DRIVER_WITH_MEM_MANAGER(name, dr_name, dr_vendor, dr_mem) \
-		const struct driverInfo_t name = { \
+#define DECLARE_DRIVER_WITH_MEM_MANAGER(name, dr_name, dr_vendor, init, shutdown, dr_mem) \
+		const driverInfo_t name = { \
 			dr_name, \
 			dr_vendor, \
-			init_driver_entry, \
-			shutdown_driver_entry, \
-			start_driver_entry, \
+			init, \
+			shutdown, \
 			dr_mem \
 		};
 
 typedef bool (*init_driver)(size_t, char **);
 typedef bool (*shutdown_driver)(void);
-
-typedef bool (*start_driver)(void);
-typedef bool (*stop_driver)(void);
 
 typedef struct driverInfo
 {
@@ -59,8 +53,6 @@ typedef struct driverInfo
 	char driverVendor[50];
 	init_driver initDriver;
 	shutdown_driver shutdownDriver;
-	start_driver start;
-	stop_driver stop;
 	mallocInfo_t mallocInfo;
 } driverInfo_t;
 

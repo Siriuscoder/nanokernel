@@ -71,7 +71,7 @@ AR = ar
 ARFLAGS = cru
 libdriver_def_a_AR = $(AR) $(ARFLAGS)
 libdriver_def_a_LIBADD =
-am_libdriver_def_a_OBJECTS = driverdef.$(OBJEXT)
+am_libdriver_def_a_OBJECTS = driverdef.$(OBJEXT) keyboard.$(OBJEXT)
 libdriver_def_a_OBJECTS = $(am_libdriver_def_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -190,7 +190,7 @@ top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -m32 -Wall -fmessage-length=0
 AM_CCASFLAGS = -D__GAS__
 lib_LIBRARIES = libdriver_def.a
-libdriver_def_a_SOURCES = driverdef.c
+libdriver_def_a_SOURCES = driverdef.c keyboard/keyboard.c
 EXTRA_DIST = 
 all: all-am
 
@@ -270,6 +270,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/driverdef.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/keyboard.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -284,6 +285,20 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(COMPILE) -c `$(CYGPATH_W) '$<'`
+
+keyboard.o: keyboard/keyboard.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT keyboard.o -MD -MP -MF $(DEPDIR)/keyboard.Tpo -c -o keyboard.o `test -f 'keyboard/keyboard.c' || echo '$(srcdir)/'`keyboard/keyboard.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/keyboard.Tpo $(DEPDIR)/keyboard.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='keyboard/keyboard.c' object='keyboard.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o keyboard.o `test -f 'keyboard/keyboard.c' || echo '$(srcdir)/'`keyboard/keyboard.c
+
+keyboard.obj: keyboard/keyboard.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT keyboard.obj -MD -MP -MF $(DEPDIR)/keyboard.Tpo -c -o keyboard.obj `if test -f 'keyboard/keyboard.c'; then $(CYGPATH_W) 'keyboard/keyboard.c'; else $(CYGPATH_W) '$(srcdir)/keyboard/keyboard.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/keyboard.Tpo $(DEPDIR)/keyboard.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='keyboard/keyboard.c' object='keyboard.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o keyboard.obj `if test -f 'keyboard/keyboard.c'; then $(CYGPATH_W) 'keyboard/keyboard.c'; else $(CYGPATH_W) '$(srcdir)/keyboard/keyboard.c'; fi`
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \

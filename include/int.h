@@ -35,6 +35,7 @@
 #define IDT_GATE_DPL_3					0x60
 
 #define EXC_DIVIDE_ERROR				0x00
+#define EXC_DEBUG						0x01
 #define EXC_NMI							0x02
 #define EXC_BREAKPOINT					0x03
 #define EXC_OVERFLOW					0x04
@@ -58,6 +59,8 @@
 
 #ifndef __GAS__
 
+#include <kerror.h>
+
 /* Defines an IDT entry */
 #pragma pack(push, 1)
 typedef struct idt_entry
@@ -70,10 +73,16 @@ typedef struct idt_entry
 } idtEntry_t;
 #pragma pack(pop)
 
+typedef struct
+{
+	uint32_t	intNum;
+	int32_t 	code;
+	uint32_t 	addr;
+	regs_t		*pregs;
+} intParams_t;
+
 typedef void
-(*ISR_handler_t)(int32_t code, uint32_t addr);
-typedef void
-(*IRQ_handler_t)();
+(*INT_handler_t)(const intParams_t *params);
 
 /* async interrupts enable */
 void k_iasync_enable();
@@ -84,9 +93,8 @@ void k_iasync_disable();
 void k_idt_set_int_gate(byte intNum, const ptr_t handler, uint16_t codeSelector, byte DPL);
 void k_idt_set_task_gate(byte intNum, uint16_t tssSelector, byte DPL);
 void k_idt_set_trap_gate(byte intNum, const ptr_t handler, uint16_t codeSelector, byte DPL);
-void k_attach_isr_handler(byte isrNum, ISR_handler_t handler);
-void k_attach_irq_handler(byte irqNum, IRQ_handler_t handler);
-void k_detach_handler(byte isrNum, void *handler);
+void k_attach_interrupt_handler(byte irqNum, INT_handler_t handler);
+void k_detach_interrupt_handler(byte isrNum, INT_handler_t handler);
 
 bool k_idt_init();
 bool k_interrupts_init();

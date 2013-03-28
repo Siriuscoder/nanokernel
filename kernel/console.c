@@ -36,6 +36,20 @@ static struct
 	consoleEntry_t entry;
 } consIntern;
 
+static void k_clear_line(uint32_t lineno)
+{
+	int i = 0;
+	consoleEntity_t *p = consIntern.firstEntity +
+		(lineno * consIntern.entry.xLen);
+
+	for(; i < consIntern.entry.xLen; i++, p++)
+	{
+		p->symbol = ' ';
+		p->attrib = WHITE_ON_DARK_ATTR;
+	}
+}
+
+
 static size_t k_console_newline()
 {
 	size_t curLine;
@@ -50,6 +64,8 @@ static size_t k_console_newline()
 		k_memcpy(consIntern.entry.memEntry,
 			consIntern.entry.memEntry + consIntern.lineSize,
 			consIntern.buffSize - consIntern.lineSize);
+		/* clear current line */
+		k_clear_line(newLine);
 	}
 	else
 	{
@@ -76,12 +92,8 @@ bool k_console_clean()
 {
 	int i = 0;
 
-	consoleEntity_t *p = consIntern.firstEntity;
-	for(; i < consIntern.consoleMaxSize; ++i, ++p)
-	{
-		p->symbol = ' ';
-		p->attrib = WHITE_ON_DARK_ATTR;
-	}
+	for(; i < consIntern.entry.yLen; i++)
+		k_clear_line(i);
 
 	return true;
 }

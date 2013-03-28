@@ -43,6 +43,7 @@ typedef struct MemPool
 	struct BlockHeader_t *freeSlicesLists[MEMORY_SLICES_MAX_COUNT];
 	uint32_t numAllocatedBlocks[MEMORY_SLICES_MAX_COUNT];
 	uint32_t numBlockAllocations[MEMORY_SLICES_MAX_COUNT];
+	ptr_t	phisicalMemBeginPtr;
 	ptr_t	phisicalMemPtr;
 	ptr_t 	phisicalMemPtrMax;
 } MemPool_t;

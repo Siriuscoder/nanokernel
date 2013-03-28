@@ -17,11 +17,29 @@
 */
 
 #include <driver.h>
+#include <int.h>
+#include <pic.h>
+#include <io.h>
+#include <std/print.h>
 
-extern const driverInfo_t keyboardDrv;
+static void keyboard_irq_handler(const intParams_t *params)
+{
+	k_print("k_handle_irq line %d\n", params->intNum);
+	/* read scancode */
+	k_io_port_inb(0x60);
+}
 
-const driverInfo_t *drivers_definition[] = {
-		&keyboardDrv,
-		NULL
-};
+static bool init_keyboard(size_t argc, char **args)
+{
+	k_iasync_disable();
+
+	k_attach_interrupt_handler(IRQ_MAKEINT_MASTER(IRQ_MASTER_KEYBOARD), keyboard_irq_handler);
+	k_pic_enable_irq_line(IRQ_MASTER_KEYBOARD);
+	k_iasync_enable();
+
+	return true;
+}
+
+DECLARE_DRIVER(keyboardDrv, "keyboard", "siriusmicro", init_keyboard, NULL);
+
 

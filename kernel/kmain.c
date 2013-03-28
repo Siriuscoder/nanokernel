@@ -43,13 +43,13 @@ void k_main()
 
 	k_refresh_cpu_info();
 	k_cpuinfo_print(k_get_cpuinfo());
-	k_memory_dump();
+	k_print_memory_info();
 
 	if(!k_interrupts_init())
 		k_panic1(INT_INIT_FAILED);
 
 	drivers_start(0, NULL);
-
+	k_print_memory_usage_info();
 	/* do work */
 	for(;;);
 

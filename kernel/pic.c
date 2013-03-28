@@ -215,7 +215,8 @@ bool k_pic_init()
 	*  47 */
 	pic_remap(IRQ_MASTER_BASE, IRQ_SLAVE_BASE);
 
-	k_pic_set_irq_mask(0xfffd);
+	/* mask all */
+	k_pic_set_irq_mask(/*0xfffd*/0xffff);
 	//pic_restore_mask();
 	//k_iasync_enable();
 	return true;

@@ -23,12 +23,30 @@
 
 static MemPool_t memPool;
 
-bool k_heap_init()
+bool
+k_heap_init()
 {
+	int i;
 	k_memset(&memPool, 0, sizeof(MemPool_t));
-	/* set kernel heap out to 2 Mb phisical memory space */
-	memPool.phisicalMemPtr = (ptr_t)KERNEL_HEAP_ADDRESS;
-	memPool.phisicalMemPtrMax = memPool.phisicalMemPtr + (KERNEL_HEAP_PAGES * 4096);
+	/* find first block of phisical memory what we wish */
+	for(i = 0; i < k_phisical_memory_map_size; i++)
+	{
+		if(k_phisical_memory_map[i].type != MEMORY_USE_NORMAL)
+			continue;
+
+		if(k_phisical_memory_map[i].base >= KERNEL_HEAP_BEGIN &&
+				k_phisical_memory_map[i].length >= KERNEL_HEAP_PAGES)
+		{
+			memPool.phisicalMemBeginPtr = memPool.phisicalMemPtr =
+				(ptr_t)LOPART(k_phisical_memory_map[i].base);
+			memPool.phisicalMemPtrMax = memPool.phisicalMemBeginPtr +
+				LOPART(k_phisical_memory_map[i].length);
+		}
+	}
+
+	/* if not found.. mean low memory - panic */
+	if(memPool.phisicalMemBeginPtr == NULL)
+		return false;
 
 	return true;
 }
@@ -52,7 +70,7 @@ k_realloc(ptr_t block, size_t bytes)
 }
 
 void
-k_memory_dump()
+k_print_memory_info()
 {
 	int i;
 	uint64_t memTotal = 0;
@@ -74,6 +92,41 @@ k_memory_dump()
 	}
 
 	k_print("Usable memory total: %d bytes\n", (uint32_t)memTotal);
+}
+
+void
+k_print_memory_usage_info()
+{
+	memInfo_t memInfo;
+	int i;
+	get_memory_info(&memInfo);
+
+	k_print("Memory usage:\n");
+	k_print("Heap address: 0x%08x\n", memInfo.heapAddress);
+	k_print("Memory cached: %d/%d\n", memInfo.heapCached, memInfo.totalSize);
+	k_print("Allocated blocks:\n");
+	for(i = 0; i < MEMORY_SLICES_MAX_COUNT; i++)
+	{
+		if(memPool.numAllocatedBlocks[i] != 0)
+		k_print("|%dx(%d)|", memPool.numAllocatedBlocks[i], (1<<i));
+	}
+
+	k_print("\n");
+}
+
+void
+get_memory_info(memInfo_t *info)
+{
+	int i;
+	info->totalSize = 0;
+	for(i = 0; i < k_phisical_memory_map_size; i++)
+	{
+		if(k_phisical_memory_map[i].type == MEMORY_USE_NORMAL)
+			info->totalSize += k_phisical_memory_map[i].length;
+	}
+
+	info->heapAddress = (uint32_t)memPool.phisicalMemBeginPtr;
+	info->heapCached = (uint32_t)(memPool.phisicalMemPtr - memPool.phisicalMemBeginPtr);
 }
 
 

@@ -23,7 +23,6 @@
 #include <pic.h>
 #include <io.h>
 #include <cpuinfo.h>
-#include <kerror.h>
 #include <int.h>
 
 
@@ -120,8 +119,7 @@ const char *k_exception_descr[ISR_DESCR_MAX] = {
 static struct list *int_handlers;
 struct int_handler_descr_t
 {
-	ISR_handler_t isrHandler;
-	IRQ_handler_t irqHandler;
+	INT_handler_t isrHandler;
 /** List link inside of list */
 	struct list_link listLink;
 };
@@ -356,23 +354,49 @@ bool k_idt_init()
 	return true;
 }
 
+static bool dispatch_handle(struct list_link *link, void *arg)
+{
+	struct int_handler_descr_t *cur =
+			MEMBERCAST(struct int_handler_descr_t, link, listLink);
+/* raise interrupt handler! */
+	if(cur->isrHandler)
+		cur->isrHandler((intParams_t *)arg);
+
+	return false;
+}
 
 void k_handle_exception(uint32_t except, int32_t code, uint32_t addr)
 {
 	regs_t *regs = (regs_t *)(&addr + 1);
 	/* handle interrupt code */
-	if(except != EXC_BREAKPOINT && except < ISR_DESCR_MAX)
-		k_panic4(CPU_EXCEPTION, except, k_exception_descr[except], regs, addr);
+	switch(except)
+	{
+	case EXC_BREAKPOINT:
+	case EXC_OVERFLOW:
+	case EXC_DEBUG:
+	/* skip debug interrupts */
+		break;
+	default:
+		{
+			if(except < ISR_DESCR_MAX)
+			{
+				k_panic4(CPU_EXCEPTION, except, k_exception_descr[except], regs, addr);
+			}
+		}
+		break;
+	}
+
+	/* hack - we using list find method to raise all handlers */
+	intParams_t params = { except, code, addr, regs };
+	list_find_arg(&int_handlers[except], dispatch_handle, &params);
 }
 
 void k_handle_irq(uint32_t irq)
 {
-	/* handle interrupt code */
-	k_print("k_handle_irq line %d\n", irq);
-	if(irq == 1)
-	{
-		k_io_port_inb(0x60);
-	}
+	uint32_t intno = (irq <= 0x07 ? IRQ_MAKEINT_MASTER(irq) : IRQ_MAKEINT_SLAVE(irq));
+	/* hack - we using list find method to raise all handlers */
+	intParams_t params = { irq, 0, 0, NULL };
+	list_find_arg(&int_handlers[intno], dispatch_handle, &params);
 
 	k_pic_eoi((byte)irq);
 }
@@ -404,25 +428,12 @@ bool k_interrupts_init()
 	return true;
 }
 
-void k_attach_isr_handler(byte isrNum, ISR_handler_t handler)
+void k_attach_interrupt_handler(byte irqNum, INT_handler_t handler)
 {
 	struct int_handler_descr_t *hdl;
 	hdl = (struct int_handler_descr_t *)k_malloc(sizeof(struct int_handler_descr_t));
 
-	hdl->irqHandler = NULL;
 	hdl->isrHandler = handler;
-	list_link_init(&hdl->listLink);
-
-	list_add_last_link(&hdl->listLink, &(int_handlers[isrNum]));
-}
-
-void k_attach_irq_handler(byte irqNum, IRQ_handler_t handler)
-{
-	struct int_handler_descr_t *hdl;
-	hdl = (struct int_handler_descr_t *)k_malloc(sizeof(struct int_handler_descr_t));
-
-	hdl->isrHandler = NULL;
-	hdl->irqHandler = handler;
 	list_link_init(&hdl->listLink);
 
 	list_add_last_link(&hdl->listLink, &(int_handlers[irqNum]));
@@ -432,15 +443,13 @@ static bool handler_descr_comparator(struct list_link *link, void *arg)
 {
 	struct int_handler_descr_t *cur =
 			MEMBERCAST(struct int_handler_descr_t, link, listLink);
-	if(cur->irqHandler == arg)
-		return true;
 	if(cur->isrHandler == arg)
 		return true;
 
 	return false;
 }
 
-void k_detach_handler(byte intNum, void *handler)
+void k_detach_interrupt_handler(byte intNum, INT_handler_t handler)
 {
 	struct list_link *link;
 	struct int_handler_descr_t *cur;

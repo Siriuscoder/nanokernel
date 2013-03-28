@@ -21,7 +21,7 @@
 
 #include <types.h>
 
-#define KERNEL_HEAP_ADDRESS				0x200000
+#define KERNEL_HEAP_BEGIN				0x100000
 #define KERNEL_HEAP_PAGES				(256 * 20) // 20MB
 
 #define HIPART(x)						(uint32_t)((x) >> 32)
@@ -50,6 +50,13 @@ typedef struct phisical_address_map_entity
 } phisical_address_map_entity_t;
 #pragma pack(pop)
 
+typedef struct
+{
+	uint32_t totalSize;
+	uint32_t heapAddress;
+	uint32_t heapCached;
+} memInfo_t;
+
 /* phisical map structure pointers */
 extern phisical_address_map_entity_t *k_phisical_memory_map;
 extern uint16_t k_phisical_memory_map_size;
@@ -77,6 +84,11 @@ ptr_t
 k_realloc(ptr_t block, size_t bytes);
 
 void
-k_memory_dump();
+k_print_memory_info();
+
+void
+k_print_memory_usage_info();
+
+void get_memory_info(memInfo_t *info);
 
 #endif /* MEMORY_H_ */
