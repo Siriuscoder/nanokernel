@@ -42,6 +42,7 @@ AC_TYPE_UINT8_T
 AC_CONFIG_FILES([Makefile
 				kernel/Makefile
 				drivers/Makefile
+				drivers/keyboard/Makefile
 				loader/Makefile
 				include/Makefile])
 AC_OUTPUT

@@ -10,7 +10,8 @@ LINK=@LINKER@ $(AM_LDFLAGS) $(LDFLAGS) -o kernel 1>linkage.map
 
 noinst_PROGRAMS = kernel
 
-kernel_LDADD = $(top_builddir)/drivers/libdriver_def.a
+kernel_LDADD = $(top_builddir)/drivers/libdriverdef.a $(top_builddir)/drivers/keyboard/libkeyboard.a
+
 kernel_SOURCES = i386/int.c \
 				 i386/inthandlers.S \
 				 i386/port.S \

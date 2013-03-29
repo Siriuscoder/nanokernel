@@ -24,9 +24,19 @@
 
 static void keyboard_irq_handler(const intParams_t *params)
 {
-	k_print("k_handle_irq line %d\n", params->intNum);
+	k_print("keyboard_irq_handler line %d\n", params->intNum);
 	/* read scancode */
 	k_io_port_inb(0x60);
+}
+
+static void keyboard_irq_handler1(const intParams_t *params)
+{
+	k_print("keyboard_irq_handler1 line %d\n", params->intNum);
+}
+
+static void keyboard_irq_handler2(const intParams_t *params)
+{
+	k_print("keyboard_irq_handler1 line %d\n", params->intNum);
 }
 
 static bool init_keyboard(size_t argc, char **args)
@@ -34,6 +44,8 @@ static bool init_keyboard(size_t argc, char **args)
 	k_iasync_disable();
 
 	k_attach_interrupt_handler(IRQ_MAKEINT_MASTER(IRQ_MASTER_KEYBOARD), keyboard_irq_handler);
+	k_attach_interrupt_handler(IRQ_MAKEINT_MASTER(IRQ_MASTER_KEYBOARD), keyboard_irq_handler1);
+	k_attach_interrupt_handler(IRQ_MAKEINT_MASTER(IRQ_MASTER_KEYBOARD), keyboard_irq_handler2);
 	k_pic_enable_irq_line(IRQ_MASTER_KEYBOARD);
 	k_iasync_enable();
 

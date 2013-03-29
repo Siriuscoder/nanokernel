@@ -386,7 +386,7 @@ void k_handle_exception(uint32_t except, int32_t code, uint32_t addr)
 		break;
 	}
 
-	/* hack - we using list find method to raise all handlers */
+	/* hack - we using list find method to dispatch all handlers */
 	intParams_t params = { except, code, addr, regs };
 	list_find_arg(&int_handlers[except], dispatch_handle, &params);
 }
@@ -394,7 +394,7 @@ void k_handle_exception(uint32_t except, int32_t code, uint32_t addr)
 void k_handle_irq(uint32_t irq)
 {
 	uint32_t intno = (irq <= 0x07 ? IRQ_MAKEINT_MASTER(irq) : IRQ_MAKEINT_SLAVE(irq));
-	/* hack - we using list find method to raise all handlers */
+	/* hack - we using list find method to dispatch all handlers */
 	intParams_t params = { irq, 0, 0, NULL };
 	list_find_arg(&int_handlers[intno], dispatch_handle, &params);
 

@@ -4,9 +4,8 @@ AM_CCASFLAGS = -D__GAS__
 # sneaky hack
 CFLAGS= -g -O0
 
-lib_LIBRARIES = libdriverdef.a
+lib_LIBRARIES = libkeyboard.a
 
-libdriverdef_a_SOURCES = driverdef.c
+libkeyboard_a_SOURCES = keyboard.c stdin.c stdin.h
 
 EXTRA_DIST = 
-SUBDIRS = keyboard

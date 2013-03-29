@@ -4585,7 +4585,7 @@ _ACEOF
 
 # Checks for library functions.
 
-ac_config_files="$ac_config_files Makefile kernel/Makefile drivers/Makefile loader/Makefile include/Makefile"
+ac_config_files="$ac_config_files Makefile kernel/Makefile drivers/Makefile drivers/keyboard/Makefile loader/Makefile include/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -5325,6 +5325,7 @@ do
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "kernel/Makefile") CONFIG_FILES="$CONFIG_FILES kernel/Makefile" ;;
     "drivers/Makefile") CONFIG_FILES="$CONFIG_FILES drivers/Makefile" ;;
+    "drivers/keyboard/Makefile") CONFIG_FILES="$CONFIG_FILES drivers/keyboard/Makefile" ;;
     "loader/Makefile") CONFIG_FILES="$CONFIG_FILES loader/Makefile" ;;
     "include/Makefile") CONFIG_FILES="$CONFIG_FILES include/Makefile" ;;
 

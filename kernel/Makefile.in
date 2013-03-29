@@ -55,7 +55,8 @@ am_kernel_OBJECTS = int.$(OBJEXT) inthandlers.$(OBJEXT) port.$(OBJEXT) \
 	mempool.$(OBJEXT) pic.$(OBJEXT) screen.$(OBJEXT) \
 	driver.$(OBJEXT)
 kernel_OBJECTS = $(am_kernel_OBJECTS)
-kernel_DEPENDENCIES = $(top_builddir)/drivers/libdriver_def.a
+kernel_DEPENDENCIES = $(top_builddir)/drivers/libdriverdef.a \
+	$(top_builddir)/drivers/keyboard/libkeyboard.a
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -175,7 +176,7 @@ AM_CPPFLAGS = -m32 -Wall -fmessage-length=0 -fno-strict-aliasing
 AM_CCASFLAGS = -D__GAS__
 AM_LDFLAGS = -mi386linux -M -T link.ld
 LINK = @LINKER@ $(AM_LDFLAGS) $(LDFLAGS) -o kernel 1>linkage.map
-kernel_LDADD = $(top_builddir)/drivers/libdriver_def.a
+kernel_LDADD = $(top_builddir)/drivers/libdriverdef.a $(top_builddir)/drivers/keyboard/libkeyboard.a
 kernel_SOURCES = i386/int.c \
 				 i386/inthandlers.S \
 				 i386/port.S \
