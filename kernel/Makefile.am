@@ -25,6 +25,8 @@ kernel_SOURCES = i386/int.c \
 				 std/strings.c \
 				 utils/list.c \
 				 utils/tree.c \
+				 fs/file.c \
+				 fs/vfs.c \
 				 console.c \
 				 cpuinfo.c \
 				 kerror.c \

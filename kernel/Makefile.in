@@ -50,10 +50,10 @@ am_kernel_OBJECTS = int.$(OBJEXT) inthandlers.$(OBJEXT) port.$(OBJEXT) \
 	protmode.$(OBJEXT) start.$(OBJEXT) stop.$(OBJEXT) \
 	version.$(OBJEXT) cpu.$(OBJEXT) membase.$(OBJEXT) \
 	print.$(OBJEXT) strings.$(OBJEXT) list.$(OBJEXT) \
-	tree.$(OBJEXT) console.$(OBJEXT) cpuinfo.$(OBJEXT) \
-	kerror.$(OBJEXT) kmain.$(OBJEXT) kmalloc.$(OBJEXT) \
-	mempool.$(OBJEXT) pic.$(OBJEXT) screen.$(OBJEXT) \
-	driver.$(OBJEXT)
+	tree.$(OBJEXT) file.$(OBJEXT) vfs.$(OBJEXT) console.$(OBJEXT) \
+	cpuinfo.$(OBJEXT) kerror.$(OBJEXT) kmain.$(OBJEXT) \
+	kmalloc.$(OBJEXT) mempool.$(OBJEXT) pic.$(OBJEXT) \
+	screen.$(OBJEXT) driver.$(OBJEXT)
 kernel_OBJECTS = $(am_kernel_OBJECTS)
 kernel_DEPENDENCIES = $(top_builddir)/drivers/libdriverdef.a \
 	$(top_builddir)/drivers/keyboard/libkeyboard.a
@@ -190,6 +190,8 @@ kernel_SOURCES = i386/int.c \
 				 std/strings.c \
 				 utils/list.c \
 				 utils/tree.c \
+				 fs/file.c \
+				 fs/vfs.c \
 				 console.c \
 				 cpuinfo.c \
 				 kerror.c \
@@ -252,6 +254,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cpu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cpuinfo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/driver.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/file.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/int.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/inthandlers.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kerror.Po@am__quote@
@@ -270,6 +273,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strings.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tree.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/version.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vfs.Po@am__quote@
 
 .S.o:
 @am__fastdepCCAS_TRUE@	$(CPPASCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -480,6 +484,34 @@ tree.obj: utils/tree.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='utils/tree.c' object='tree.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o tree.obj `if test -f 'utils/tree.c'; then $(CYGPATH_W) 'utils/tree.c'; else $(CYGPATH_W) '$(srcdir)/utils/tree.c'; fi`
+
+file.o: fs/file.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT file.o -MD -MP -MF $(DEPDIR)/file.Tpo -c -o file.o `test -f 'fs/file.c' || echo '$(srcdir)/'`fs/file.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/file.Tpo $(DEPDIR)/file.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='fs/file.c' object='file.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o file.o `test -f 'fs/file.c' || echo '$(srcdir)/'`fs/file.c
+
+file.obj: fs/file.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT file.obj -MD -MP -MF $(DEPDIR)/file.Tpo -c -o file.obj `if test -f 'fs/file.c'; then $(CYGPATH_W) 'fs/file.c'; else $(CYGPATH_W) '$(srcdir)/fs/file.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/file.Tpo $(DEPDIR)/file.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='fs/file.c' object='file.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o file.obj `if test -f 'fs/file.c'; then $(CYGPATH_W) 'fs/file.c'; else $(CYGPATH_W) '$(srcdir)/fs/file.c'; fi`
+
+vfs.o: fs/vfs.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT vfs.o -MD -MP -MF $(DEPDIR)/vfs.Tpo -c -o vfs.o `test -f 'fs/vfs.c' || echo '$(srcdir)/'`fs/vfs.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/vfs.Tpo $(DEPDIR)/vfs.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='fs/vfs.c' object='vfs.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o vfs.o `test -f 'fs/vfs.c' || echo '$(srcdir)/'`fs/vfs.c
+
+vfs.obj: fs/vfs.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT vfs.obj -MD -MP -MF $(DEPDIR)/vfs.Tpo -c -o vfs.obj `if test -f 'fs/vfs.c'; then $(CYGPATH_W) 'fs/vfs.c'; else $(CYGPATH_W) '$(srcdir)/fs/vfs.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/vfs.Tpo $(DEPDIR)/vfs.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='fs/vfs.c' object='vfs.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o vfs.obj `if test -f 'fs/vfs.c'; then $(CYGPATH_W) 'fs/vfs.c'; else $(CYGPATH_W) '$(srcdir)/fs/vfs.c'; fi`
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
