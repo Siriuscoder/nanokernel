@@ -30,6 +30,13 @@ bool k_vfs_init()
 	tree_link_init(&vfs_root.link);
 	vfs_root.flags = FILE_IS_FOLDER;
 	vfs_root.node.name[0] = '/';
+	/* add default folders */
+	fsnode_t *devNode, *tmpNode, *mntNode;
+	devNode = k_malloc(sizeof(fsnode_t));
+	tmpNode = k_malloc(sizeof(fsnode_t));
+	mntNode = k_malloc(sizeof(fsnode_t));
+
+
 
 	return true;
 }

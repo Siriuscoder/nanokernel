@@ -116,8 +116,12 @@ uint32_t k_fopen(const char *path, uint32_t mode)
 
 	if(!file->open(path, mode, file))
 		goto failed;
+
+	/* check next file descriptor is present */
+	/* if not - fd array is full, and relocation failed */
+	if(!fdcheck())
+		goto failed;
 	/* setup next file descriptor */
-	fdcheck();
 	fdt.fdarray[fdt.fdcounter] = file;
 	return fdt.fdcounter;
 
@@ -135,7 +139,7 @@ bool k_fclose(uint32_t fd)
 			file->close(file);
 		k_vfs_close_file(file);
 		/* empty fd desc */
-		k_free(fdt.fdarray[fd]);
+		k_free(file);
 		fdt.fdarray[fd] = NULL;
 
 		return true;
@@ -180,7 +184,7 @@ long k_fseek(uint32_t fd, uint32_t offset, uint32_t whence)
 	return -1;
 }
 
-void k_flush(uint32_t fd)
+void k_fflush(uint32_t fd)
 {
 	file_t *file = NULL;
 	if((file = fdfind(fd)) != NULL)
