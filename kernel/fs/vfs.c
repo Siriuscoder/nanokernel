@@ -52,7 +52,7 @@ static bool find_file_node_in_list(struct list_link *link, void *arg)
 	return false;
 }
 
-fsnode_t *K_vfs_find_node_by_full_path(const char *path)
+fsnode_t *k_vfs_find_node_by_full_path(const char *path)
 {
 	char tmp[FILE_FULL_PATH];
 	char *ps = tmp;
@@ -86,7 +86,7 @@ fsnode_t *K_vfs_find_node_by_full_path(const char *path)
 file_t *k_vfs_open_file(file_t *file, const char *path, uint32_t mode)
 {
 	fsnode_t *fsNode;
-	if((fsNode = K_vfs_find_node_by_full_path(path)) == NULL)
+	if((fsNode = k_vfs_find_node_by_full_path(path)) == NULL)
 		return NULL;
 	/* if found node is folder return */
 	if(fsNode->flags & FILE_IS_FOLDER)

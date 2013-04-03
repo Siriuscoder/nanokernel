@@ -43,7 +43,7 @@ typedef struct
 
 bool k_vfs_init();
 
-fsnode_t *K_vfs_find_node_by_full_path(const char *path);
+fsnode_t *k_vfs_find_node_by_full_path(const char *path);
 
 file_t *k_vfs_open_file(file_t *file, const char *path, uint32_t mode);
 file_t *k_vfs_close_file(file_t *file);
