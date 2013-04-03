@@ -36,7 +36,28 @@ bool k_vfs_init()
 	tmpNode = k_malloc(sizeof(fsnode_t));
 	mntNode = k_malloc(sizeof(fsnode_t));
 
+    k_memset(devNode, 0, sizeof(fsnode_t));
+    k_memset(tmpNode, 0, sizeof(fsnode_t));
+    k_memset(mntNode, 0, sizeof(fsnode_t));
+    
+    devNode->flags |= FILE_IS_FOLDER;
+    k_strcpy(devNode->node.name, "dev/");
+    tree_link_init(&devNode->link);
+    list_init(&devNode->openFiles);
+    
+    tmpNode->flags |= FILE_IS_FOLDER;
+    k_strcpy(tmpNode->node.name, "tmp/");
+    tree_link_init(&tmpNode->link);
+    list_init(&tmpNode->openFiles);    
 
+    mntNode->flags |= FILE_IS_FOLDER;
+    k_strcpy(mntNode->node.name, "mnt/");
+    tree_link_init(&mntNode->link);
+    list_init(&mntNode->openFiles);
+    /* add default nodes to vfs tree */
+    tree_add_link(&vfs_root.link, &devNode->link);
+    tree_add_link(&vfs_root.link, &tmpNode->link);
+    tree_add_link(&vfs_root.link, &mntNode->link);
 
 	return true;
 }
@@ -120,6 +141,34 @@ file_t *k_vfs_close_file(file_t *file)
 
 bool k_vfs_mknode(const char *path, const node_t *node, uint32_t flags)
 {
+    fsnode_t *fsNode, *dstNode;
+    char fullName[FILE_FULL_PATH] = { '\0' }; 
+    
+    fsNode = k_malloc(sizeof(fsnode_t));
+    if(!fsNode)
+        goto failed_exit;
+    
+    k_memset(fsNode, 0, sizeof(fsnode_t));
+    tree_link_init(&fsNode->link);
+    list_init(&fsNode->openFiles);
+    fsNode->node = *node;
+    fsNode->flags = flags;
+    if((dstNode = k_vfs_find_node_by_full_path(path)) == NULL)
+        goto failed;
+    
+    /* check if file already exist */
+    k_strcat(fullName, path);
+    k_strcat(fullName, node->name);
+    if(k_vfs_find_node_by_full_path(fullName))
+        goto failed;
+    
+    /* add to vfs tree */
+    tree_add_link(&dstNode->link, &fsNode->link);
+    return true;
+    
+failed:
+    k_free(fsNode);
+failed_exit:
 	return false;
 }
 
