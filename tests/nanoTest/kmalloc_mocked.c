@@ -35,10 +35,10 @@ k_heap_init()
 	int i;
 	k_memset(&memPool, 0, sizeof(MemPool_t));
 
-    memPool.phisicalMemBeginPtr = memPool.phisicalMemPtr = 
-        malloc(4096 * KERNEL_HEAP_PAGES);
-    memPool.phisicalMemPtrMax = memPool.phisicalMemBeginPtr + 
-        (4096 * KERNEL_HEAP_PAGES);
+	memPool.phisicalMemBeginPtr = memPool.phisicalMemPtr = 
+		malloc(KERNEL_HEAP_PAGES);
+	memPool.phisicalMemPtrMax = memPool.phisicalMemBeginPtr + 
+		KERNEL_HEAP_PAGES;
 	/* if not found.. mean low memory - panic */
 	if(memPool.phisicalMemBeginPtr == NULL)
 		return false;
@@ -73,7 +73,8 @@ k_print_memory_usage_info()
 
 	k_print("Memory usage:\n");
 	k_print("Heap address: 0x%08x\n", memInfo.heapAddress);
-	k_print("Memory cached: %d/%d\n", memInfo.heapCached, memInfo.totalSize);
+	k_print("Memory cached: %d/%d bytes\n", memInfo.heapCached, memInfo.totalSize);
+	k_print("Memory used: %d bytes\n", memInfo.memoryUsed);
 	k_print("Allocated blocks:\n");
 	for(i = 0; i < MEMORY_SLICES_MAX_COUNT; i++)
 	{
@@ -87,8 +88,20 @@ k_print_memory_usage_info()
 void
 get_memory_info(memInfo_t *info)
 {
+	int i;
+    k_memset(info, 0, sizeof(memInfo_t));
 	info->heapAddress = (uint32_t)memPool.phisicalMemBeginPtr;
-	info->heapCached = (uint32_t)(memPool.phisicalMemPtr - memPool.phisicalMemBeginPtr);
+	info->heapCached = (uint32_t)(memPool.phisicalMemPtr - 
+        memPool.phisicalMemBeginPtr);
+    
+    for(i = 0; i < MEMORY_SLICES_MAX_COUNT; i++)
+	{
+		if(memPool.numAllocatedBlocks[i] != 0)
+			info->memoryUsed += (memPool.numAllocatedBlocks[i] * (1<<i));
+	}
+	
+	info->totalSize = memPool.phisicalMemPtrMax - 
+		memPool.phisicalMemBeginPtr;
 }
 
 

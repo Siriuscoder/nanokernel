@@ -30,7 +30,7 @@ void drivers_start(size_t argc, char **args)
 		if(drivers_definition[i]->initDriver)
 		{
 			if(drivers_definition[i]->initDriver(argc, args))
-				k_print("driver loaded OK: %s\n", drivers_definition[i]->driverName);
+				k_print("Driver loaded OK: %s\n", drivers_definition[i]->driverName);
 		}
 	}
 }

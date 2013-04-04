@@ -40,8 +40,9 @@
 #define KERNEL_VERSION_FULL			nanokernel v.MAJOR_VERSION.MINOR_VERSION.BUILD_VERSION \
 	BUILD_ARCHITECTURE compiled at __DATE__ __TIME__
 
-/* phisical memory map address */
-#define SYSTEM_ADDRESS_MAP_ENTRY		0x1000
+#define DEFAULT_MEM_PAGE_SIZE			0x1000
+/* phisical memory map address on second mem page */
+#define SYSTEM_ADDRESS_MAP_ENTRY		(DEFAULT_MEM_PAGE_SIZE * 1)
 
 /* realmode segments */
 #define KERNEL_REALMODE_STACK_SEG		0x0

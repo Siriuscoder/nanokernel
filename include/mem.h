@@ -20,9 +20,10 @@
 #define MEMORY_H_
 
 #include <types.h>
+#include <kernel.h>
 
 #define KERNEL_HEAP_BEGIN				0x100000
-#define KERNEL_HEAP_PAGES				(256 * 20) // 20MB
+#define KERNEL_HEAP_PAGES				(DEFAULT_MEM_PAGE_SIZE * 256 * 20) // 20MB
 
 #define HIPART(x)						(uint32_t)((x) >> 32)
 #define LOPART(x)						(uint32_t)(x)
@@ -55,6 +56,7 @@ typedef struct
 	uint32_t totalSize;
 	uint32_t heapAddress;
 	uint32_t heapCached;
+    uint32_t memoryUsed;
 } memInfo_t;
 
 /* phisical map structure pointers */

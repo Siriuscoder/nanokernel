@@ -103,7 +103,8 @@ k_print_memory_usage_info()
 
 	k_print("Memory usage:\n");
 	k_print("Heap address: 0x%08x\n", memInfo.heapAddress);
-	k_print("Memory cached: %d/%d\n", memInfo.heapCached, memInfo.totalSize);
+	k_print("Memory cached: %d/%d bytes\n", memInfo.heapCached, memInfo.totalSize);
+	k_print("Memory used: %d bytes\n", memInfo.memoryUsed);
 	k_print("Allocated blocks:\n");
 	for(i = 0; i < MEMORY_SLICES_MAX_COUNT; i++)
 	{
@@ -118,7 +119,7 @@ void
 get_memory_info(memInfo_t *info)
 {
 	int i;
-	info->totalSize = 0;
+    k_memset(info, 0, sizeof(memInfo_t));
 	for(i = 0; i < k_phisical_memory_map_size; i++)
 	{
 		if(k_phisical_memory_map[i].type == MEMORY_USE_NORMAL)
@@ -126,7 +127,14 @@ get_memory_info(memInfo_t *info)
 	}
 
 	info->heapAddress = (uint32_t)memPool.phisicalMemBeginPtr;
-	info->heapCached = (uint32_t)(memPool.phisicalMemPtr - memPool.phisicalMemBeginPtr);
+	info->heapCached = (uint32_t)(memPool.phisicalMemPtr - 
+        memPool.phisicalMemBeginPtr);
+    
+    for(i = 0; i < MEMORY_SLICES_MAX_COUNT; i++)
+	{
+		if(memPool.numAllocatedBlocks[i] != 0)
+			info->memoryUsed += (memPool.numAllocatedBlocks[i] * (1<<i));
+	}
 }
 
 
