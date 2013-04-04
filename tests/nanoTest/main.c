@@ -14,16 +14,18 @@
 #endif
 
 #define TEST_FAILED(x)  \
-    { printf("%s TEST FAILED at %s:%d", #x, __FILE__, __LINE__); \
+    { printf("%s TEST FAILED at %s:%d\n", #x, __FILE__, __LINE__); \
     return EXIT_FAILURE; }
 
 #define TEST_OK(x)  \
-    { printf("%s TEST OK", #x); }
+    { printf("%s TEST OK\n", #x); }
 
-#define TEST_DEFINE(x)  if(!x()) TEST_FAILED(x) else TEST_OK(x)
+#define TEST_DECLARE(x)  if(!x()) TEST_FAILED(x) else TEST_OK(x)
 
 
 #include <mem.h>
+
+#include "vfs_test.h"
 
 /*
  * 
@@ -31,8 +33,9 @@
 int
 main(int argc, char** argv)
 {
-    TEST_DEFINE(k_heap_init)
-
+    TEST_DECLARE(k_heap_init);
+    TEST_DECLARE(run_vfs_test);
+    
     return EXIT_SUCCESS;
 }
 
