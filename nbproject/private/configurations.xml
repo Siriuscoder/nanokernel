@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="88">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df root="." name="nanokernel">
+      <df name="autom4te.cache">
+      </df>
+      <df name="drivers">
+        <df name="keyboard">
+          <in>keyboard.c</in>
+          <in>stdin.c</in>
+          <in>stdin.h</in>
+        </df>
+        <in>driverdef.c</in>
+      </df>
+      <df name="include">
+        <df name="fs">
+          <in>file.h</in>
+          <in>vfs.h</in>
+        </df>
+        <df name="std">
+          <in>membase.h</in>
+          <in>print.h</in>
+          <in>stdarg.h</in>
+          <in>strings.h</in>
+        </df>
+        <df name="utils">
+          <in>list.h</in>
+          <in>membercast.h</in>
+          <in>tree.h</in>
+        </df>
+        <in>config.h</in>
+        <in>console.h</in>
+        <in>cpuinfo.h</in>
+        <in>driver.h</in>
+        <in>int.h</in>
+        <in>io.h</in>
+        <in>irq.h</in>
+        <in>kernel.h</in>
+        <in>kerror.h</in>
+        <in>loader.h</in>
+        <in>mem.h</in>
+        <in>mempool.h</in>
+        <in>pic.h</in>
+        <in>screen.h</in>
+        <in>types.h</in>
+      </df>
+      <df name="kernel">
+        <df name="fs">
+          <in>file.c</in>
+          <in>vfs.c</in>
+        </df>
+        <df name="i386">
+          <in>int.c</in>
+          <in>inthandlers.S</in>
+          <in>port.S</in>
+          <in>protmode.S</in>
+          <in>start.S</in>
+          <in>stop.S</in>
+          <in>version.S</in>
+        </df>
+        <df name="i486">
+          <in>cpu.S</in>
+        </df>
+        <df name="std">
+          <in>membase.c</in>
+          <in>print.c</in>
+          <in>strings.c</in>
+        </df>
+        <df name="utils">
+          <in>list.c</in>
+          <in>tree.c</in>
+        </df>
+        <in>console.c</in>
+        <in>cpuinfo.c</in>
+        <in>driver.c</in>
+        <in>kerror.c</in>
+        <in>kmain.c</in>
+        <in>kmalloc.c</in>
+        <in>mempool.c</in>
+        <in>pic.c</in>
+        <in>screen.c</in>
+      </df>
+      <df name="loader">
+        <in>boot.S</in>
+      </df>
+      <df name="tests">
+        <df name="nanoTest">
+          <df name="build">
+            <df name="Debug">
+              <df name="GNU-Linux-x86">
+                <df name="_ext">
+                  <df name="1109276195">
+                  </df>
+                  <df name="35041009">
+                  </df>
+                  <df name="683473409">
+                  </df>
+                  <df name="968701377">
+                  </df>
+                </df>
+              </df>
+            </df>
+          </df>
+          <df name="dist">
+            <df name="Debug">
+              <df name="GNU-Linux-x86">
+              </df>
+            </df>
+          </df>
+          <df name="include">
+            <in>vfs_test.h</in>
+          </df>
+          <in>kerror_mocked.c</in>
+          <in>kmalloc_mocked.c</in>
+          <in>main.c</in>
+          <in>print_mocked.c</in>
+          <in>vfs_test.c</in>
+        </df>
+      </df>
+    </df>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <platform>2</platform>
+      </toolsSet>
+      <dbx_gdbdebugger version="1">
+        <gdb_pathmaps>
+        </gdb_pathmaps>
+        <gdb_interceptlist>
+          <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
+        </gdb_interceptlist>
+        <gdb_options>
+          <DebugOptions>
+          </DebugOptions>
+        </gdb_options>
+        <gdb_buildfirst gdb_buildfirst_overriden="false" gdb_buildfirst_old="false"/>
+      </dbx_gdbdebugger>
+      <nativedebugger version="1">
+        <engine>gdb</engine>
+      </nativedebugger>
+      <runprofile version="9">
+        <runcommandpicklist>
+          <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
+          <runcommandpicklistitem>qemu -fda ./floppy.img</runcommandpicklistitem>
+        </runcommandpicklist>
+        <runcommand>qemu -fda ./floppy.img</runcommand>
+        <rundir>/home/sirius/source/nanokernel/</rundir>
+        <buildfirst>false</buildfirst>
+        <terminal-type>0</terminal-type>
+        <remove-instrumentation>0</remove-instrumentation>
+        <environment>
+        </environment>
+      </runprofile>
+    </conf>
+  </confs>
+</configurationDescriptor>
