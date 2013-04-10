@@ -25,7 +25,7 @@
 
 #define BOOL_LOADER_BODY_SIZE			0x1FE
 /* boot drive index (0x00 for floppy disk A)*/
-#define BOOT_DRIVE_INDEX			0x00
+#define BOOT_DRIVE_INDEX				0x00
 /* MBR signature */
 #define MAIN_BOOT_RECORD_SIGNATURE		0xAA55
 /* boot loader start address */
@@ -35,13 +35,13 @@
 /* kernel start sector */
 #define BOOT_KERNEL_START_SECTOR		0x1
 /* default sector size 512 bytes */
-#define DISK_SECT_SIZE			 	0x200
+#define DISK_SECT_SIZE					0x200
 /* sector size / 0x10 */
-#define LOAD_SEGMENT_OFFSET		 	0x20
+#define LOAD_SEGMENT_OFFSET				0x20
 /* kernel load address 07e0h:0000h */
-#define KERNEL_LOAD_SEGMENT			0x07e0
+#define KERNEL_LOAD_SEGMENT				0x07e0
 #define FLOPPY_SECTORS_PER_TRACK		18
-#define FLOPPY_HEADS_NUM			2
+#define FLOPPY_HEADS_NUM				2
 
 
 /* Apple assembler requires local labels to start with a capital L */

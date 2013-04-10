@@ -48,8 +48,13 @@ fsnode_t *k_vfs_find_node_by_full_path(const char *path);
 file_t *k_vfs_open_file(file_t *file, const char *path, uint32_t mode);
 file_t *k_vfs_close_file(file_t *file);
 
+/* common fs functions */
 bool k_vfs_mknode(const char *path, const node_t *node, uint32_t flags);
 bool k_vfs_rmnode(const char *path);
 
+bool k_vfs_mkdir(const char *path, const char *name);
+bool k_vfs_rmdir(const char *path);
+
+bool k_vfs_mvnode(const char *path, const char *newPath);
 
 #endif /* VFS_H_ */

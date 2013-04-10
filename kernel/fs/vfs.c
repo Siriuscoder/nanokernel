@@ -31,33 +31,9 @@ bool k_vfs_init()
 	vfs_root.flags = FILE_IS_FOLDER;
 	vfs_root.node.name[0] = '/';
 	/* add default folders */
-	fsnode_t *devNode, *tmpNode, *mntNode;
-	devNode = k_malloc(sizeof(fsnode_t));
-	tmpNode = k_malloc(sizeof(fsnode_t));
-	mntNode = k_malloc(sizeof(fsnode_t));
-
-    k_memset(devNode, 0, sizeof(fsnode_t));
-    k_memset(tmpNode, 0, sizeof(fsnode_t));
-    k_memset(mntNode, 0, sizeof(fsnode_t));
-    
-    devNode->flags |= FILE_IS_FOLDER;
-    k_strcpy(devNode->node.name, "dev");
-    tree_link_init(&devNode->link);
-    list_init(&devNode->openFiles);
-    
-    tmpNode->flags |= FILE_IS_FOLDER;
-    k_strcpy(tmpNode->node.name, "tmp");
-    tree_link_init(&tmpNode->link);
-    list_init(&tmpNode->openFiles);    
-
-    mntNode->flags |= FILE_IS_FOLDER;
-    k_strcpy(mntNode->node.name, "mnt");
-    tree_link_init(&mntNode->link);
-    list_init(&mntNode->openFiles);
-    /* add default nodes to vfs tree */
-    tree_add_link(&vfs_root.link, &devNode->link);
-    tree_add_link(&vfs_root.link, &tmpNode->link);
-    tree_add_link(&vfs_root.link, &mntNode->link);
+	k_vfs_mkdir("/", "mnt");
+	k_vfs_mkdir("/", "dev");
+	k_vfs_mkdir("/", "tmp");
 
 	return true;
 }
@@ -80,9 +56,9 @@ fsnode_t *k_vfs_find_node_by_full_path(const char *path)
 	struct tree_link *searchTreeNode = &vfs_root.link;
 	struct list_link *searchLink;
 	/* copy path to tmp buffer first */
-	k_strcpy(tmp, path);
+	k_strncpy(tmp, path, FILE_FULL_PATH);
 	/* add '/' to end for all */
-	k_strcat(tmp, "/");
+	k_strncat(tmp, "/", FILE_FULL_PATH);
 	while(true)
 	{
 		char *s = k_strchr(ps, '/');	
@@ -125,8 +101,8 @@ file_t *k_vfs_open_file(file_t *file, const char *path, uint32_t mode)
 	file->read = fsNode->node.read;
 	file->seek = fsNode->node.seek;
 	file->flush = fsNode->node.flush;
-	k_strcpy(file->fullPath, path);
-	k_strcpy(file->name, fsNode->node.name);
+	k_strncpy(file->fullPath, path, FILE_FULL_PATH);
+	k_strncpy(file->name, fsNode->node.name, FILE_NAME_LEN);
 	/* add new open file to list */
 	list_link_init(&file->l);
 	list_add_last_link(&file->l, &fsNode->openFiles);
@@ -166,8 +142,8 @@ bool k_vfs_mknode(const char *path, const node_t *node, uint32_t flags)
 	if(!(dstNode->flags & FILE_IS_FOLDER))
 		goto failed;
     /* check if file already exist */
-	k_strcat(fullName, path);
-	k_strcat(fullName, node->name);
+	k_strncat(fullName, path, FILE_FULL_PATH);
+	k_strncat(fullName, node->name, FILE_FULL_PATH);
 	if(k_vfs_find_node_by_full_path(fullName))
 		goto failed;
     
@@ -183,7 +159,51 @@ failed_exit:
 
 bool k_vfs_rmnode(const char *path)
 {
-	return false;
+	fsnode_t *fsNode;
+	if((fsNode = k_vfs_find_node_by_full_path(path)) == NULL)
+		return false;
+	
+	/* if folder not empty - return false */
+	/* TODO: remove sub-catalogs later */
+	if(!list_is_empty(&fsNode->link.children))
+		return false;
+	tree_unlink_link(&fsNode->link);
+	k_free(fsNode);
+	
+	return true;
+}
+
+bool k_vfs_mkdir(const char *path, const char *name)
+{
+	node_t dirNode;
+	k_memset(&dirNode, 0, sizeof(dirNode));
+	k_strcpy(dirNode.name, name);
+	
+	return k_vfs_mknode(path, &dirNode, FILE_IS_FOLDER);
+}
+
+bool k_vfs_rmdir(const char *path)
+{
+	return k_vfs_rmnode(path);
+}
+
+bool k_vfs_mvnode(const char *path, const char *newPath)
+{
+	fsnode_t *fsNode, *dstNode;	    
+	if((fsNode = k_vfs_find_node_by_full_path(path)) == NULL)
+		return false;
+
+	/* go to destination  node */
+	if((dstNode = k_vfs_find_node_by_full_path(newPath)) == NULL)
+		return false;
+	
+	/* if exist - return */
+	if(list_find_arg(&dstNode->link.children, 
+		find_file_node_in_list, fsNode->node.name))
+		return false;
+	
+	tree_move_link(&dstNode->link, &fsNode->link);
+	return true;
 }
 
 

@@ -37,7 +37,6 @@ boot:
 	xorw	%ax, %ax
 	movw	%ax, %bx
 	movw	%ax, %cx
-	movw	%ax, %dx
 
 	jmp	real_start
 	nop
@@ -82,8 +81,6 @@ real_start:
 	/* turn on interrupts */
 	sti
 
-	/* set boot drive */
-	movb	$BOOT_DRIVE_INDEX, %dl
 	/* save drive reference first thing! */
 	pushw	%dx
 
@@ -91,19 +88,19 @@ real_start:
 	/* BIOS INT 13h AH=41h: Check Extensions Present */
 	movb	$0x41, %ah
 	movw	$0x55aa, %bx
-	int	$0x13
+	int		$0x13
 
 	popw	%dx
 
 	/* check result */
-	jc	lba_not_supported
+	jc		lba_not_supported
 	cmpw	$0xaa55, %bx
-	jne	lba_not_supported
+	jne		lba_not_supported
 	/* drive control using DAP structure? */ 
 	andw	$1, %cx
-	jz	lba_not_supported
+	jz		lba_not_supported
 
-lba_mode:
+LBA_mode:
 /*
  * BIOS call "INT 0x13 Function 0x42" to read sectors from disk into memory
  *	Call with	%ah = 0x42
@@ -115,8 +112,8 @@ lba_mode:
 
 	movb	$0x42, %ah
 	leaw	REAL_ADR(DAP), %si
-	int	$0x13
-	jnc	boot_next
+	int		$0x13
+	jnc		boot_next
 
 CHS_mode:
 	push	%dx
@@ -126,9 +123,9 @@ CHS_mode:
 	 *  INT 13h AH=08h: Read Drive Parameters
 	 */
 	movb	$0x08, %ah
-	int	$0x13
+	int		$0x13
 	/* read disk parameters failed, use standart floppy parameters */
-	jc	CHS_read
+	jc		CHS_read
 
 	/* expand disk parameters */
 	movw	%cx, %ax
@@ -185,7 +182,7 @@ CHS_read_sector:
 	/* high bits of cylinder start */
 	xorb	%al, %al
 	shrw	$2, %ax
-	orb	%al, %cl
+	orb		%al, %cl
 	/* setup memory buffer offset to 0 */
 	xorw	%bx, %bx
 /*
@@ -201,7 +198,7 @@ CHS_read_sector:
  *			%al = 0x0 on success; err code on failure
  */
 	movw	$0x0201, %ax	
-	int	$0x13
+	int		$0x13
 
 	jc	error_disk_read
 
@@ -212,7 +209,7 @@ CHS_read_sector:
 	addw	$LOAD_SEGMENT_OFFSET, %bx
 	movw	%bx, %es
 	cmpw	$(BOOT_KERNEL_SIZE_IN_SECT+BOOT_KERNEL_START_SECTOR), -4(%bp)
-	jl	CHS_read_sector
+	jl		CHS_read_sector
 
 	/* restore stack */
 	movw	%bp, %sp
@@ -240,7 +237,7 @@ message:
 	movb	$0xe, %ah
 	jmp 	message_lods
 display_char:
-	int	$0x10		/* display a byte */
+	int		$0x10		/* display a byte */
 message_lods:
 	lodsb
 	cmpb	$0, %al

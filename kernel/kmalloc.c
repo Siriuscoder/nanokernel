@@ -41,6 +41,7 @@ k_heap_init()
 				(ptr_t)LOPART(k_phisical_memory_map[i].base);
 			memPool.phisicalMemPtrMax = memPool.phisicalMemBeginPtr +
 				LOPART(k_phisical_memory_map[i].length);
+			break;
 		}
 	}
 
@@ -85,13 +86,13 @@ k_print_memory_info()
 			k_phisical_memory_map[i].type == MEMORY_USE_NORMAL ? "Use Normal" :
 			(k_phisical_memory_map[i].type == MEMORY_USE_RESERVED ? "Reserved" :
 			(k_phisical_memory_map[i].type == MEMORY_USE_ACPI_RECLAIMABLE ? "ACPI Reclaimable" :
-			(k_phisical_memory_map[i].type == MEMORY_USE_ACPI_NVS ? "Use normal" : "ACPI NVS"))));
+			(k_phisical_memory_map[i].type == MEMORY_USE_ACPI_NVS ? "ACPI NVS" : "BAD"))));
 
 		if(k_phisical_memory_map[i].type == MEMORY_USE_NORMAL)
 			memTotal += k_phisical_memory_map[i].length;
 	}
 
-	k_print("Usable memory total: %d bytes\n", (uint32_t)memTotal);
+	//k_print("Usable memory total: %d bytes\n", (uint32_t)memTotal);
 }
 
 void
@@ -103,13 +104,13 @@ k_print_memory_usage_info()
 
 	k_print("Memory usage:\n");
 	k_print("Heap address: 0x%08x\n", memInfo.heapAddress);
-	k_print("Memory cached: %d/%d bytes\n", memInfo.heapCached, memInfo.totalSize);
-	k_print("Memory used: %d bytes\n", memInfo.memoryUsed);
+	k_print("Memory cached: %u/%u bytes\n", memInfo.heapCached, memInfo.totalSize);
+	k_print("Memory used: %u bytes\n", memInfo.memoryUsed);
 	k_print("Allocated blocks:\n");
 	for(i = 0; i < MEMORY_SLICES_MAX_COUNT; i++)
 	{
 		if(memPool.numAllocatedBlocks[i] != 0)
-		k_print("|%dx(%d)|", memPool.numAllocatedBlocks[i], (1<<i));
+		k_print("|%dx(%u)|", memPool.numAllocatedBlocks[i], (1<<i));
 	}
 
 	k_print("\n");
@@ -120,14 +121,11 @@ get_memory_info(memInfo_t *info)
 {
 	int i;
     k_memset(info, 0, sizeof(memInfo_t));
-	for(i = 0; i < k_phisical_memory_map_size; i++)
-	{
-		if(k_phisical_memory_map[i].type == MEMORY_USE_NORMAL)
-			info->totalSize += k_phisical_memory_map[i].length;
-	}
-
-	info->heapAddress = (uint32_t)memPool.phisicalMemBeginPtr;
-	info->heapCached = (uint32_t)(memPool.phisicalMemPtr - 
+	
+	info->totalSize = (size_t)(memPool.phisicalMemPtrMax - 
+		memPool.phisicalMemBeginPtr);
+	info->heapAddress = (size_t)memPool.phisicalMemBeginPtr;
+	info->heapCached = (size_t)(memPool.phisicalMemPtr - 
         memPool.phisicalMemBeginPtr);
     
     for(i = 0; i < MEMORY_SLICES_MAX_COUNT; i++)

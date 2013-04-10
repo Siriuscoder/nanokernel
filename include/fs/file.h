@@ -31,6 +31,9 @@
 
 /* file open flags */
 #define FILE_OPEN_IN_VFS	(1)
+#define FILE_CREATE_IN_VFS	(1<<1)
+#define FILE_OUT			(1<<2)
+#define FILE_IN				(1<<3)
 
 typedef void  *(*file_open_t)(const char *path, uint32_t mode, void *file);
 typedef bool   (*file_close_t)(void *file);

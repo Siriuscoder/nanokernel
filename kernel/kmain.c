@@ -23,7 +23,7 @@
 #include <std/print.h>
 #include <driver.h>
 
-void k_return()
+static void k_return()
 {
 	k_print("Halt kernel now..");
 	k_abort();

@@ -90,6 +90,9 @@ get_memory_info(memInfo_t *info)
 {
 	int i;
     k_memset(info, 0, sizeof(memInfo_t));
+	
+	info->totalSize = (uint32_t)(memPool.phisicalMemPtrMax - 
+		memPool.phisicalMemBeginPtr);
 	info->heapAddress = (uint32_t)memPool.phisicalMemBeginPtr;
 	info->heapCached = (uint32_t)(memPool.phisicalMemPtr - 
         memPool.phisicalMemBeginPtr);
@@ -99,9 +102,6 @@ get_memory_info(memInfo_t *info)
 		if(memPool.numAllocatedBlocks[i] != 0)
 			info->memoryUsed += (memPool.numAllocatedBlocks[i] * (1<<i));
 	}
-	
-	info->totalSize = memPool.phisicalMemPtrMax - 
-		memPool.phisicalMemBeginPtr;
 }
 
 

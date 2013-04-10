@@ -53,10 +53,10 @@ typedef struct phisical_address_map_entity
 
 typedef struct
 {
-	uint32_t totalSize;
-	uint32_t heapAddress;
-	uint32_t heapCached;
-    uint32_t memoryUsed;
+	size_t totalSize;
+	size_t heapAddress;
+	size_t heapCached;
+    size_t memoryUsed;
 } memInfo_t;
 
 /* phisical map structure pointers */
