@@ -36,9 +36,9 @@ k_heap_init()
 	k_memset(&memPool, 0, sizeof(MemPool_t));
 
 	memPool.phisicalMemBeginPtr = memPool.phisicalMemPtr = 
-		malloc(KERNEL_HEAP_PAGES);
+		malloc(KERNEL_HEAP_MIN_SIZE);
 	memPool.phisicalMemPtrMax = memPool.phisicalMemBeginPtr + 
-		KERNEL_HEAP_PAGES;
+		KERNEL_HEAP_MIN_SIZE;
 	/* if not found.. mean low memory - panic */
 	if(memPool.phisicalMemBeginPtr == NULL)
 		return false;

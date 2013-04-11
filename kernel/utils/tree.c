@@ -57,7 +57,8 @@ tree_unlink_link(struct tree_link *link)
 }
 
 struct tree_link *
-tree_find_arg(struct tree_link *tree, tree_link_arg_predicate_t predicate, void *arg)
+tree_find_arg(struct tree_link *tree, 
+	tree_link_arg_predicate_t predicate, void *arg)
 {
 	struct list_link *iter, *enditer;
 	struct tree_link *item;
@@ -84,7 +85,24 @@ tree_find_arg(struct tree_link *tree, tree_link_arg_predicate_t predicate, void 
 }
 
 void
-tree_foreach(struct tree_link *tree, tree_link_arg_predicate_t predicate)
+tree_foreach(struct tree_link *tree, 
+	tree_link_arg_predicate_t predicate, void *arg)
 {
-	tree_find_arg(tree, predicate, NULL);
+	struct list_link *iter, *enditer;
+	struct tree_link *item;
+
+	if(!list_is_empty(&tree->children))
+	{
+		iter = list_first_link(&tree->children);
+		enditer = list_last_link(&tree->children);
+
+		for(; iter != enditer; iter = list_next(iter))
+		{
+			item = MEMBERCAST(struct tree_link, iter, listLink);
+			/* goto child */
+			tree_foreach(item, predicate, arg);		
+			/* then all child are look in, call user */
+			predicate(item, arg);
+		}
+	}
 }

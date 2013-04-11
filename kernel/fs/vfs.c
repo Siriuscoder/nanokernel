@@ -23,6 +23,12 @@
 
 static fsnode_t vfs_root;
 
+typedef struct
+{
+	each_file_in_dir_t callback;
+	void *arg;
+} iterate_helper_t;
+
 bool k_vfs_init()
 {
 	k_memset(&vfs_root, 0, sizeof(fsnode_t));
@@ -30,10 +36,6 @@ bool k_vfs_init()
 	tree_link_init(&vfs_root.link);
 	vfs_root.flags = FILE_IS_FOLDER;
 	vfs_root.node.name[0] = '/';
-	/* add default folders */
-	k_vfs_mkdir("/", "mnt");
-	k_vfs_mkdir("/", "dev");
-	k_vfs_mkdir("/", "tmp");
 
 	return true;
 }
@@ -49,7 +51,20 @@ static bool find_file_node_in_list(struct list_link *link, void *arg)
 	return false;
 }
 
-fsnode_t *k_vfs_find_node_by_full_path(const char *path)
+static bool iterate_file_node_in_list(struct list_link *link, void *arg)
+{
+	iterate_helper_t *itHelper = (iterate_helper_t *)arg;
+	struct tree_link *cur = MEMBERCAST(struct tree_link, link, listLink);
+	fsnode_t *curNode = MEMBERCAST(fsnode_t, cur, link);
+	
+	if(itHelper->callback)
+		itHelper->callback(curNode->node.name, curNode->flags,
+				itHelper->arg);
+	
+	return false;
+}
+
+static fsnode_t *k_vfs_find_node_by_full_path(const char *path)
 {
 	char tmp[FILE_FULL_PATH];
 	char *ps = tmp;
@@ -125,6 +140,9 @@ bool k_vfs_mknode(const char *path, const node_t *node, uint32_t flags)
 {
     fsnode_t *fsNode, *dstNode;
     char fullName[FILE_FULL_PATH] = { '\0' }; 
+	
+	if(!k_strlen(path) || !k_strlen(node->name))
+		return false;
     
 	fsNode = k_malloc(sizeof(fsnode_t));
 	if(!fsNode)
@@ -143,8 +161,10 @@ bool k_vfs_mknode(const char *path, const node_t *node, uint32_t flags)
 		goto failed;
     /* check if file already exist */
 	k_strncat(fullName, path, FILE_FULL_PATH);
+	if(path[k_strlen(path)-1] != '/')
+		k_strncat(fullName, "/", FILE_FULL_PATH);
 	k_strncat(fullName, node->name, FILE_FULL_PATH);
-	if(k_vfs_find_node_by_full_path(fullName))
+	if(k_vfs_path_is_exist(fullName))
 		goto failed;
     
     /* add to vfs tree */
@@ -206,6 +226,28 @@ bool k_vfs_mvnode(const char *path, const char *newPath)
 	return true;
 }
 
+bool k_vfs_path_is_exist(const char *path)
+{
+	return k_vfs_find_node_by_full_path(path) != NULL;
+}
 
+bool k_vfs_iterate_directory(const char *path, 
+	each_file_in_dir_t callback, void *arg)
+{
+	fsnode_t *fsNode;
+	iterate_helper_t itHelper;
+	if((fsNode = k_vfs_find_node_by_full_path(path)) == NULL)
+		return false;
+	
+	if(!(fsNode->flags & FILE_IS_FOLDER))
+		return false;
+	
+	itHelper.callback = callback;
+	itHelper.arg = arg;
+	list_find_arg(&fsNode->link.children, iterate_file_node_in_list,
+		&itHelper);
+	
+	return true;
+}
 
 

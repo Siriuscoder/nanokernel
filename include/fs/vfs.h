@@ -41,9 +41,9 @@ typedef struct
 	struct tree_link link;
 } fsnode_t;
 
-bool k_vfs_init();
+typedef void (*each_file_in_dir_t)(const char *name, uint32_t flags, void *arg);
 
-fsnode_t *k_vfs_find_node_by_full_path(const char *path);
+bool k_vfs_init();
 
 file_t *k_vfs_open_file(file_t *file, const char *path, uint32_t mode);
 file_t *k_vfs_close_file(file_t *file);
@@ -56,5 +56,10 @@ bool k_vfs_mkdir(const char *path, const char *name);
 bool k_vfs_rmdir(const char *path);
 
 bool k_vfs_mvnode(const char *path, const char *newPath);
+
+bool k_vfs_path_is_exist(const char *path);
+
+bool k_vfs_iterate_directory(const char *path, 
+	each_file_in_dir_t callback, void *arg);
 
 #endif /* VFS_H_ */

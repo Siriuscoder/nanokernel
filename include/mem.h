@@ -23,7 +23,7 @@
 #include <kernel.h>
 
 #define KERNEL_HEAP_BEGIN				0x100000
-#define KERNEL_HEAP_PAGES				(DEFAULT_MEM_PAGE_SIZE * 256 * 20) // 20MB
+#define KERNEL_HEAP_MIN_SIZE			(DEFAULT_MEM_PAGE_SIZE * 256 * 32) // 32MB
 
 #define HIPART(x)						(uint32_t)((x) >> 32)
 #define LOPART(x)						(uint32_t)(x)

@@ -93,12 +93,12 @@ real_start:
 	popw	%dx
 
 	/* check result */
-	jc		lba_not_supported
+	jc		LBA_not_supported
 	cmpw	$0xaa55, %bx
-	jne		lba_not_supported
+	jne		LBA_not_supported
 	/* drive control using DAP structure? */ 
 	andw	$1, %cx
-	jz		lba_not_supported
+	jz		LBA_not_supported
 
 LBA_mode:
 /*
@@ -215,9 +215,9 @@ CHS_read_sector:
 	movw	%bp, %sp
 	jmp 	boot_next
 
-lba_not_supported:
+LBA_not_supported:
 	pushw	%si
-	leaw 	REAL_ADR(lba_not_supported_err_mes), %si
+	leaw 	REAL_ADR(LBA_not_supported_err_mes), %si
 	call 	message
 	popw	%si
 	jmp 	CHS_mode
@@ -253,7 +253,7 @@ boot_next:
 /* go go go !!! */
 	ljmp	$KERNEL_LOAD_SEGMENT, $0x0
 
-lba_not_supported_err_mes:
+LBA_not_supported_err_mes:
 	.asciz "LBA not supported, trying CHS mode\n"
 disk_read_error_mes:
 	.asciz "Disk read error, boot failed..\n"

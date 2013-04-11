@@ -34,8 +34,8 @@ k_heap_init()
 		if(k_phisical_memory_map[i].type != MEMORY_USE_NORMAL)
 			continue;
 
-		if(k_phisical_memory_map[i].base >= KERNEL_HEAP_BEGIN &&
-				k_phisical_memory_map[i].length >= KERNEL_HEAP_PAGES)
+		if(k_phisical_memory_map[i].base == KERNEL_HEAP_BEGIN &&
+				k_phisical_memory_map[i].length >= KERNEL_HEAP_MIN_SIZE)
 		{
 			memPool.phisicalMemBeginPtr = memPool.phisicalMemPtr =
 				(ptr_t)LOPART(k_phisical_memory_map[i].base);
