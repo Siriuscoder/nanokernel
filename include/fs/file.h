@@ -45,7 +45,6 @@ typedef void (*file_flush_t)(void *file);
 typedef struct
 {
 	char name[FILE_NAME_LEN];
-	char fullPath[FILE_FULL_PATH];
 	uint32_t flags;
 	uint32_t fd;
 	file_open_t open;

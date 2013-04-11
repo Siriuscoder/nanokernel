@@ -39,7 +39,8 @@
 /* sector size / 0x10 */
 #define LOAD_SEGMENT_OFFSET				0x20
 /* kernel load address 07e0h:0000h */
-#define KERNEL_LOAD_SEGMENT				0x07e0
+/* expand stack size to 53 kb */
+#define KERNEL_LOAD_SEGMENT				0x0e00
 #define FLOPPY_SECTORS_PER_TRACK		18
 #define FLOPPY_HEADS_NUM				2
 

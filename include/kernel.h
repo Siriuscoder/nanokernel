@@ -77,7 +77,7 @@
 #define EXIT_COLD_BOOT		0x0
 #define EXIT_WARM_BOOT		0x1234
 #define EXIT_CPU_HALT		0x2
-#define EXIT_PANIC		0xDEAD
+#define EXIT_PANIC			0xDEAD
 
 
 #if !defined(__GAS__)

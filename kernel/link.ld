@@ -2,9 +2,26 @@ OUTPUT_FORMAT("binary")
 ENTRY(start)
 SECTIONS
 {
-	.text 0x7e00 : 
+	.text16 0xE000 : 
 	{
-    		start.o (.text)
+    	start.o (.text)
+    	protmode.o (.text)
+	}
+
+	.data16 :
+	{
+		start.o (.data)
+    	protmode.o (.data)
+	}
+
+	.rodata16 :
+	{
+		start.o (.rodata)
+    	protmode.o (.rodata)
+	}
+
+	.text :
+	{
 		*(.text)
 	}
 

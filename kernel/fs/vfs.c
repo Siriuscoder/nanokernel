@@ -116,7 +116,6 @@ file_t *k_vfs_open_file(file_t *file, const char *path, uint32_t mode)
 	file->read = fsNode->node.read;
 	file->seek = fsNode->node.seek;
 	file->flush = fsNode->node.flush;
-	k_strncpy(file->fullPath, path, FILE_FULL_PATH);
 	k_strncpy(file->name, fsNode->node.name, FILE_NAME_LEN);
 	/* add new open file to list */
 	list_link_init(&file->l);
