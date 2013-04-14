@@ -39,7 +39,7 @@ static file_t *fdfind(uint32_t fd)
 	return fdt.fdarray[fd];
 }
 
-static bool fdextrude()
+static bool fdexpand()
 {
 	/* allocate first */
 	if(fdt.fdarray == NULL)
@@ -78,7 +78,7 @@ static bool fdcheck()
 {
 	if(!fdfind_first())
 	{
-		if(fdextrude())
+		if(fdexpand())
 		{
 			return fdcheck();
 		}
@@ -108,7 +108,8 @@ uint32_t k_fopen(const char *path, uint32_t mode)
 	if(mode & FILE_OPEN_IN_VFS)
 	{
 		/* get file desc in vfs */
-		file = k_vfs_open_file(file, path, mode);
+		if(!k_vfs_open_file(file, path, mode))
+			goto failed;
 	}
 
 	if(!file->open)
@@ -117,12 +118,14 @@ uint32_t k_fopen(const char *path, uint32_t mode)
 	if(!file->open(path, mode, file))
 		goto failed;
 
+	file->flags = mode;
 	/* check next file descriptor is present */
 	/* if not - fd array is full, and relocation failed */
 	if(!fdcheck())
 		goto failed;
 	/* setup next file descriptor */
 	fdt.fdarray[fdt.fdcounter] = file;
+	file->fd = fdt.fdcounter;
 	return fdt.fdcounter;
 
 failed:
@@ -152,8 +155,8 @@ long k_fread(uint32_t fd, ptr_t buf, size_t size, size_t count)
 {
 	file_t *file = NULL;
 	if((file = fdfind(fd)) != NULL)
-	{
-		if(file->read)
+	{		
+		if(file->read && (file->flags & FILE_IN))
 			return file->read(buf, size, count, file);
 	}
 
@@ -165,7 +168,7 @@ long k_fwrite(uint32_t fd, const ptr_t buf, size_t size, size_t count)
 	file_t *file = NULL;
 	if((file = fdfind(fd)) != NULL)
 	{
-		if(file->write)
+		if(file->write && (file->flags & FILE_OUT))
 			return file->write(buf, size, count, file);
 	}
 

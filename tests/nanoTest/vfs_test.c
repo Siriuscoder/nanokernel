@@ -7,27 +7,35 @@
 
 static void *file_open_1(const char *path, uint32_t mode, void *file)
 {
-	
+	k_print("File1 %s opened!\n", path);
+	return file;
 }
 
 static void *file_open_2(const char *path, uint32_t mode, void *file)
 {
-	
+	k_print("File2 %s opened!\n", path);
+	return file;
 }
 
 static bool file_close_1(void *file)
 {
-	
+	file_t *myfile = (file_t *)file;
+	k_print("file_close_1 %s, %d\n", myfile->name, myfile->fd);
+	return true;
 }
 
 static bool file_close_2(void *file)
 {
-	
+	file_t *myfile = (file_t *)file;
+	k_print("file_close_2 %s, %d\n", myfile->name, myfile->fd);
+	return true;	
 }
 
 static long file_write_1(const ptr_t buf, size_t size, size_t count, void *file)
 {
-	
+	file_t *myfile = (file_t *)file;
+	k_print("file_write_1 %s, %d\n", myfile->name, myfile->fd);
+	return true;
 }
 
 static void dir_iterator(const char *name, uint32_t flags, void *arg)
@@ -153,6 +161,34 @@ static bool rm_mv_some_vfs_nodes()
 		return false;
 }
 
+static bool files_working_test()
+{
+	uint32_t fd1, fd2;
+	
+	fd1 = k_fopen("/dev/disk/", FILE_OPEN_IN_VFS | FILE_OUT);
+	if(fd1)
+		return false;
+	
+	fd1 = k_fopen("/dev/net/", FILE_OPEN_IN_VFS | FILE_OUT);
+	if(fd1)
+		return false;
+	
+	fd1 = k_fopen("/dev/stdout1", FILE_OPEN_IN_VFS | FILE_OUT);
+	if(!fd1)
+		return false;
+	fd2 = k_fopen("/dev/net/net2", FILE_OPEN_IN_VFS | FILE_OUT);
+	if(!fd2)
+		return false;
+	
+	k_fwrite(fd1, "test1", 5, 1);
+	k_fwrite(fd2, "test2", 5, 1);
+	
+	if(!k_fclose(fd1))
+		return false;
+	if(!k_fclose(fd2))
+		return false;
+}
+
 bool run_vfs_test()
 {
 	if(!k_vfs_init())
@@ -162,6 +198,8 @@ bool run_vfs_test()
 	if(!valid_vfs())
 		return false;
 	if(!rm_mv_some_vfs_nodes())
+		return false;
+	if(!files_working_test())
 		return false;
 	
     return true;

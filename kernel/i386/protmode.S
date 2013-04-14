@@ -48,7 +48,7 @@
 /* force 8-byte alignment */
 	.p2align	3
 
-k_gdt:
+k_gdt_dummy:
 	.word	0, 0
 	.byte	0, 0, 0, 0
 
@@ -90,9 +90,9 @@ k_gdt:
 /* force 4-byte alignment */
 	.p2align	2
 /* this is the GDT descriptor */
-gdtdesc:
+gdtdesc_dummy:
 	.word	0x2F			/* limit */
-	.long	k_gdt			/* addr */
+	.long	k_gdt_dummy		/* addr */
 
 	.text
 
@@ -105,7 +105,7 @@ k_switch_to_protected_mode:
 	/* load the GDT register */
 	movl	$KERNEL_REALMODE_DATA_SEG, %eax
 	movw	%ax, %ds
-	lgdt	gdtdesc
+	lgdt	gdtdesc_dummy
 
 	/* turn on protected mode */
 	movl	%cr0, %eax
@@ -145,7 +145,9 @@ k_switch_to_real_mode:
 	movl	%esp, %ebp
 	pushl	%eax
 	/* just in case, set GDT */
-	lgdt	gdtdesc
+	movl	$KERNEL_REALMODE_DATA_SEG, %eax
+	movw	%ax, %ds
+	lgdt	gdtdesc_dummy
 
 	/* set up segment limits */
 	movw	$KERNEL_PSEUDO_REALMODE_DATA_SEG, %ax
@@ -157,9 +159,9 @@ k_switch_to_real_mode:
 
 	/* this might be an extra step */
 	/* jump to a 16 bit segment */
-	ljmp	$KERNEL_PSEUDO_REALMODE_CODE_SEG, $switch_tmp16_segment
+	ljmp	$KERNEL_PSEUDO_REALMODE_CODE_SEG, $switch_code16_segment
 
-switch_tmp16_segment:
+switch_code16_segment:
 	.code16
 
 	/* clear the PE bit of CR0 */
@@ -168,9 +170,9 @@ switch_tmp16_segment:
 	movl	%eax, %cr0
 
 	/* flush prefetch queue, reload %cs */
-	ljmp	$KERNEL_REALMODE_CODE_SEG, $realmode_exec_return
+	ljmp	$KERNEL_REALMODE_CODE_SEG, $realmode_code
 
-realmode_exec_return:
+realmode_code:
 	/* we are in real mode now
 	 * set up the real mode segment registers : DS, SS, ES
 	 */
