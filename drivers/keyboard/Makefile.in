@@ -71,7 +71,7 @@ AR = ar
 ARFLAGS = cru
 libkeyboard_a_AR = $(AR) $(ARFLAGS)
 libkeyboard_a_LIBADD =
-am_libkeyboard_a_OBJECTS = keyboard.$(OBJEXT) stdin.$(OBJEXT)
+am_libkeyboard_a_OBJECTS = i8042.$(OBJEXT) stdin.$(OBJEXT)
 libkeyboard_a_OBJECTS = $(am_libkeyboard_a_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -190,7 +190,7 @@ top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -m32 -Wall -fmessage-length=0
 AM_CCASFLAGS = -D__GAS__
 lib_LIBRARIES = libkeyboard.a
-libkeyboard_a_SOURCES = keyboard.c stdin.c stdin.h
+libkeyboard_a_SOURCES = i8042.c stdin.c stdin.h codepage.h
 EXTRA_DIST = 
 all: all-am
 
@@ -269,7 +269,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/keyboard.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i8042.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stdin.Po@am__quote@
 
 .c.o:

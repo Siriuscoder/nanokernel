@@ -4,7 +4,7 @@
     <df root="." name="nanokernel">
       <df name="drivers">
         <df name="keyboard">
-          <in>keyboard.c</in>
+          <in>i8042.c</in>
           <in>stdin.c</in>
           <in>stdin.h</in>
         </df>
@@ -62,6 +62,7 @@
         <in>cpuinfo.c</in>
         <in>driver.c</in>
         <in>kerror.c</in>
+        <in>keyboard.c</in>
         <in>kmain.c</in>
         <in>kmalloc.c</in>
         <in>mempool.c</in>
@@ -70,6 +71,9 @@
       </df>
       <df name="tests">
         <df name="nanoTest">
+          <df name="include">
+            <in>vfs_test.h</in>
+          </df>
           <in>main.c</in>
         </df>
       </df>
@@ -118,7 +122,7 @@
           </incDir>
         </cTool>
       </item>
-      <item path="drivers/keyboard/keyboard.c" ex="false" tool="0" flavor2="0">
+      <item path="drivers/keyboard/i8042.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="drivers/keyboard/stdin.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -200,6 +204,8 @@
       </item>
       <item path="kernel/kerror.c" ex="false" tool="0" flavor2="0">
       </item>
+      <item path="kernel/keyboard.c" ex="false" tool="0" flavor2="0">
+      </item>
       <item path="kernel/kmain.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="kernel/kmalloc.c" ex="false" tool="0" flavor2="0">
@@ -220,7 +226,11 @@
       </item>
       <item path="kernel/utils/tree.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="tests/nanoTest/main.c" ex="false" tool="0" flavor2="0">
+      <item path="tests/nanoTest/include/vfs_test.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="tests/nanoTest/main.c" ex="false" tool="0" flavor2="2">
+        <cTool>
+        </cTool>
       </item>
     </conf>
   </confs>

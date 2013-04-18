@@ -5,18 +5,21 @@ SECTIONS
 	.text16 0xE000 : 
 	{
     	start.o (.text)
+		stop.o	(.text)
     	protmode.o (.text)
 	}
 
 	.data16 :
 	{
 		start.o (.data)
+		stop.o	(.data)
     	protmode.o (.data)
 	}
 
 	.rodata16 :
 	{
 		start.o (.rodata)
+		stop.o	(.rodata)
     	protmode.o (.rodata)
 	}
 

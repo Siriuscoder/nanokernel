@@ -6,7 +6,8 @@
       </df>
       <df name="drivers">
         <df name="keyboard">
-          <in>keyboard.c</in>
+          <in>codepage.h</in>
+          <in>i8042.c</in>
           <in>stdin.c</in>
           <in>stdin.h</in>
         </df>
@@ -37,6 +38,7 @@
         <in>irq.h</in>
         <in>kernel.h</in>
         <in>kerror.h</in>
+        <in>keyboard.h</in>
         <in>loader.h</in>
         <in>mem.h</in>
         <in>mempool.h</in>
@@ -74,6 +76,7 @@
         <in>cpuinfo.c</in>
         <in>driver.c</in>
         <in>kerror.c</in>
+        <in>keyboard.c</in>
         <in>kmain.c</in>
         <in>kmalloc.c</in>
         <in>mempool.c</in>

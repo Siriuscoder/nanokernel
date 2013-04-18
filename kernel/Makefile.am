@@ -35,6 +35,7 @@ kernel_SOURCES = i386/int.c \
 				 mempool.c \
 				 pic.c \
 				 screen.c \
-				 driver.c
+				 driver.c \
+				 keyboard.c
 
 EXTRA_DIST = link.ld

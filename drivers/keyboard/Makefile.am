@@ -6,6 +6,6 @@ CFLAGS= -g -O0
 
 lib_LIBRARIES = libkeyboard.a
 
-libkeyboard_a_SOURCES = keyboard.c stdin.c stdin.h
+libkeyboard_a_SOURCES = i8042.c stdin.c stdin.h codepage.h
 
 EXTRA_DIST = 
