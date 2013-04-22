@@ -23,6 +23,7 @@
 #include <pic.h>
 #include <io.h>
 #include <std/print.h>
+#include <keyboard.h>
 
 
 #define  I8042_MODE_XLATE					0x40
@@ -173,15 +174,61 @@ static bool init_I8042_controller(void)
 			LED_NUMLOCK_ENABLE | 
 			LED_CAPSLOCK_ENABLE | 
 			LED_SCROLLLOCK_ENABLE);
-
+	
 	return true;
 }
 
 static void keyboard_irq_handler(const intParams_t *params)
 {
 	/* read scancode */
-	I8042_wait_read();
 	byte scancode = k_io_port_inb(I8042_DATA_PORT);
+	byte indexcode = scancode;
+	
+	if(scancode == KEYBOARD_EXTENDED_STATE)
+		return;
+	/* key released */
+	if(scancode & KEYBOARD_RELEASED_STATE)
+	{
+		/* normalize scancode */
+		indexcode = scancode & 0x7f;
+	}
+	
+	if(indexcode >= (sizeof(scan_code_map_1)/3))
+		return;
+	/* control buttons */
+	if(scan_code_map_1[indexcode][2])
+	{
+		k_set_keyboard_state_key(scan_code_map_1[indexcode][0],
+			scancode & KEYBOARD_RELEASED_STATE ? KEY_RELEASED : KEY_PESSED);
+		switch(scan_code_map_1[indexcode][0])
+		{
+		case KEY_ENTER:
+			_enter_ascii_symbol('\n');
+			break;
+		case KEY_SPACE:
+			_enter_ascii_symbol(' ');
+			break;
+		case KEY_TAB:
+			_enter_ascii_symbol('\t');
+			break;
+		}
+	}
+	/* char buttons */
+	else
+	{
+		byte code;
+		if(k_get_keyboard_state_key(KEY_LEFT_SHIFT) == KEY_PESSED ||
+			k_get_keyboard_state_key(KEY_RIGHT_SHIFT) == KEY_PESSED)
+		{
+			code = scan_code_map_1[indexcode][1];
+		}
+		else
+		{
+			code = scan_code_map_1[indexcode][0];
+		}
+		
+		_enter_ascii_symbol(code);
+	}
 }
 
 static bool init_keyboard(size_t argc, char **args)
@@ -189,6 +236,7 @@ static bool init_keyboard(size_t argc, char **args)
 	/* init ps/2 keyboard/mouse controller */
 	if(!init_I8042_controller())
 		return false;
+	_init_stdin();
 	
 	/* disable async interrupts */
 	k_iasync_disable();

@@ -19,6 +19,17 @@
 #ifndef STDIN_H_
 #define STDIN_H_
 
+#include <types.h>
+
+typedef struct 
+{
+	bool bufReady;
+	byte symbol;
+} keyBuf_t;
+
+bool _init_stdin(void);
+
+bool _enter_ascii_symbol(byte symbol);
 
 
 #endif /* STDIN_H_ */

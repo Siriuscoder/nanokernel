@@ -17,3 +17,65 @@
 */
 
 #include <stdin.h>
+#include <fs/vfs.h>
+#include <fs/file.h>
+
+static keyBuf_t keybordBuffer;
+
+static void* stdin_open(const char *path, uint32_t mode, void *file)
+{
+	/* read only */
+	if(!(mode & FILE_IN))
+		return NULL;
+	
+	return file;
+}
+
+static bool stdin_close(void *file)
+{
+	return true;
+}
+
+static long stdin_read(ptr_t buf, size_t size, size_t count, void *file)
+{
+	/* fill input buffer */
+	size_t fullSize = size * count;
+	char *destBuf = buf;
+	while(fullSize > 0)
+	{
+		/* wait for keyboard */
+		while(keybordBuffer.bufReady == false);
+		*destBuf = keybordBuffer.symbol;
+		
+		destBuf++;
+		fullSize--;
+	}
+	
+	return (long)(destBuf-(char *)buf);
+}
+
+bool _init_stdin(void)
+{
+	node_t stdinNode = {
+		"stdin",
+		stdin_open, 
+		stdin_close, 
+		stdin_read,
+		NULL,
+		NULL,
+		NULL
+	};
+		
+	k_vfs_mkdir("/", "dev");
+	if(!k_vfs_mknode("/dev/", &stdinNode, 0x0))
+		return false;
+	
+	return true;
+}
+
+bool _enter_ascii_symbol(byte symbol)
+{
+	keybordBuffer.symbol = symbol;
+	keybordBuffer.bufReady = true;
+	return true;
+}
