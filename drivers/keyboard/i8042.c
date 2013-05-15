@@ -178,6 +178,22 @@ static bool init_I8042_controller(void)
 	return true;
 }
 
+static void enter_non_ascii_symbol(byte index)
+{
+	switch(scan_code_map_1[index][0])
+	{
+	case KEY_ENTER:
+		_enter_ascii_symbol('\n');
+		break;
+	case KEY_SPACE:
+		_enter_ascii_symbol(' ');
+		break;
+	case KEY_TAB:
+		_enter_ascii_symbol('\t');
+		break;
+	}
+}
+
 static void keyboard_irq_handler(const intParams_t *params)
 {
 	/* read scancode */
@@ -195,39 +211,25 @@ static void keyboard_irq_handler(const intParams_t *params)
 	
 	if(indexcode >= (sizeof(scan_code_map_1)/3))
 		return;
-	/* control buttons */
+	/* non char buttons */
 	if(scan_code_map_1[indexcode][2])
-	{
-		k_set_keyboard_state_key(scan_code_map_1[indexcode][0],
+	{		
+		k_set_keyboard_state_key(scan_code_map_1[indexcode][0], 
 			scancode & KEYBOARD_RELEASED_STATE ? KEY_RELEASED : KEY_PESSED);
-		switch(scan_code_map_1[indexcode][0])
+		
+		if(!(scancode & KEYBOARD_RELEASED_STATE))
 		{
-		case KEY_ENTER:
-			_enter_ascii_symbol('\n');
-			break;
-		case KEY_SPACE:
-			_enter_ascii_symbol(' ');
-			break;
-		case KEY_TAB:
-			_enter_ascii_symbol('\t');
-			break;
+			enter_non_ascii_symbol(indexcode);
 		}
 	}
 	/* char buttons */
-	else
+	else if(!(scancode & KEYBOARD_RELEASED_STATE))
 	{
-		byte code;
-		if(k_get_keyboard_state_key(KEY_LEFT_SHIFT) == KEY_PESSED ||
-			k_get_keyboard_state_key(KEY_RIGHT_SHIFT) == KEY_PESSED)
-		{
-			code = scan_code_map_1[indexcode][1];
-		}
-		else
-		{
-			code = scan_code_map_1[indexcode][0];
-		}
-		
-		_enter_ascii_symbol(code);
+		byte symbol = scan_code_map_1[indexcode][
+				(k_get_keyboard_state_key(KEY_LEFT_SHIFT) == KEY_PESSED ||
+				k_get_keyboard_state_key(KEY_RIGHT_SHIFT) == KEY_PESSED) ? 1 : 0];
+
+		_enter_ascii_symbol(symbol);
 	}
 }
 

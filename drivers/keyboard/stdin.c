@@ -41,17 +41,14 @@ static long stdin_read(ptr_t buf, size_t size, size_t count, void *file)
 	/* fill input buffer */
 	size_t fullSize = size * count;
 	char *destBuf = buf;
-	while(fullSize > 0)
-	{
-		/* wait for keyboard */
-		while(keybordBuffer.bufReady == false);
-		*destBuf = keybordBuffer.symbol;
-		
-		destBuf++;
-		fullSize--;
-	}
+	if(!keybordBuffer.bufReady)
+		return 0;
+	if(fullSize < 1)
+		return -1;
 	
-	return (long)(destBuf-(char *)buf);
+	*destBuf = keybordBuffer.symbol;
+	keybordBuffer.bufReady = false;
+	return 1;
 }
 
 bool _init_stdin(void)

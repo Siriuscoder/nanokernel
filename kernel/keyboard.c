@@ -25,7 +25,7 @@ static uint32_t *keyboardState;
 void k_init_keyboard(void)
 {
 	keyboardState = k_malloc(sizeof(uint32_t) * KEY_MAX);
-	k_memset(keyboardState, 0, sizeof(sizeof(uint32_t) * KEY_MAX));
+	k_memset(keyboardState, 0, sizeof(uint32_t) * KEY_MAX);
 }
 
 void k_set_keyboard_state_key(uint32_t key, uint8_t state)

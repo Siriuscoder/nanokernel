@@ -22,6 +22,8 @@
 #include <kerror.h>
 #include <std/print.h>
 #include <driver.h>
+#include <fs/vfs.h>
+#include <keyboard.h>
 
 static void k_return()
 {
@@ -48,10 +50,19 @@ void k_main()
 	if(!k_interrupts_init())
 		k_panic1(INT_INIT_FAILED);
 
+	k_vfs_init();
+	k_init_keyboard();
 	drivers_start(0, NULL);
 	k_print_memory_usage_info();
 	/* do work */
-	for(;;);
+	int stdin = k_fopen("/dev/stdin", FILE_OPEN_IN_VFS | FILE_IN);
+	if(!stdin) k_panic1(INIT_FAILED);
+	for(;;)
+	{
+		char symbol;
+		if(k_fread(stdin, &symbol, 1, 1) == 1)
+			k_print("%c", symbol);
+	}
 
 	drivers_stop();
 
