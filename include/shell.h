@@ -21,8 +21,7 @@
 
 #include <kernel.h>
 
-bool k_init_shell();
-bool k_start_shell();
+int k_start_shell();
 
 
 #endif	/* SHELL_H */

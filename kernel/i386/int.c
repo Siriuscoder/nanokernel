@@ -375,6 +375,7 @@ void k_handle_exception(uint32_t except, int32_t code, uint32_t addr)
 	case EXC_OVERFLOW:
 	case EXC_DEBUG:
 	/* skip debug interrupts */
+		k_debug_info(DEBUG_EXCEPTION, except, k_exception_descr[except], regs, addr);
 		break;
 	default:
 		{

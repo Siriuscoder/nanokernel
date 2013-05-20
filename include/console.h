@@ -37,9 +37,15 @@ bool k_console_clean();
 
 int k_console_set_cursor_pos(size_t x, size_t y);
 
+void k_console_get_cursor_pos(size_t *x, size_t *y);
+
 int k_console_seek(size_t pos);
 
+size_t k_console_get_pos();
+
 int k_console_putc(char c);
+
+void k_console_clean_front();
 
 size_t k_console_write(char *message);
 

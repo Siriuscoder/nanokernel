@@ -43,12 +43,18 @@ void k_panic3(int errCode, int addCode, const char *str)
 
 void k_panic4(int errCode, int addCode, const char *str, const regs_t *regs, uint32_t address)
 {
+	k_debug_info(errCode, addCode, str, regs, address);
+	k_abort();
+}
+
+void k_debug_info(int errCode, int addCode, const char *str, const regs_t *regs, uint32_t address)
+{
 	k_print("*** Kernel Panic at 0x%08x\n", address);
 	k_print("Error Code 0x%08x; Second Code %d : %s\n", errCode, addCode,
 			(str == NULL) ? "none" : str);
 
 	k_print_regs(regs);
-	k_abort();
+	k_print("\n");
 }
 
 

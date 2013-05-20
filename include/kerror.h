@@ -29,7 +29,10 @@
 #define SCR_INIT_FAILED			0xE005
 #define CPU_EXCEPTION			0xE006
 #define OUT_OF_MEMORY			0xE007
-#define HEAP_INIT_FAILED		0xE007
+#define HEAP_INIT_FAILED		0xE008
+
+
+#define DEBUG_EXCEPTION			0xDBAC
 
 #pragma pack(push, 1)
 typedef struct
@@ -54,6 +57,8 @@ typedef struct
 void k_panic1(int errCode);
 void k_panic3(int errCode, int addCode, const char *str);
 void k_panic4(int errCode, int addCode, const char *str,
+		const regs_t *regs, uint32_t address);
+void k_debug_info(int errCode, int addCode, const char *str, 
 		const regs_t *regs, uint32_t address);
 
 #endif /* ERROR_H_ */

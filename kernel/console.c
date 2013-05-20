@@ -147,6 +147,12 @@ int k_console_set_cursor_pos(size_t x, size_t y)
 	return 0;
 }
 
+void k_get_cursor_pos(size_t *x, size_t *y)
+{
+	*y = consIntern.pos / consIntern.entry.xLen;
+	*x = consIntern.pos % consIntern.entry.xLen;
+}
+
 
 int k_console_seek(size_t pos)
 {
@@ -155,5 +161,19 @@ int k_console_seek(size_t pos)
 
 	consIntern.pos = pos;
 	return 0;
+}
+
+size_t k_console_get_pos()
+{
+	return consIntern.pos;
+}
+
+void k_console_clean_front()
+{
+	if(consIntern.pos > 0)
+	{
+		consIntern.pos--;
+		(consIntern.firstEntity + consIntern.pos)->symbol = 0;
+	}
 }
 

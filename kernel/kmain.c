@@ -25,9 +25,12 @@
 #include <driver.h>
 #include <fs/vfs.h>
 #include <keyboard.h>
+#include <shell.h>
 
 static void k_return(int how)
 {
+	drivers_stop();
+	
 	switch(how)
 	{
 	case EXIT_COLD_BOOT:
@@ -51,38 +54,14 @@ void k_main()
 		k_panic1(SCR_INIT_FAILED);
 	if(!k_stdout_init())
 		k_panic1(INIT_FAILED);
-
-	k_print("Boot process done.. Starting the kernel\n");
-	k_print("Console init OK..\n");
-	k_print("Kernel version: %s\n", k_version_full_string);
-
+	k_init_keyboard();
 	k_refresh_cpu_info();
-	k_cpuinfo_print(k_get_cpuinfo());
-	k_print_memory_info();
 
 	if(!k_interrupts_init())
 		k_panic1(INT_INIT_FAILED);
 
-	k_init_keyboard();
 	drivers_start(0, NULL);
-	k_print_memory_usage_info();
-	/* do work */
-	int stdin = k_fopen("/dev/stdin", FILE_OPEN_IN_VFS | FILE_IN);
-	if(!stdin) k_panic1(INIT_FAILED);
-	for(;;)
-	{
-		char symbol;
-		k_wait_keyboard();
-		if(k_fread(stdin, &symbol, 1, 1) > 0)
-			k_print("%c", symbol);
-		if(k_get_keyboard_state_key(KEY_LEFT_CTRL) == KEY_PESSED &&
-			k_get_keyboard_state_key(KEY_ALT) == KEY_PESSED &&
-			k_get_keyboard_state_key(KEY_DELETE) == KEY_PESSED)
-			break;
-	}
 
-	drivers_stop();
-
-	k_return(EXIT_WARM_BOOT);
+	k_return(k_start_shell());
 }
 
