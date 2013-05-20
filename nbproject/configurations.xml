@@ -19,6 +19,7 @@
           <in>membase.h</in>
           <in>print.h</in>
           <in>stdarg.h</in>
+          <in>stdout.h</in>
           <in>strings.h</in>
         </df>
         <df name="utils">
@@ -39,6 +40,7 @@
         <in>mempool.h</in>
         <in>pic.h</in>
         <in>screen.h</in>
+        <in>shell.h</in>
         <in>types.h</in>
       </df>
       <df name="kernel">
@@ -52,6 +54,7 @@
         <df name="std">
           <in>membase.c</in>
           <in>print.c</in>
+          <in>stdout.c</in>
           <in>strings.c</in>
         </df>
         <df name="utils">
@@ -68,6 +71,7 @@
         <in>mempool.c</in>
         <in>pic.c</in>
         <in>screen.c</in>
+        <in>shell.c</in>
       </df>
       <df name="tests">
         <df name="nanoTest">
@@ -174,11 +178,15 @@
       </item>
       <item path="include/screen.h" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="include/shell.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/std/membase.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/std/print.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/std/stdarg.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/std/stdout.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/std/strings.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -216,9 +224,13 @@
       </item>
       <item path="kernel/screen.c" ex="false" tool="0" flavor2="0">
       </item>
+      <item path="kernel/shell.c" ex="false" tool="0" flavor2="0">
+      </item>
       <item path="kernel/std/membase.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="kernel/std/print.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kernel/std/stdout.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="kernel/std/strings.c" ex="false" tool="0" flavor2="0">
       </item>

@@ -47,12 +47,34 @@
 #define KEY_TAB				21
 #define KEY_ENTER			22
 #define KEY_SPACE			23
+#define KEY_HOME			24
+#define KEY_PAGE_UP			25
+#define KEY_PAGE_DOWN		26
+#define KEY_END				27
+#define KEY_UP_ARROW		28
+#define KEY_DOWN_ARROW		29
+#define KEY_LEFT_ARROW		30
+#define KEY_RIGHT_ARROW		31
+#define KEY_INSERT			32
+#define KEY_DELETE			33
 
 #define KEY_MAX				50
+
+/* LEDs keys */
+#define LED_NUMLOCK_ENABLE					0x02
+#define LED_CAPSLOCK_ENABLE					0x04
+#define LED_SCROLLLOCK_ENABLE				0x01
+
+typedef void
+(*LED_controll_t)(uint8_t flag);
 
 void k_set_keyboard_state_key(uint32_t key, uint8_t state);
 uint8_t k_get_keyboard_state_key(uint32_t key);
 void k_init_keyboard(void);
+void k_wait_keyboard(void);
+void k_notify_keyboard(void);
+void k_set_keyboard_LED_controll(LED_controll_t func);
+void k_keyboard_LED_controll(uint8_t flag);
 
 #endif	/* KEYBOARD_H */
 

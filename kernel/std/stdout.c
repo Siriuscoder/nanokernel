@@ -15,64 +15,66 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
-
-#include <stdin.h>
-#include <fs/vfs.h>
 #include <fs/file.h>
+#include <fs/vfs.h>
+#include <console.h>
 
-static keyBuf_t keybordBuffer;
+uint32_t	STDOUT;
+uint32_t	STDERR;
 
-static void* stdin_open(const char *path, uint32_t mode, void *file)
+static void* std_out_err_open(const char *path, uint32_t mode, void *file)
 {
-	/* read only */
-	if(!(mode & FILE_IN))
+	/* write only */
+	if(!(mode & FILE_OUT))
 		return NULL;
 	
 	return file;
 }
 
-static bool stdin_close(void *file)
+static bool std_out_err_close(void *file)
 {
 	return true;
 }
 
-static long stdin_read(ptr_t buf, size_t size, size_t count, void *file)
+static long std_out_err_write(const ptr_t buf, size_t size, size_t count, void *file)
 {
-	/* fill input buffer */
-	size_t fullSize = size * count;
-	char *destBuf = buf;
-	if(!keybordBuffer.bufReady)
-		return 0;
-	if(fullSize < 1)
-		return -1;
+	size_t fullSize = size * count, i = 0;
+	for(; i < fullSize; i++)
+		k_console_putc(((char *)buf)[i]);
 	
-	*destBuf = keybordBuffer.symbol;
-	keybordBuffer.bufReady = false;
-	return 1;
+	return fullSize;
 }
 
-bool init_stdin(void)
+bool k_stdout_init()
 {
-	node_t stdinNode = {
-		"stdin",
-		stdin_open, 
-		stdin_close, 
-		stdin_read,
+	node_t stdoutNode = {
+		"stdout",
+		std_out_err_open, 
+		std_out_err_close, 
 		NULL,
+		std_out_err_write,
+		NULL,
+		NULL
+	};
+	
+	node_t stderrNode = {
+		"stderr",
+		std_out_err_open, 
+		std_out_err_close, 
+		NULL,
+		std_out_err_write,
 		NULL,
 		NULL
 	};
 		
 	k_vfs_mkdir("/", "dev");
-	if(!k_vfs_mknode("/dev/", &stdinNode, 0x0))
+	if(!k_vfs_mknode("/dev/", &stdoutNode, 0x0))
+		return false;
+	if(!k_vfs_mknode("/dev/", &stderrNode, 0x0))
 		return false;
 	
-	return true;
-}
-
-bool enter_ascii_symbol(byte symbol)
-{
-	keybordBuffer.symbol = symbol;
-	keybordBuffer.bufReady = true;
+	STDOUT = k_fopen("/dev/stdout", FILE_OPEN_IN_VFS | FILE_OUT);
+	STDERR = k_fopen("/dev/stderr", FILE_OPEN_IN_VFS | FILE_OUT);
+	
 	return true;
 }

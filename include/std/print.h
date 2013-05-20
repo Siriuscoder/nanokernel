@@ -24,5 +24,7 @@
 int
 k_print(const char *format, ...);
 
+int
+k_fprint(uint32_t file, const char *format, ...);
 
 #endif /* PRINT_H_ */

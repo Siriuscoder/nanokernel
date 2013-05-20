@@ -18,6 +18,7 @@
 
 #include <console.h>
 #include <screen.h>
+#include <fs/vfs.h>
 
 /* console init structure */
 const consoleEntry_t consoleEntry = {

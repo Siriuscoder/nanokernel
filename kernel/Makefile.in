@@ -49,11 +49,12 @@ PROGRAMS = $(noinst_PROGRAMS)
 am_kernel_OBJECTS = int.$(OBJEXT) inthandlers.$(OBJEXT) port.$(OBJEXT) \
 	protmode.$(OBJEXT) start.$(OBJEXT) stop.$(OBJEXT) \
 	version.$(OBJEXT) cpu.$(OBJEXT) membase.$(OBJEXT) \
-	print.$(OBJEXT) strings.$(OBJEXT) list.$(OBJEXT) \
-	tree.$(OBJEXT) file.$(OBJEXT) vfs.$(OBJEXT) console.$(OBJEXT) \
-	cpuinfo.$(OBJEXT) kerror.$(OBJEXT) kmain.$(OBJEXT) \
-	kmalloc.$(OBJEXT) mempool.$(OBJEXT) pic.$(OBJEXT) \
-	screen.$(OBJEXT) driver.$(OBJEXT) keyboard.$(OBJEXT)
+	print.$(OBJEXT) strings.$(OBJEXT) stdout.$(OBJEXT) \
+	list.$(OBJEXT) tree.$(OBJEXT) file.$(OBJEXT) vfs.$(OBJEXT) \
+	console.$(OBJEXT) cpuinfo.$(OBJEXT) kerror.$(OBJEXT) \
+	kmain.$(OBJEXT) kmalloc.$(OBJEXT) mempool.$(OBJEXT) \
+	pic.$(OBJEXT) screen.$(OBJEXT) driver.$(OBJEXT) \
+	keyboard.$(OBJEXT) shell.$(OBJEXT)
 kernel_OBJECTS = $(am_kernel_OBJECTS)
 kernel_DEPENDENCIES = $(top_builddir)/drivers/libdriverdef.a \
 	$(top_builddir)/drivers/keyboard/libkeyboard.a
@@ -188,6 +189,7 @@ kernel_SOURCES = i386/int.c \
 				 std/membase.c \
 				 std/print.c \
 				 std/strings.c \
+				 std/stdout.c \
 				 utils/list.c \
 				 utils/tree.c \
 				 fs/file.c \
@@ -201,7 +203,8 @@ kernel_SOURCES = i386/int.c \
 				 pic.c \
 				 screen.c \
 				 driver.c \
-				 keyboard.c
+				 keyboard.c \
+				 shell.c
 
 EXTRA_DIST = link.ld
 all: all-am
@@ -270,7 +273,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/print.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/protmode.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/screen.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/shell.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/start.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stdout.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stop.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strings.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tree.Po@am__quote@
@@ -458,6 +463,20 @@ strings.obj: std/strings.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='std/strings.c' object='strings.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o strings.obj `if test -f 'std/strings.c'; then $(CYGPATH_W) 'std/strings.c'; else $(CYGPATH_W) '$(srcdir)/std/strings.c'; fi`
+
+stdout.o: std/stdout.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT stdout.o -MD -MP -MF $(DEPDIR)/stdout.Tpo -c -o stdout.o `test -f 'std/stdout.c' || echo '$(srcdir)/'`std/stdout.c
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/stdout.Tpo $(DEPDIR)/stdout.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='std/stdout.c' object='stdout.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o stdout.o `test -f 'std/stdout.c' || echo '$(srcdir)/'`std/stdout.c
+
+stdout.obj: std/stdout.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT stdout.obj -MD -MP -MF $(DEPDIR)/stdout.Tpo -c -o stdout.obj `if test -f 'std/stdout.c'; then $(CYGPATH_W) 'std/stdout.c'; else $(CYGPATH_W) '$(srcdir)/std/stdout.c'; fi`
+@am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/stdout.Tpo $(DEPDIR)/stdout.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='std/stdout.c' object='stdout.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o stdout.obj `if test -f 'std/stdout.c'; then $(CYGPATH_W) 'std/stdout.c'; else $(CYGPATH_W) '$(srcdir)/std/stdout.c'; fi`
 
 list.o: utils/list.c
 @am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT list.o -MD -MP -MF $(DEPDIR)/list.Tpo -c -o list.o `test -f 'utils/list.c' || echo '$(srcdir)/'`utils/list.c

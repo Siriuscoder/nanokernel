@@ -23,6 +23,7 @@ kernel_SOURCES = i386/int.c \
 				 std/membase.c \
 				 std/print.c \
 				 std/strings.c \
+				 std/stdout.c \
 				 utils/list.c \
 				 utils/tree.c \
 				 fs/file.c \
@@ -36,6 +37,7 @@ kernel_SOURCES = i386/int.c \
 				 pic.c \
 				 screen.c \
 				 driver.c \
-				 keyboard.c
+				 keyboard.c \
+				 shell.c
 
 EXTRA_DIST = link.ld

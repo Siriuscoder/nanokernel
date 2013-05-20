@@ -21,23 +21,36 @@
 #include <int.h>
 #include <kerror.h>
 #include <std/print.h>
+#include <std/stdout.h>
 #include <driver.h>
 #include <fs/vfs.h>
 #include <keyboard.h>
 
-static void k_return()
+static void k_return(int how)
 {
-	k_print("Halt kernel now..");
-	k_abort();
+	switch(how)
+	{
+	case EXIT_COLD_BOOT:
+	case EXIT_WARM_BOOT:
+		k_reboot(how);
+		break;
+	default:
+		k_print("Halt kernel now..");
+		k_abort();	
+		break;
+	}
 }
 
 void k_main()
 {
 	if(!k_heap_init())
 		k_panic1(HEAP_INIT_FAILED);
-
+	if(!k_vfs_init())
+		k_panic1(INIT_FAILED);
 	if(!k_init_screen())
 		k_panic1(SCR_INIT_FAILED);
+	if(!k_stdout_init())
+		k_panic1(INIT_FAILED);
 
 	k_print("Boot process done.. Starting the kernel\n");
 	k_print("Console init OK..\n");
@@ -50,7 +63,6 @@ void k_main()
 	if(!k_interrupts_init())
 		k_panic1(INT_INIT_FAILED);
 
-	k_vfs_init();
 	k_init_keyboard();
 	drivers_start(0, NULL);
 	k_print_memory_usage_info();
@@ -60,12 +72,17 @@ void k_main()
 	for(;;)
 	{
 		char symbol;
-		if(k_fread(stdin, &symbol, 1, 1) == 1)
+		k_wait_keyboard();
+		if(k_fread(stdin, &symbol, 1, 1) > 0)
 			k_print("%c", symbol);
+		if(k_get_keyboard_state_key(KEY_LEFT_CTRL) == KEY_PESSED &&
+			k_get_keyboard_state_key(KEY_ALT) == KEY_PESSED &&
+			k_get_keyboard_state_key(KEY_DELETE) == KEY_PESSED)
+			break;
 	}
 
 	drivers_stop();
 
-	k_return();
+	k_return(EXIT_WARM_BOOT);
 }
 

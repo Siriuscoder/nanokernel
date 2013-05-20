@@ -16,20 +16,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef STDIN_H_
-#define STDIN_H_
+#ifndef SHELL_H
+#define	SHELL_H
 
-#include <types.h>
+#include <kernel.h>
 
-typedef struct 
-{
-	bool bufReady;
-	byte symbol;
-} keyBuf_t;
-
-bool init_stdin(void);
-
-bool enter_ascii_symbol(byte symbol);
+bool k_init_shell();
+bool k_start_shell();
 
 
-#endif /* STDIN_H_ */
+#endif	/* SHELL_H */
+

@@ -45,8 +45,9 @@
 
 #include <std/print.h>
 #include <std/strings.h>
+#include <std/stdout.h>
 
-#include <console.h>
+#include <fs/file.h>
 
 #define PAD_RIGHT 1
 #define PAD_ZERO 2
@@ -56,8 +57,8 @@
 #define PRINT_BUF_LEN 12
 
 static int
-prints(void
-(*printchar_handler)(char **str, int c), char **out, const char *string,
+prints(uint32_t fileno, void
+(*printchar_handler)(uint32_t fileno, char **str, int c), char **out, const char *string,
 		int width, int precision, int pad)
 {
 	/*TODO: optimizations needed to be enabled in gcc (-O2)
@@ -83,7 +84,7 @@ prints(void
 	{
 		for (; width > 0; --width)
 		{
-			printchar_handler(out, padchar);
+			printchar_handler(fileno, out, padchar);
 			++pc;
 		}
 	}
@@ -92,7 +93,7 @@ prints(void
 	{
 		for (; precision && *string; ++string, --precision)
 		{
-			printchar_handler(out, *string);
+			printchar_handler(fileno, out, *string);
 			++pc;
 		}
 	}
@@ -100,13 +101,13 @@ prints(void
 	{
 		for (; *string; ++string)
 		{
-			printchar_handler(out, *string);
+			printchar_handler(fileno, out, *string);
 			++pc;
 		}
 	}
 	for (; width > 0; --width)
 	{
-		printchar_handler(out, padchar);
+		printchar_handler(fileno, out, padchar);
 		++pc;
 	}
 
@@ -114,8 +115,8 @@ prints(void
 }
 
 static int
-printi(void
-(*printchar_handler)(char **str, int c), char **out, int i, int b, int sg,
+printi(uint32_t fileno, void
+(*printchar_handler)(uint32_t fileno, char **str, int c), char **out, int i, int b, int sg,
 		int width, int pad, int letbase)
 {
 	char print_buf[PRINT_BUF_LEN];
@@ -130,7 +131,7 @@ printi(void
 	{
 		print_buf[0] = '0';
 		print_buf[1] = '\0';
-		return prints(printchar_handler, out, print_buf, width, 0, pad);
+		return prints(fileno, printchar_handler, out, print_buf, width, 0, pad);
 	}
 
 	if (sg && b == 10 && i < 0)
@@ -155,7 +156,7 @@ printi(void
 	{
 		if (width && (pad & PAD_ZERO))
 		{
-			printchar_handler(out, '-');
+			printchar_handler(fileno, out, '-');
 			++pc;
 			--width;
 		}
@@ -165,12 +166,12 @@ printi(void
 		}
 	}
 
-	return pc + prints(printchar_handler, out, s, width, 0, pad);
+	return pc + prints(fileno, printchar_handler, out, s, width, 0, pad);
 }
 
 static int
-printb(void
-(*printchar_handler)(char **str, int c), char **out, int i, int width, int dot)
+printb(uint32_t fileno, void
+(*printchar_handler)(uint32_t fileno, char **str, int c), char **out, int i, int width, int dot)
 {
 	char print_buf[PRINTB_BUF_LEN];
 	/*register*/
@@ -202,12 +203,12 @@ printb(void
 		++s;
 		dc--;
 	}
-	return prints(printchar_handler, out, s, width + dc, 0, 0);
+	return prints(fileno, printchar_handler, out, s, width + dc, 0, 0);
 }
 
 static int
-print(void
-(*printchar_handler)(char **str, int c), char **out, const char *format,
+print(uint32_t fileno, void
+(*printchar_handler)(uint32_t fileno, char **str, int c), char **out, const char *format,
 		va_list args)
 {
 	/*register*/int width, precision, pad;
@@ -259,41 +260,41 @@ print(void
 			case 's':
 			{
 				char *s = (char *) va_arg(args, int);
-				pc += prints(printchar_handler, out, s ? s : "(null)", width,
+				pc += prints(fileno, printchar_handler, out, s ? s : "(null)", width,
 						precision, pad);
 			}
 				continue;
 			case 'd':
-				pc += printi(printchar_handler, out, va_arg(args, int), 10, 1,
+				pc += printi(fileno, printchar_handler, out, va_arg(args, int), 10, 1,
 						width, pad, 'a');
 				continue;
 			case 'p':
 				/*TODO: printf haven't realized pointer variable operations*/
 			case 'x':
-				pc += printi(printchar_handler, out, va_arg(args, int), 16, 0,
+				pc += printi(fileno, printchar_handler, out, va_arg(args, int), 16, 0,
 						width, pad, 'a');
 				continue;
 			case 'X':
-				pc += printi(printchar_handler, out, va_arg(args, int), 16, 0,
+				pc += printi(fileno, printchar_handler, out, va_arg(args, int), 16, 0,
 						width, pad, 'A');
 				continue;
 			case 'u':
-				pc += printi(printchar_handler, out, va_arg(args, int), 10, 0,
+				pc += printi(fileno, printchar_handler, out, va_arg(args, int), 10, 0,
 						width, pad, 'a');
 				continue;
 			case 'b':
-				pc += printb(printchar_handler, out, va_arg(args, int), width,
+				pc += printb(fileno, printchar_handler, out, va_arg(args, int), width,
 						0);
 				continue;
 			case 'B':
-				pc += printb(printchar_handler, out, va_arg(args, int), width,
+				pc += printb(fileno, printchar_handler, out, va_arg(args, int), width,
 						1);
 				continue;
 			case 'c':
 				/* char are converted to int then pushed on the stack */
 				scr[0] = (char) va_arg(args, int);
 				scr[1] = '\0';
-				pc += prints(printchar_handler, out, scr, width, 0, pad);
+				pc += prints(fileno, printchar_handler, out, scr, width, 0, pad);
 				continue;
 			case 'f':
 			case 'e':
@@ -304,7 +305,7 @@ print(void
 		}
 		else
 		{
-			out_print: printchar_handler(out, *format);
+			out_print: printchar_handler(fileno, out, *format);
 			++pc;
 		}
 	}
@@ -316,9 +317,9 @@ print(void
 }
 
 static void
-diag_printchar(char **str, int c)
+diag_printchar(uint32_t fileno, char **str, int c)
 {
-	k_console_putc((byte) c);
+	k_fwrite(fileno, &c, 1, 1);
 }
 
 int
@@ -328,7 +329,20 @@ k_print(const char *format, ...)
 	va_list args;
 
 	va_start(args, format);
-	ret = print(diag_printchar, 0, format, args);
+	ret = print(STDOUT, diag_printchar, 0, format, args);
+	va_end(args);
+
+	return ret;
+}
+
+int
+k_fprint(uint32_t file, const char *format, ...)
+{
+	int ret;
+	va_list args;
+
+	va_start(args, format);
+	ret = print(file, diag_printchar, 0, format, args);
 	va_end(args);
 
 	return ret;

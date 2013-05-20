@@ -21,6 +21,9 @@
 #include <std/membase.h>
 
 static uint32_t *keyboardState;
+static bool keyboardWait;
+static LED_controll_t led_controll_func;
+
 
 void k_init_keyboard(void)
 {
@@ -37,3 +40,25 @@ uint8_t k_get_keyboard_state_key(uint32_t key)
 {
 	return key < KEY_MAX ? keyboardState[key] : 0;
 }
+
+void k_wait_keyboard(void)
+{
+	while(keyboardWait);
+	keyboardWait = true;
+}
+
+void k_notify_keyboard(void)
+{
+	keyboardWait = false;
+}
+
+void k_set_keyboard_LED_controll(LED_controll_t func)
+{
+	led_controll_func = func;
+}
+
+void k_keyboard_LED_controll(uint8_t flag)
+{
+	led_controll_func(flag);
+}
+

@@ -71,11 +71,10 @@
 /* enabling devices */
 #define COMMAND_FPORT_ENABLE				0xAE
 #define COMMAND_SPORT_ENABLE				0xA8
-/* LEDs keys */
-#define LED_NUMLOCK_ENABLE					0x02
-#define LED_CAPSLOCK_ENABLE					0x04
-#define LED_SCROLLLOCK_ENABLE				0x01
+
 #define LED_SET_COMMAND						0xED
+
+static bool extendedKeyboardFlag = false;
 
 static void I8042_wait_read(void) 
 {
@@ -183,13 +182,13 @@ static void enter_non_ascii_symbol(byte index)
 	switch(scan_code_map_1[index][0])
 	{
 	case KEY_ENTER:
-		_enter_ascii_symbol('\n');
+		enter_ascii_symbol('\n');
 		break;
 	case KEY_SPACE:
-		_enter_ascii_symbol(' ');
+		enter_ascii_symbol(' ');
 		break;
 	case KEY_TAB:
-		_enter_ascii_symbol('\t');
+		enter_ascii_symbol('\t');
 		break;
 	}
 }
@@ -201,7 +200,10 @@ static void keyboard_irq_handler(const intParams_t *params)
 	byte indexcode = scancode;
 	
 	if(scancode == KEYBOARD_EXTENDED_STATE)
+	{
+		extendedKeyboardFlag = true;
 		return;
+	}
 	/* key released */
 	if(scancode & KEYBOARD_RELEASED_STATE)
 	{
@@ -209,18 +211,21 @@ static void keyboard_irq_handler(const intParams_t *params)
 		indexcode = scancode & 0x7f;
 	}
 	
-	if(indexcode >= (sizeof(scan_code_map_1)/3))
+	if(indexcode >= (sizeof(scan_code_map_1)/4))
 		return;
 	/* non char buttons */
-	if(scan_code_map_1[indexcode][2])
+	if(extendedKeyboardFlag || scan_code_map_1[indexcode][3])
 	{		
-		k_set_keyboard_state_key(scan_code_map_1[indexcode][0], 
+		k_set_keyboard_state_key(scan_code_map_1[indexcode]
+			[extendedKeyboardFlag ? 2 : 0], 
 			scancode & KEYBOARD_RELEASED_STATE ? KEY_RELEASED : KEY_PESSED);
 		
 		if(!(scancode & KEYBOARD_RELEASED_STATE))
 		{
 			enter_non_ascii_symbol(indexcode);
 		}
+		
+		extendedKeyboardFlag = false;
 	}
 	/* char buttons */
 	else if(!(scancode & KEYBOARD_RELEASED_STATE))
@@ -229,8 +234,10 @@ static void keyboard_irq_handler(const intParams_t *params)
 				(k_get_keyboard_state_key(KEY_LEFT_SHIFT) == KEY_PESSED ||
 				k_get_keyboard_state_key(KEY_RIGHT_SHIFT) == KEY_PESSED) ? 1 : 0];
 
-		_enter_ascii_symbol(symbol);
+		enter_ascii_symbol(symbol);
 	}
+	
+	k_notify_keyboard();
 }
 
 static bool init_keyboard(size_t argc, char **args)
@@ -238,8 +245,9 @@ static bool init_keyboard(size_t argc, char **args)
 	/* init ps/2 keyboard/mouse controller */
 	if(!init_I8042_controller())
 		return false;
-	_init_stdin();
+	init_stdin();
 	
+	k_set_keyboard_LED_controll(keyboard_led_ctrl);
 	/* disable async interrupts */
 	k_iasync_disable();
 	/* register interrupt handler */
