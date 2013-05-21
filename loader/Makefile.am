@@ -1,6 +1,6 @@
 AM_CPPFLAGS = -m32 -Wall -fmessage-length=0
 CCASFLAGS = -D__GAS__
-AM_LDFLAGS = -T mbr.ld 
+AM_LDFLAGS = -mi386linux -T mbr.ld 
 
 LINK=@LINKER@ $(AM_LDFLAGS) -o loader
 

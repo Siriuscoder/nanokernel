@@ -163,7 +163,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 AM_CPPFLAGS = -m32 -Wall -fmessage-length=0
-AM_LDFLAGS = -T mbr.ld 
+AM_LDFLAGS = -mi386linux -T mbr.ld 
 LINK = @LINKER@ $(AM_LDFLAGS) -o loader
 loader_SOURCES = boot.S
 EXTRA_DIST = mbr.ld
