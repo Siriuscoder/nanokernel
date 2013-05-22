@@ -25,6 +25,7 @@
 #include <fs/file.h>
 #include <fs/vfs.h>
 #include <console.h>
+#include <cpuinfo.h>
 
 #define COMMAND_BUFFER_SIZE			2048
 
@@ -88,13 +89,19 @@ static int process_command(char *command)
 				"free - virtual memory info\n"
 				"cpuinfo - CPU info\n"
 				"reboot - reboot computer\n"
-				"int - debut interrupt\n"
+				"int - debug interrupt\n"
 				);
 	}
 	else if(k_strcmp(command, "int") == 0)
 		k_breakpoint();
 	else if(k_strcmp(command, "reboot") == 0)
 		return EXIT_COLD_BOOT;
+	else if(k_strcmp(command, "cpuinfo") == 0)
+		k_cpuinfo_print(k_get_cpuinfo());
+	else if(k_strcmp(command, "memory") == 0)
+		k_print_memory_info();
+	else if(k_strcmp(command, "free") == 0)
+		k_print_memory_usage_info();
 	else
 		k_print("unknown command..\n");
 	

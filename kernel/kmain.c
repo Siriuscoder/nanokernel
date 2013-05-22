@@ -17,7 +17,6 @@
 */
 
 #include <screen.h>
-#include <cpuinfo.h>
 #include <int.h>
 #include <kerror.h>
 #include <std/print.h>
@@ -54,8 +53,8 @@ void k_main()
 		k_panic1(SCR_INIT_FAILED);
 	if(!k_stdout_init())
 		k_panic1(INIT_FAILED);
-	k_init_keyboard();
-	k_refresh_cpu_info();
+	if(!k_init_keyboard())
+		k_panic1(INIT_FAILED);
 
 	if(!k_interrupts_init())
 		k_panic1(INT_INIT_FAILED);

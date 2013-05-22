@@ -404,6 +404,7 @@ void k_handle_irq(uint32_t irq)
 
 bool k_interrupts_init()
 {
+	k_refresh_cpu_info();
 	/* disable external interrupts */
 	k_iasync_disable();
 

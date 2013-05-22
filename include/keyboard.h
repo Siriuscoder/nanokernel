@@ -70,7 +70,7 @@ typedef void
 
 void k_set_keyboard_state_key(uint32_t key, uint8_t state);
 uint8_t k_get_keyboard_state_key(uint32_t key);
-void k_init_keyboard(void);
+bool k_init_keyboard(void);
 void k_wait_keyboard(void);
 void k_notify_keyboard(void);
 void k_set_keyboard_LED_controll(LED_controll_t func);
