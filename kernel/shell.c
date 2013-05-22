@@ -39,7 +39,7 @@ static char *read_line_to_command_buffer(int stdin)
 {
 	char symbol;
 	char *pBuf = commandBuf;
-	for(;;)
+	while(true)
 	{
 		k_wait_keyboard();
 		if(k_fread(stdin, &symbol, 1, 1) > 0)
@@ -73,7 +73,7 @@ static char *read_line_to_command_buffer(int stdin)
 	return commandBuf;
 }
 
-int process_command(char *command)
+static int process_command(char *command)
 {
 	if(k_strlen(command) == 0)
 		return EXIT_PROCESS_NEXT;
@@ -110,7 +110,7 @@ int k_start_shell()
 	allocate_command_buffer();
 	
 	k_print("Welcome to NikitOS! Try 'help' first!\n\n");
-	for(;;)
+	while(true)
 	{
 		k_print("nikitOS:> ");
 		exit = process_command(read_line_to_command_buffer(stdin));

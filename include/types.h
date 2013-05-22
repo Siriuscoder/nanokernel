@@ -147,96 +147,203 @@ typedef __UINTMAX_TYPE__ uintmax_t;
 
 /* 7.18.2 Limits of specified-width integer types */
 
+#undef INT8_MAX
 #ifdef __INT8_MAX__
-# undef INT8_MAX
 # define INT8_MAX __INT8_MAX__
-# undef INT8_MIN
-# define INT8_MIN (-INT8_MAX - 1)
+#else
+# define INT8_MAX 0x7f
 #endif
+
+#undef INT8_MIN
+#define INT8_MIN (-INT8_MAX - 1)
+
+
+#undef UINT8_MAX
 #ifdef __UINT8_MAX__
-# undef UINT8_MAX
 # define UINT8_MAX __UINT8_MAX__
 #endif
+
+#undef INT16_MAX
 #ifdef __INT16_MAX__
-# undef INT16_MAX
 # define INT16_MAX __INT16_MAX__
-# undef INT16_MIN
-# define INT16_MIN (-INT16_MAX - 1)
+#else
+# define INT16_MAX 0x7fff
 #endif
+
+#undef INT16_MIN
+#define INT16_MIN (-INT16_MAX - 1)
+
+#undef UINT16_MAX
 #ifdef __UINT16_MAX__
-# undef UINT16_MAX
 # define UINT16_MAX __UINT16_MAX__
 #endif
+
+#undef INT32_MAX
 #ifdef __INT32_MAX__
-# undef INT32_MAX
 # define INT32_MAX __INT32_MAX__
-# undef INT32_MIN
-# define INT32_MIN (-INT32_MAX - 1)
+#else
+# define INT16_MAX 0x7fffffff
 #endif
+
+#undef INT32_MIN
+#define INT32_MIN (-INT32_MAX - 1)
+
+#undef UINT32_MAX
 #ifdef __UINT32_MAX__
-# undef UINT32_MAX
 # define UINT32_MAX __UINT32_MAX__
 #endif
+
+#undef INT64_MAX
 #ifdef __INT64_MAX__
-# undef INT64_MAX
 # define INT64_MAX __INT64_MAX__
-# undef INT64_MIN
-# define INT64_MIN (-INT64_MAX - 1)
+#else
+# define INT16_MAX 0x7fffffffffffffff
 #endif
+
+#undef INT64_MIN
+#define INT64_MIN (-INT64_MAX - 1)
+
+#undef UINT64_MAX
 #ifdef __UINT64_MAX__
-# undef UINT64_MAX
 # define UINT64_MAX __UINT64_MAX__
 #endif
 
+
 #undef INT_LEAST8_MAX
-#define INT_LEAST8_MAX __INT_LEAST8_MAX__
+#ifdef __INT_LEAST8_MAX__
+# define INT_LEAST8_MAX __INT_LEAST8_MAX__
+#else
+# define INT_LEAST8_MAX INT8_MAX
+#endif
+
 #undef INT_LEAST8_MIN
 #define INT_LEAST8_MIN (-INT_LEAST8_MAX - 1)
+
 #undef UINT_LEAST8_MAX
-#define UINT_LEAST8_MAX __UINT_LEAST8_MAX__
+#ifdef __UINT_LEAST8_MAX__
+# define UINT_LEAST8_MAX __UINT_LEAST8_MAX__
+#else
+# define UINT_LEAST8_MAX UINT8_MAX
+#endif
+
 #undef INT_LEAST16_MAX
-#define INT_LEAST16_MAX __INT_LEAST16_MAX__
+#ifdef __INT_LEAST16_MAX__
+# define INT_LEAST16_MAX __INT_LEAST16_MAX__
+#else
+# define INT_LEAST16_MAX INT16_MAX
+#endif
+
 #undef INT_LEAST16_MIN
 #define INT_LEAST16_MIN (-INT_LEAST16_MAX - 1)
+
 #undef UINT_LEAST16_MAX
-#define UINT_LEAST16_MAX __UINT_LEAST16_MAX__
+#ifdef __UINT_LEAST16_MAX__
+# define UINT_LEAST16_MAX __UINT_LEAST16_MAX__
+#else
+# define UINT_LEAST16_MAX UINT16_MAX
+#endif
+
 #undef INT_LEAST32_MAX
-#define INT_LEAST32_MAX __INT_LEAST32_MAX__
+#ifdef __INT_LEAST32_MAX__
+# define INT_LEAST32_MAX __INT_LEAST32_MAX__
+#else
+# define INT_LEAST32_MAX INT32_MAX
+#endif
+
 #undef INT_LEAST32_MIN
 #define INT_LEAST32_MIN (-INT_LEAST32_MAX - 1)
+
 #undef UINT_LEAST32_MAX
-#define UINT_LEAST32_MAX __UINT_LEAST32_MAX__
+#ifdef __UINT_LEAST32_MAX__
+# define UINT_LEAST32_MAX __UINT_LEAST32_MAX__
+#else
+# define UINT_LEAST32_MAX UINT32_MAX
+#endif
+
 #undef INT_LEAST64_MAX
-#define INT_LEAST64_MAX __INT_LEAST64_MAX__
+#ifdef __INT_LEAST64_MAX__
+# define INT_LEAST64_MAX __INT_LEAST64_MAX__
+#else
+# define INT_LEAST64_MAX INT64_MAX
+#endif
+
 #undef INT_LEAST64_MIN
 #define INT_LEAST64_MIN (-INT_LEAST64_MAX - 1)
+
 #undef UINT_LEAST64_MAX
-#define UINT_LEAST64_MAX __UINT_LEAST64_MAX__
+#ifdef __UINT_LEAST64_MAX__
+# define UINT_LEAST64_MAX __UINT_LEAST64_MAX__
+#else
+# define UINT_LEAST64_MAX UINT64_MAX
+#endif
 
 #undef INT_FAST8_MAX
-#define INT_FAST8_MAX __INT_FAST8_MAX__
+#ifdef __INT_FAST8_MAX__
+# define INT_FAST8_MAX __INT_FAST8_MAX__
+#else
+# define INT_FAST8_MAX INT8_MAX
+#endif
+
 #undef INT_FAST8_MIN
 #define INT_FAST8_MIN (-INT_FAST8_MAX - 1)
+
 #undef UINT_FAST8_MAX
-#define UINT_FAST8_MAX __UINT_FAST8_MAX__
+#ifdef __UINT_FAST8_MAX__
+# define UINT_FAST8_MAX __UINT_FAST8_MAX__
+#else
+# define UINT_FAST8_MAX UINT8_MAX
+#endif
+
 #undef INT_FAST16_MAX
-#define INT_FAST16_MAX __INT_FAST16_MAX__
+#ifdef __INT_FAST16_MAX__
+# define INT_FAST16_MAX __INT_FAST16_MAX__
+#else
+# define INT_FAST16_MAX INT16_MAX
+#endif
+
 #undef INT_FAST16_MIN
 #define INT_FAST16_MIN (-INT_FAST16_MAX - 1)
+
 #undef UINT_FAST16_MAX
-#define UINT_FAST16_MAX __UINT_FAST16_MAX__
+#ifdef __UINT_FAST16_MAX__
+# define UINT_FAST16_MAX __UINT_FAST16_MAX__
+#else
+# define UINT_FAST16_MAX UINT16_MAX
+#endif
+
 #undef INT_FAST32_MAX
-#define INT_FAST32_MAX __INT_FAST32_MAX__
+#ifdef __INT_FAST32_MAX__
+# define INT_FAST32_MAX __INT_FAST32_MAX__
+#else
+# define INT_FAST32_MAX INT8_MAX
+#endif
+
 #undef INT_FAST32_MIN
 #define INT_FAST32_MIN (-INT_FAST32_MAX - 1)
+
 #undef UINT_FAST32_MAX
-#define UINT_FAST32_MAX __UINT_FAST32_MAX__
+#ifdef __UINT_FAST32_MAX__
+# define UINT_FAST32_MAX __UINT_FAST32_MAX__
+#else
+# define UINT_FAST32_MAX UINT32_MAX
+#endif
+
 #undef INT_FAST64_MAX
-#define INT_FAST64_MAX __INT_FAST64_MAX__
+#ifdef __INT_FAST64_MAX__
+# define INT_FAST64_MAX __INT_FAST64_MAX__
+#else
+# define INT_FAST64_MAX INT64_MAX
+#endif
+
 #undef INT_FAST64_MIN
 #define INT_FAST64_MIN (-INT_FAST64_MAX - 1)
+
 #undef UINT_FAST64_MAX
-#define UINT_FAST64_MAX __UINT_FAST64_MAX__
+#ifdef __UINT_FAST64_MAX__
+# define UINT_FAST64_MAX __UINT_FAST64_MAX__
+#else
+# define UINT_FAST64_MAX UINT64_MAX
+#endif
 
 #ifdef __INTPTR_MAX__
 # undef INTPTR_MAX
