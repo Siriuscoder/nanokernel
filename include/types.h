@@ -182,7 +182,7 @@ typedef __UINTMAX_TYPE__ uintmax_t;
 #ifdef __INT32_MAX__
 # define INT32_MAX __INT32_MAX__
 #else
-# define INT16_MAX 0x7fffffff
+# define INT32_MAX 0x7fffffff
 #endif
 
 #undef INT32_MIN
@@ -197,7 +197,7 @@ typedef __UINTMAX_TYPE__ uintmax_t;
 #ifdef __INT64_MAX__
 # define INT64_MAX __INT64_MAX__
 #else
-# define INT16_MAX 0x7fffffffffffffff
+# define INT64_MAX 0x7fffffffffffffff
 #endif
 
 #undef INT64_MIN
