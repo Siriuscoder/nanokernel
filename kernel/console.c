@@ -53,26 +53,24 @@ static void k_clear_line(uint32_t lineno)
 static size_t k_console_newline()
 {
 	size_t curLine;
-	size_t newLine;
 
 	curLine = consIntern.pos / consIntern.entry.xLen;
 	/* if it is last line in console buffer shift to up */
 	if(curLine+1 >= consIntern.entry.yLen)
 	{
-		newLine = curLine;
 		/* copy from second line to begin */
 		k_memcpy(consIntern.entry.memEntry,
 			consIntern.entry.memEntry + consIntern.lineSize,
 			consIntern.buffSize - consIntern.lineSize);
 		/* clear current line */
-		k_clear_line(newLine);
+		k_clear_line(curLine);
 	}
 	else
 	{
-		newLine = curLine+1;
+		curLine++;
 	}
 
-	consIntern.pos = consIntern.entry.xLen * newLine;
+	consIntern.pos = consIntern.entry.xLen * curLine;
 	return consIntern.pos;
 }
 
@@ -131,7 +129,7 @@ int k_console_putc(char c)
 	(consIntern.firstEntity + consIntern.pos)->symbol = c;
 
 	consIntern.pos++;
-	if(consIntern.pos >= consIntern.consoleMaxSize)
+	if(consIntern.pos+1 >= consIntern.consoleMaxSize)
 		k_console_newline();
 
 	return 1;
