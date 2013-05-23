@@ -44,19 +44,21 @@ static char *read_line_to_command_buffer(int stdin)
 	{
 		k_wait_keyboard();
 		if(k_fread(stdin, &symbol, 1, 1) > 0)
-		{
-			/* check command buffer is full */
-			if((pBuf - commandBuf) > COMMAND_BUFFER_SIZE+1)
-				continue;
-			/* print char */
-			k_print("%c", symbol);
+		{			
 			/* check on \n */
 			if(symbol == '\n')
-			{
+			{			
+				/* to next line */
+				k_print("\n");	
 				*pBuf = 0;
 				break;
 			}
+			/* check command buffer is full */
+			if((pBuf - commandBuf) > COMMAND_BUFFER_SIZE+1)
+				continue;
 			
+			/* print char */
+			k_print("%c", symbol);	
 			*pBuf = symbol;
 			pBuf++;
 		}
@@ -103,7 +105,7 @@ static int process_command(char *command)
 	else if(k_strcmp(command, "free") == 0)
 		k_print_memory_usage_info();
 	else
-		k_print("unknown command..\n");
+		k_print("unknown command '%s'\n", command);
 	
 	return EXIT_PROCESS_NEXT;
 }
