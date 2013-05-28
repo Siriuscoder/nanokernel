@@ -105,23 +105,39 @@ static int process_command(char *command)
 	else if(k_strcmp(command, "free") == 0)
 		k_print_memory_usage_info();
 	else
+	{
+		k_console_set_color(CONCOLE_BACKGROUND_BLACK,
+			CONCOLE_SYMBOL_COLOR_RED);	
 		k_print("unknown command '%s'\n", command);
+		k_console_set_color(CONCOLE_BACKGROUND_BLACK,
+			CONCOLE_SYMBOL_COLOR_LIGHTGREY);
+	}
+
 	
 	return EXIT_PROCESS_NEXT;
+}
+
+static void print_command_line_beginer()
+{
+	k_console_set_color(CONCOLE_BACKGROUND_BLACK,
+		CONCOLE_SYMBOL_COLOR_CYAN);	
+	k_print("nikitOS:> ");
+	k_console_set_color(CONCOLE_BACKGROUND_BLACK,
+		CONCOLE_SYMBOL_COLOR_LIGHTGREY);
 }
 
 int k_start_shell()
 {
 	int stdin = k_fopen("/dev/stdin", FILE_OPEN_IN_VFS | FILE_IN);
 	int exit;
-	if(!stdin) 
+	if(!stdin)
 		k_panic1(INIT_FAILED);
 	allocate_command_buffer();
 	
 	k_print("Welcome to NikitOS! Try 'help' first!\n\n");
 	while(true)
 	{
-		k_print("nikitOS:> ");
+		print_command_line_beginer();
 		exit = process_command(read_line_to_command_buffer(stdin));
 		
 		if(exit != EXIT_PROCESS_NEXT)

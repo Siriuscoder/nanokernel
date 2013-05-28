@@ -20,9 +20,34 @@
 #define __CONSOLE_H
 
 /* is this not a kernel includes, add for easy */
-#include <std/membase.h>
+#include <kernel.h>
 
 #define TAB_WHITE_SPACES	4
+
+#define CONCOLE_SYMBOL_COLOR_BLACK			0x0
+#define CONCOLE_SYMBOL_COLOR_BLUE			0x1
+#define CONCOLE_SYMBOL_COLOR_GREEN			0x2
+#define CONCOLE_SYMBOL_COLOR_CYAN			0x3
+#define CONCOLE_SYMBOL_COLOR_RED			0x4
+#define CONCOLE_SYMBOL_COLOR_MAGENTA		0x5
+#define CONCOLE_SYMBOL_COLOR_BROWN			0x6
+#define CONCOLE_SYMBOL_COLOR_LIGHTGREY		0x7
+#define CONCOLE_SYMBOL_COLOR_DARKGREY		0x8
+#define CONCOLE_SYMBOL_COLOR_LIGHTBLUE		0x9
+#define CONCOLE_SYMBOL_COLOR_LIGHTCYAN		0xA
+#define CONCOLE_SYMBOL_COLOR_LIGHTRED		0xB
+#define CONCOLE_SYMBOL_COLOR_LIGHTMAGENTA	0xC
+#define CONCOLE_SYMBOL_COLOR_LIGHTBROWN		0xD
+#define CONCOLE_SYMBOL_COLOR_WHITE			0xE
+
+#define CONCOLE_BACKGROUND_BLACK			0x0
+#define CONCOLE_BACKGROUND_BLUE				0x1
+#define CONCOLE_BACKGROUND_GREEN			0x2
+#define CONCOLE_BACKGROUND_CYAN				0x3
+#define CONCOLE_BACKGROUND_RED				0x4
+#define CONCOLE_BACKGROUND_MAGENTA			0x5
+#define CONCOLE_BACKGROUND_BROWN			0x6
+#define CONCOLE_BACKGROUND_LIGHTGREY		0x7
 
 typedef struct 
 {
@@ -49,6 +74,6 @@ void k_console_clean_front();
 
 size_t k_console_write(char *message);
 
-
+void k_console_set_color(char backCol, char symCol);
 
 #endif

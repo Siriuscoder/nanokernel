@@ -34,6 +34,9 @@ bool k_init_screen()
 		return false;
 	/* clean console memory */
 	k_console_clean();
+	
+	k_console_set_color(CONCOLE_BACKGROUND_BLACK,
+		CONCOLE_SYMBOL_COLOR_LIGHTGREY);
 
 	return true;
 }

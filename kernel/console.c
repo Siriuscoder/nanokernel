@@ -17,6 +17,7 @@
 */
 
 #include <console.h>
+#include <std/membase.h>
 
 #define WHITE_ON_DARK_ATTR 0x07 // white on black text
 
@@ -32,6 +33,7 @@ static struct
 	size_t buffSize;
 	size_t lineSize;
 	size_t consoleMaxSize;
+	char curAttrib;
 	consoleEntity_t *firstEntity;
 	consoleEntry_t entry;
 } consIntern;
@@ -74,6 +76,13 @@ static size_t k_console_newline()
 	return consIntern.pos;
 }
 
+static void k_set_symbol_in_current_pos(char symbol, char attr)
+{
+	consoleEntity_t *entity = (consIntern.firstEntity + consIntern.pos);
+	entity->symbol = symbol;
+	entity->attrib = attr;
+}
+
 bool k_console_init(const consoleEntry_t *entry)
 {
 	k_memcpy(&consIntern.entry, (ptr_t)entry, sizeof(consoleEntry_t));
@@ -82,6 +91,7 @@ bool k_console_init(const consoleEntry_t *entry)
 	consIntern.buffSize = consIntern.lineSize * entry->yLen;
 	consIntern.consoleMaxSize = entry->xLen * entry->yLen;
 	consIntern.firstEntity = (consoleEntity_t *)consIntern.entry.memEntry;
+	consIntern.curAttrib = WHITE_ON_DARK_ATTR;
 
 	return true;
 }
@@ -110,6 +120,9 @@ size_t k_console_write(char *message)
 
 int k_console_putc(char c)
 {
+    /* clean up cursor */
+	k_set_symbol_in_current_pos(0, WHITE_ON_DARK_ATTR);
+	
 	if(c == '\n')
 	{
 		k_console_newline();
@@ -124,13 +137,18 @@ int k_console_putc(char c)
 			k_console_putc(' ');
 			tabCounter++;
 		}
+		
+		return 1;
 	}
 
-	(consIntern.firstEntity + consIntern.pos)->symbol = c;
+	k_set_symbol_in_current_pos(c, consIntern.curAttrib);
 
 	consIntern.pos++;
 	if(consIntern.pos+1 >= consIntern.consoleMaxSize)
 		k_console_newline();
+
+	/* paint my cursor */
+	k_set_symbol_in_current_pos('_', WHITE_ON_DARK_ATTR);
 
 	return 1;
 }
@@ -145,7 +163,7 @@ int k_console_set_cursor_pos(size_t x, size_t y)
 	return 0;
 }
 
-void k_get_cursor_pos(size_t *x, size_t *y)
+void k_console_get_cursor_pos(size_t *x, size_t *y)
 {
 	*y = consIntern.pos / consIntern.entry.xLen;
 	*x = consIntern.pos % consIntern.entry.xLen;
@@ -170,8 +188,19 @@ void k_console_clean_front()
 {
 	if(consIntern.pos > 0)
 	{
+		k_set_symbol_in_current_pos(0, WHITE_ON_DARK_ATTR);
 		consIntern.pos--;
-		(consIntern.firstEntity + consIntern.pos)->symbol = 0;
+		
+		/* paint my cursor */
+		k_set_symbol_in_current_pos('_', WHITE_ON_DARK_ATTR);
 	}
+}
+
+void k_console_set_color(char backCol, char symCol)
+{
+ /* set low 4 bits for symbol color */
+	consIntern.curAttrib = (symCol & 0xf);
+ /* set high 3 bits for background color, 4-ht bit always 0 */
+	consIntern.curAttrib |= (backCol << 4);
 }
 
