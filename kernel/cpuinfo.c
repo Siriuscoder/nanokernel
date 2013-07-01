@@ -79,7 +79,7 @@ void
 k_get_cpu_info(uint32_t mode, uint32_t *eax, uint32_t *ebx, uint32_t *ecx,
 		uint32_t *edx);
 
-bool
+bool NO_OPTIMIZE
 k_refresh_cpu_info()
 {
 	uint32_t eax = 0, ebx = 0, ecx = 0, edx = 0, i, count;

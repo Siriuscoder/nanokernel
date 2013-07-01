@@ -80,6 +80,8 @@
 #define EXIT_CPU_HALT		0x2
 #define EXIT_PANIC			0xDEAD
 
+#define NO_OPTIMIZE			__attribute__((optimize("O0")))
+
 
 #if !defined(__GAS__)
 

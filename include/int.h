@@ -23,7 +23,7 @@
 #include <irq.h>
 
 #define IDT_INTEL_EXCEPTION_COUNT		32
-#define IDT_COUNT_MAX					(IDT_INTEL_EXCEPTION_COUNT+IDT_IRQ_VECTORS_COUNT)
+#define IDT_COUNT_MAX					(255)
 
 #define IDT_INTERRUPT_GATE_FLAG			0x8E
 #define IDT_TRAP_GATE_FLAG				0x8F
@@ -71,6 +71,13 @@ typedef struct idt_entry
     byte flags;
     uint16_t base_hi;
 } idtEntry_t;
+
+/* Defines an IDT descriptor */
+typedef struct idt_descriptor
+{
+	uint16_t idt_limit;
+	idtEntry_t *idt_entry;
+} idt_descriptor_t;
 #pragma pack(pop)
 
 typedef struct

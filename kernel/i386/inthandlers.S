@@ -20,9 +20,10 @@
 
 #include <int.h>
 
-	.globl k_idt;
+	.globl k_idt_descriptor;
 	.globl k_load_idt_descriptor;
 	.globl k_DE_handler;
+	.globl k_DB_handler;
 	.globl k_NMI_handler;
 	.globl k_BP_handler;
 	.globl k_OF_handler;
@@ -63,18 +64,12 @@
 
 
 	.data
-/* force 8-byte alignment */
-	.p2align	3
-
-k_idt:
-	.space		(8 * IDT_COUNT_MAX)
-
 /* force 4-byte alignment */
 	.p2align	2
 
 k_idt_descriptor:
-	.word	((IDT_COUNT_MAX*8)-1)	/* limit */
-	.long	k_idt					/* addr */
+	.word	0x0	/* limit */
+	.long	0x0	/* addr */
 
 
 	.text
@@ -228,6 +223,14 @@ k_DE_handler:
 	pushl	%ebp
 	movl	%esp, %ebp
 	pushl	$EXC_DIVIDE_ERROR
+	pushl	$INT_NO_PARAM
+	jmp 	k_switch_to_handler
+
+k_DB_handler:
+	/* no err code */
+	pushl	%ebp
+	movl	%esp, %ebp
+	pushl	$EXC_DEBUG
 	pushl	$INT_NO_PARAM
 	jmp 	k_switch_to_handler
 

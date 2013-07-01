@@ -90,7 +90,7 @@
  */
 
 extern void k_load_idt_descriptor();
-extern idtEntry_t k_idt[];
+extern idt_descriptor_t k_idt_descriptor;
 
 const char *k_exception_descr[ISR_DESCR_MAX] = {
 		"Divide Error",
@@ -127,6 +127,7 @@ struct int_handler_descr_t
 DECLARE_INTERRUPT_POINTER(k_stub_handler);
 
 DECLARE_INTERRUPT_POINTER(k_DE_handler);
+DECLARE_INTERRUPT_POINTER(k_DB_handler);
 DECLARE_INTERRUPT_POINTER(k_NMI_handler);
 DECLARE_INTERRUPT_POINTER(k_BP_handler);
 DECLARE_INTERRUPT_POINTER(k_OF_handler);
@@ -164,7 +165,7 @@ DECLARE_INTERRUPT_POINTER(k_irq_slave_07);
 
 static void setup_idt_descriptor(byte intNum, idtEntry_t *desc)
 {
-	k_memcpy(&k_idt[intNum], desc, sizeof(idtEntry_t));
+	k_memcpy(&(k_idt_descriptor.idt_entry[intNum]), desc, sizeof(idtEntry_t));
 }
 
 static void init_handler_lists()
@@ -226,16 +227,23 @@ void k_idt_set_trap_gate(byte intNum, const ptr_t handler, uint16_t codeSelector
 
 bool k_idt_init()
 {
+	/* allocate idt table */
+	k_idt_descriptor.idt_limit = sizeof(idtEntry_t) * IDT_COUNT_MAX;
+	k_idt_descriptor.idt_entry = k_malloc_aligned(k_idt_descriptor.idt_limit, 8);
+	if(!k_idt_descriptor.idt_entry)
+		return false;
+	
+	k_print("IDT entry address is %d\n", (size_t)k_idt_descriptor.idt_entry);
 	/* clean idt first */
-	k_memset(&k_idt[0], 0, sizeof(idtEntry_t) * IDT_COUNT_MAX);
+	k_memset(k_idt_descriptor.idt_entry, 0, k_idt_descriptor.idt_limit);
 
 	/* setup exceptions handlers gates */
 	k_idt_set_int_gate(EXC_DIVIDE_ERROR, INTERRUPT_POINTER(k_DE_handler),
 			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
-/*
-	k_idt_set_int_gate(1, INTERRUPT_POINTER(k_stub_handler),
+
+	k_idt_set_trap_gate(1, INTERRUPT_POINTER(k_DB_handler),
 			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
-*/
+
 	k_idt_set_int_gate(EXC_NMI, INTERRUPT_POINTER(k_NMI_handler),
 			KERNEL_PROTECTEDMODE_CODE_SEG, IDT_GATE_DPL_0);
 

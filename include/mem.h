@@ -83,7 +83,13 @@ void
 k_free(ptr_t block);
 
 ptr_t
+k_malloc_aligned(size_t bytes, byte align);
+
+ptr_t
 k_realloc(ptr_t block, size_t bytes);
+
+ptr_t
+k_realloc_aligned(ptr_t block, size_t bytes, byte align);
 
 void
 k_print_memory_info();
