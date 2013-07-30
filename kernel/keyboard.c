@@ -18,6 +18,7 @@
 
 #include <keyboard.h>
 #include <mem.h>
+#include <cpu.h>
 #include <std/membase.h>
 
 static uint32_t *keyboardState;
@@ -45,7 +46,9 @@ uint8_t k_get_keyboard_state_key(uint32_t key)
 
 void k_wait_keyboard(void)
 {
-	while(keyboardWait);
+	while(keyboardWait)
+		k_idle_wait();
+	
 	keyboardWait = true;
 }
 

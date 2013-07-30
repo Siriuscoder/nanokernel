@@ -25,6 +25,14 @@
 	.globl	k_set_msr;
 	.globl	k_iasync_enable;
 	.globl	k_iasync_disable;
+	.globl	k_abort;
+	.globl	k_reboot;
+	.globl	k_freeze;
+	.globl	k_breakpoint;
+	.globl	k_ss_crash;
+	.globl	k_gp_crash;
+	.globl	k_opcode_crash;
+	.globl	k_idle_wait;
 
 	.text
 	.code32
@@ -107,3 +115,64 @@ k_iasync_disable:
 	cli
 	ret
 
+k_abort:
+	call	k_iasync_disable
+hlt_loop:
+	hlt
+/* But if a non maskable interrupt is received, halt again */
+	jmp		hlt_loop
+
+k_reboot:
+	jmp		do_reboot
+/*
+There are several methods for rebooting, including
+1. ACPI Reset command
+2. load a 0-sized IDT and issue an interrupt (that'll triple fault and reset)
+3. Use the 8042 keyboard controller to pulse the CPU's RESET pin
+
+I chose method 2..
+
+set IDT null decriptor first 
+*/ 
+null_idt_descr:
+	.word	0x0				/* limit */
+	.long	null_idt_descr	/* addr */
+do_reboot:
+
+	lidt	null_idt_descr
+/* rase debug interrupt, and good bye */
+	int		$0x2
+
+k_freeze:
+	nop
+	nop
+	jmp		k_freeze
+
+k_breakpoint:
+	int		$0x3
+	ret
+
+k_ss_crash:
+	movl	$0xD, %eax
+	movl	$0xE, %ebx
+	movl	$0xA, %ecx
+	movl	$0xD, %edx
+	movw	%ax, %ss
+
+k_gp_crash:
+	movl	$0xD, %eax
+	movl	$0xE, %ebx
+	movl	$0xA, %ecx
+	movl	$0xD, %edx
+	movw	%ax, %ds
+
+k_opcode_crash:
+	movl	$0xD, %eax
+	movl	$0xE, %ebx
+	movl	$0xA, %ecx
+	movl	$0xD, %edx
+	.long	0xffffffff
+
+k_idle_wait:
+	hlt
+	ret

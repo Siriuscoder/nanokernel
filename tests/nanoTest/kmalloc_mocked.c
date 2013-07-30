@@ -49,19 +49,60 @@ k_heap_init()
 ptr_t
 k_malloc(size_t bytes)
 {
-	return k_pool_select(&memPool, bytes);
+	return k_malloc_aligned(bytes, 1);
 }
 
 void
 k_free(ptr_t block)
 {
-	k_pool_release(&memPool, block);
+	byte dividerSize = *(((byte *)block)-1);
+	byte *rawBlock = ((byte *)block)-dividerSize-1;
+	k_pool_release(&memPool, rawBlock);
+}
+
+ptr_t
+k_malloc_aligned(size_t bytes, byte align)
+{
+	if(align == 0)
+		return NULL;
+	
+	byte *rawMem = (byte *)k_pool_select(&memPool, bytes+align);
+	if(!rawMem)
+		return NULL;
+	
+	/* normalize raw memory block */
+	byte dividerSize = align - (((int)rawMem+1) % align);
+	rawMem += dividerSize;
+	*((byte *)rawMem) = dividerSize;
+	return rawMem+1;
 }
 
 ptr_t
 k_realloc(ptr_t block, size_t bytes)
 {
-	return k_pool_replace(&memPool, block, bytes);
+	return k_realloc_aligned(block, bytes, 1);
+}
+
+ptr_t
+k_realloc_aligned(ptr_t block, size_t bytes, byte align)
+{
+	if(align == 0)
+		return NULL;
+	
+	byte dividerOldSize = *(((byte *)block)-1);
+	byte *rawOldBlock = ((byte *)block)-dividerOldSize-1;
+	/* reallocate old block */
+	byte *rawMem = (byte *)k_pool_replace(&memPool, rawOldBlock, 
+		bytes+align);
+	
+	if(!rawMem)
+		return NULL;
+	
+	/* normalize raw memory block */
+	byte dividerSize = align - (((int)rawMem-1) % align);
+	rawMem += dividerSize;
+	*((byte *)rawMem) = dividerSize;
+	return rawMem+1;
 }
 
 void

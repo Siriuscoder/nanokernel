@@ -44,6 +44,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/_ext/683473409/tree.o \
 	${OBJECTDIR}/kerror_mocked.o \
 	${OBJECTDIR}/kmalloc_mocked.o \
+	${OBJECTDIR}/kmalloc_test.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/print_mocked.o \
 	${OBJECTDIR}/vfs_test.o
@@ -117,6 +118,11 @@ ${OBJECTDIR}/kmalloc_mocked.o: kmalloc_mocked.c
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.c) -O2 -I../../include -Iinclude -MMD -MP -MF $@.d -o ${OBJECTDIR}/kmalloc_mocked.o kmalloc_mocked.c
+
+${OBJECTDIR}/kmalloc_test.o: kmalloc_test.c 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.c) -O2 -I../../include -Iinclude -MMD -MP -MF $@.d -o ${OBJECTDIR}/kmalloc_test.o kmalloc_test.c
 
 ${OBJECTDIR}/main.o: main.c 
 	${MKDIR} -p ${OBJECTDIR}

@@ -18,6 +18,14 @@
 
 #include <kernel.h>
 
+/* The flag for protected mode.  */
+#define CPU_CR0_PE_ON		0x1
+#define CPU_CR4_PAE_ON		0x00000020
+#define CPU_CR4_PSE_ON		0x00000010
+#define CPU_CR0_PAGING_ON	0x80000000
+#define CPU_AMD64_MSR		0xc0000080
+#define CPU_AMD64_MSR_ON	0x00000100
+
 	.file	"realmode.S"
 
 .globl k_gdt;

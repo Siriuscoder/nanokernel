@@ -16,52 +16,20 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <screen.h>
-#include <int.h>
-#include <cpu.h>
-#include <kerror.h>
-#include <std/print.h>
-#include <std/stdout.h>
-#include <driver.h>
-#include <fs/vfs.h>
-#include <keyboard.h>
-#include <shell.h>
+#ifndef CPU_H
+#define	CPU_H
 
-static void k_return(int how)
-{
-	drivers_stop();
-	
-	switch(how)
-	{
-	case EXIT_COLD_BOOT:
-	case EXIT_WARM_BOOT:
-		k_reboot(how);
-		break;
-	default:
-		k_print("Halt kernel now..");
-		k_abort();	
-		break;
-	}
-}
+/* stop/interrupt funct */
+void k_abort();
+void k_reboot(int how);
+void k_freeze();
+void k_breakpoint();
+/* crash functions for debug only */
+void k_ss_crash();
+void k_gp_crash();
+void k_opcode_crash();
+void k_idle_wait();
 
-void k_main()
-{
-	if(!k_heap_init())
-		k_panic1(HEAP_INIT_FAILED);
-	if(!k_vfs_init())
-		k_panic1(INIT_FAILED);
-	if(!k_init_screen())
-		k_panic1(SCR_INIT_FAILED);
-	if(!k_stdout_init())
-		k_panic1(INIT_FAILED);
-	if(!k_init_keyboard())
-		k_panic1(INIT_FAILED);
 
-	if(!k_interrupts_init())
-		k_panic1(INT_INIT_FAILED);
-
-	drivers_start(0, NULL);
-
-	k_return(k_start_shell());
-}
+#endif	/* CPU_H */
 

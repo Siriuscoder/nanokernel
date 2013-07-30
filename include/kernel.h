@@ -64,15 +64,6 @@
 #define KERNEL_PROTECTEDMODE_STACK_ADDR		KERNEL_REALMODE_STACK_ADDR
 #define KERNEL_PROTECTEDMODE_STACK_SIZE		KERNEL_REALMODE_STACK_SIZE
 
-
-/* The flag for protected mode.  */
-#define CPU_CR0_PE_ON		0x1
-#define CPU_CR4_PAE_ON		0x00000020
-#define CPU_CR4_PSE_ON		0x00000010
-#define CPU_CR0_PAGING_ON	0x80000000
-#define CPU_AMD64_MSR		0xc0000080
-#define CPU_AMD64_MSR_ON	0x00000100
-
 /* C code exit signals */
 #define EXIT_COLD_BOOT		0x0
 #define EXIT_PROCESS_NEXT	1
@@ -81,27 +72,13 @@
 #define EXIT_PANIC			0xDEAD
 
 #define NO_OPTIMIZE			__attribute__((optimize("O0")))
-
+#define OPTIMIZE			__attribute__((optimize("O2")))
 
 #if !defined(__GAS__)
 
 /* version info pointers from version.S */
 extern uint32_t k_version_signature;
 extern char k_version_full_string[];
-
-/* stop/interrupt funct */
-extern void k_abort();
-
-extern void k_reboot(int how);
-
-extern void k_freeze();
-
-extern void k_breakpoint();
-
-/* crash functions for debug only */
-extern void k_ss_crash();
-extern void k_gp_crash();
-extern void k_opcode_crash();
 
 #endif
 

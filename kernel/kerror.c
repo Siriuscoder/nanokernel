@@ -18,6 +18,7 @@
 
 #include <std/print.h>
 #include <kerror.h>
+#include <cpu.h>
 
 static void k_print_regs(const regs_t *regs)
 {

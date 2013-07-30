@@ -32,6 +32,7 @@
         </df>
         <in>config.h</in>
         <in>console.h</in>
+        <in>cpu.h</in>
         <in>cpuinfo.h</in>
         <in>driver.h</in>
         <in>int.h</in>
@@ -59,7 +60,6 @@
           <in>port.S</in>
           <in>protmode.S</in>
           <in>start.S</in>
-          <in>stop.S</in>
           <in>version.S</in>
         </df>
         <df name="i486">
@@ -115,10 +115,12 @@
             </df>
           </df>
           <df name="include">
+            <in>kmalloc_test.h</in>
             <in>vfs_test.h</in>
           </df>
           <in>kerror_mocked.c</in>
           <in>kmalloc_mocked.c</in>
+          <in>kmalloc_test.c</in>
           <in>main.c</in>
           <in>print_mocked.c</in>
           <in>vfs_test.c</in>

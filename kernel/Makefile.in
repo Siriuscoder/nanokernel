@@ -47,14 +47,14 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 PROGRAMS = $(noinst_PROGRAMS)
 am_kernel_OBJECTS = int.$(OBJEXT) inthandlers.$(OBJEXT) port.$(OBJEXT) \
-	protmode.$(OBJEXT) start.$(OBJEXT) stop.$(OBJEXT) \
-	version.$(OBJEXT) cpu.$(OBJEXT) membase.$(OBJEXT) \
-	print.$(OBJEXT) strings.$(OBJEXT) stdout.$(OBJEXT) \
-	list.$(OBJEXT) tree.$(OBJEXT) file.$(OBJEXT) vfs.$(OBJEXT) \
-	console.$(OBJEXT) cpuinfo.$(OBJEXT) kerror.$(OBJEXT) \
-	kmain.$(OBJEXT) kmalloc.$(OBJEXT) mempool.$(OBJEXT) \
-	pic.$(OBJEXT) screen.$(OBJEXT) driver.$(OBJEXT) \
-	keyboard.$(OBJEXT) shell.$(OBJEXT)
+	protmode.$(OBJEXT) start.$(OBJEXT) version.$(OBJEXT) \
+	cpu.$(OBJEXT) membase.$(OBJEXT) print.$(OBJEXT) \
+	strings.$(OBJEXT) stdout.$(OBJEXT) list.$(OBJEXT) \
+	tree.$(OBJEXT) file.$(OBJEXT) vfs.$(OBJEXT) console.$(OBJEXT) \
+	cpuinfo.$(OBJEXT) kerror.$(OBJEXT) kmain.$(OBJEXT) \
+	kmalloc.$(OBJEXT) mempool.$(OBJEXT) pic.$(OBJEXT) \
+	screen.$(OBJEXT) driver.$(OBJEXT) keyboard.$(OBJEXT) \
+	shell.$(OBJEXT)
 kernel_OBJECTS = $(am_kernel_OBJECTS)
 kernel_DEPENDENCIES = $(top_builddir)/drivers/libdriverdef.a \
 	$(top_builddir)/drivers/keyboard/libkeyboard.a
@@ -183,7 +183,6 @@ kernel_SOURCES = i386/int.c \
 				 i386/port.S \
 				 i386/protmode.S \
 				 i386/start.S \
-				 i386/stop.S \
 				 i386/version.S \
 				 i486/cpu.S \
 				 std/membase.c \
@@ -276,7 +275,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/shell.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/start.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stdout.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stop.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strings.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tree.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/version.Po@am__quote@
@@ -351,20 +349,6 @@ start.obj: i386/start.S
 @AMDEP_TRUE@@am__fastdepCCAS_FALSE@	source='i386/start.S' object='start.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCCAS_FALSE@	DEPDIR=$(DEPDIR) $(CCASDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCCAS_FALSE@	$(CCAS) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CCASFLAGS) $(CCASFLAGS) -c -o start.obj `if test -f 'i386/start.S'; then $(CYGPATH_W) 'i386/start.S'; else $(CYGPATH_W) '$(srcdir)/i386/start.S'; fi`
-
-stop.o: i386/stop.S
-@am__fastdepCCAS_TRUE@	$(CCAS) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CCASFLAGS) $(CCASFLAGS) -MT stop.o -MD -MP -MF $(DEPDIR)/stop.Tpo -c -o stop.o `test -f 'i386/stop.S' || echo '$(srcdir)/'`i386/stop.S
-@am__fastdepCCAS_TRUE@	$(am__mv) $(DEPDIR)/stop.Tpo $(DEPDIR)/stop.Po
-@AMDEP_TRUE@@am__fastdepCCAS_FALSE@	source='i386/stop.S' object='stop.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCCAS_FALSE@	DEPDIR=$(DEPDIR) $(CCASDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCCAS_FALSE@	$(CCAS) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CCASFLAGS) $(CCASFLAGS) -c -o stop.o `test -f 'i386/stop.S' || echo '$(srcdir)/'`i386/stop.S
-
-stop.obj: i386/stop.S
-@am__fastdepCCAS_TRUE@	$(CCAS) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CCASFLAGS) $(CCASFLAGS) -MT stop.obj -MD -MP -MF $(DEPDIR)/stop.Tpo -c -o stop.obj `if test -f 'i386/stop.S'; then $(CYGPATH_W) 'i386/stop.S'; else $(CYGPATH_W) '$(srcdir)/i386/stop.S'; fi`
-@am__fastdepCCAS_TRUE@	$(am__mv) $(DEPDIR)/stop.Tpo $(DEPDIR)/stop.Po
-@AMDEP_TRUE@@am__fastdepCCAS_FALSE@	source='i386/stop.S' object='stop.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCCAS_FALSE@	DEPDIR=$(DEPDIR) $(CCASDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCCAS_FALSE@	$(CCAS) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CCASFLAGS) $(CCASFLAGS) -c -o stop.obj `if test -f 'i386/stop.S'; then $(CYGPATH_W) 'i386/stop.S'; else $(CYGPATH_W) '$(srcdir)/i386/stop.S'; fi`
 
 version.o: i386/version.S
 @am__fastdepCCAS_TRUE@	$(CCAS) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CCASFLAGS) $(CCASFLAGS) -MT version.o -MD -MP -MF $(DEPDIR)/version.Tpo -c -o version.o `test -f 'i386/version.S' || echo '$(srcdir)/'`i386/version.S

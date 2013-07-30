@@ -4,6 +4,7 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <itemPath>include/kmalloc_test.h</itemPath>
       <itemPath>include/vfs_test.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -31,6 +32,7 @@
         <itemPath>kmalloc_mocked.c</itemPath>
         <itemPath>../../kernel/mempool.c</itemPath>
       </logicalFolder>
+      <itemPath>kmalloc_test.c</itemPath>
       <itemPath>main.c</itemPath>
       <itemPath>vfs_test.c</itemPath>
     </logicalFolder>
@@ -79,11 +81,15 @@
           </incDir>
         </cTool>
       </folder>
+      <item path="include/kmalloc_test.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/vfs_test.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="kerror_mocked.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="kmalloc_mocked.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kmalloc_test.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="main.c" ex="false" tool="0" flavor2="0">
       </item>
@@ -135,11 +141,15 @@
           </incDir>
         </cTool>
       </folder>
+      <item path="include/kmalloc_test.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="include/vfs_test.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="kerror_mocked.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="kmalloc_mocked.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="kmalloc_test.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="main.c" ex="false" tool="0" flavor2="0">
       </item>

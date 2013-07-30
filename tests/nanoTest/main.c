@@ -34,6 +34,7 @@ int
 main(int argc, char** argv)
 {
     TEST_DECLARE(k_heap_init);
+	TEST_DECLARE(kmalloc_test);
     TEST_DECLARE(run_vfs_test);
     
     k_print_memory_usage_info();

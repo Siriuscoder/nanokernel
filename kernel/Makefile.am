@@ -17,7 +17,6 @@ kernel_SOURCES = i386/int.c \
 				 i386/port.S \
 				 i386/protmode.S \
 				 i386/start.S \
-				 i386/stop.S \
 				 i386/version.S \
 				 i486/cpu.S \
 				 std/membase.c \

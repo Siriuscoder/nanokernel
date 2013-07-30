@@ -20,6 +20,7 @@
 #include <std/print.h>
 #include <std/strings.h>
 #include <mem.h>
+#include <cpu.h>
 #include <kerror.h>
 #include <keyboard.h>
 #include <fs/file.h>

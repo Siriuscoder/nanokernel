@@ -28,6 +28,7 @@
           <in>tree.h</in>
         </df>
         <in>console.h</in>
+        <in>cpu.h</in>
         <in>cpuinfo.h</in>
         <in>driver.h</in>
         <in>int.h</in>
@@ -76,9 +77,15 @@
       <df name="tests">
         <df name="nanoTest">
           <df name="include">
+            <in>kmalloc_test.h</in>
             <in>vfs_test.h</in>
           </df>
+          <in>kerror_mocked.c</in>
+          <in>kmalloc_mocked.c</in>
+          <in>kmalloc_test.c</in>
           <in>main.c</in>
+          <in>print_mocked.c</in>
+          <in>vfs_test.c</in>
         </df>
       </df>
     </df>
@@ -149,6 +156,8 @@
         </cTool>
       </folder>
       <item path="include/console.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="include/cpu.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="include/cpuinfo.h" ex="false" tool="3" flavor2="0">
       </item>
@@ -238,11 +247,26 @@
       </item>
       <item path="kernel/utils/tree.c" ex="false" tool="0" flavor2="0">
       </item>
-      <item path="tests/nanoTest/include/vfs_test.h" ex="false" tool="3" flavor2="0">
+      <item path="tests/nanoTest/include/kmalloc_test.h"
+            ex="false"
+            tool="0"
+            flavor2="0">
+      </item>
+      <item path="tests/nanoTest/include/vfs_test.h" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="tests/nanoTest/kerror_mocked.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="tests/nanoTest/kmalloc_mocked.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="tests/nanoTest/kmalloc_test.c" ex="false" tool="0" flavor2="0">
       </item>
       <item path="tests/nanoTest/main.c" ex="false" tool="0" flavor2="2">
         <cTool>
         </cTool>
+      </item>
+      <item path="tests/nanoTest/print_mocked.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="tests/nanoTest/vfs_test.c" ex="false" tool="0" flavor2="0">
       </item>
     </conf>
   </confs>
